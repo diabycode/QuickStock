@@ -1,0 +1,88 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAuthenticator</title>
+    <link rel="stylesheet" href="{% static 'css/accounts/style.css' %}">
+
+</head>
+<body>
+    <main>
+        <h1>JAuthenticator</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eveniet provident quas voluptas voluptatibus! Eius ab qui odit ipsum saepe minus illum dicta odio deserunt, natus, nemo aliquam, ullam nisi quasi.</p>
+
+        <div class="form-container">
+            <h3>Inscription</h3>
+            <form action="#" method="POST">
+                {% csrf_token %}
+                <div>
+                    <div>
+                        <div>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="error">
+                                    {% for error in form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {{ form.password }}
+                            <div class="help-text {% if form.password.errors %} error {% endif %}">
+                                8 caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial.
+                            </div>
+                        </div>
+                        <div>
+                            <input type="password" name="password-repeat" placeholder="répétez le mot de passe">
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="error">
+                                    {% for error in form.last_name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="error">
+                                    {% for error in form.first_name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="error">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit">Inscription</button>
+                <a href="{% url 'accounts:login' %}">Connexion</a>
+            </form>
+        </div>
+
+        
+    </main>
+
+    <script type="module" src="{% static 'js/accounts/main.js' %}"></script>
+</body>
+</html>

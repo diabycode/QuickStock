@@ -22,7 +22,7 @@ class CustomLoginView(View):
 
     authentication_form = UserLoginForm
     template_name = 'accounts/login.html'
-    success_redirect_url = reverse_lazy('home') 
+    success_redirect_url = reverse_lazy('products:product_list') 
 
     def get(self, request):
         if request.user.is_authenticated:
@@ -51,7 +51,9 @@ class CustomLoginView(View):
                     # login user
                     from django.contrib.auth import login
                     login(request, user)
-                    return redirect(self.success_redirect_url)
+
+                    redirect_url = request.GET.get("next", self.success_redirect_url) 
+                    return redirect(redirect_url)
                 
                 return render(request, self.template_name, {'form': form, 'error': 'Password is incorrect'}) 
         

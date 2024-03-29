@@ -3,14 +3,14 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Gestion des products</title>
+        <title>Gestion des commandes</title>
     </head>
     <body>
-        <h2>Produits</h2>
+        <h2>Commandes</h2>
         <table style="border-collapse: collapse; text-align: left">
             <thead>
                 <tr>
-                    {% for column in product_column_names %}
+                    {% for column in order_column_names %}
                     <th style="border: 1px solid; padding: 5px">
                         {{ column }}
                     </th>
@@ -18,9 +18,9 @@
                 </tr>
             </thead>
             <tbody>
-                {% for product in product_list %}
+                {% for order in order_list %}
                 <tr>
-                    {% for column in product %}
+                    {% for column in order %}
                     <td style="border: 1px solid; padding: 5px">
                         {{ column }}
                     </td>

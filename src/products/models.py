@@ -8,4 +8,7 @@ class Product(models.Model):
     packaging_type = models.CharField(max_length=100, null=True)
     slug = models.SlugField(blank=True, null=True)
 
+    def __str__(self) -> str:
+        return f"{self.name.capitalize()}"
+
 

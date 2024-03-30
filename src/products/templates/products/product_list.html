@@ -4,9 +4,32 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Gestion des products</title>
+        <style>
+            td {
+                padding: 5px;
+                border: 1px solid;
+                border-collapse: collapse;
+            }
+            td.actions {
+                display: flex;
+                gap: 5px;
+            }
+            a.btn {
+                background-color: rgb(242, 242, 248);
+                padding: 5px;
+                border: 1px solid;
+                text-decoration: none;
+                color: black;
+                display: inline-block;
+                margin: 10px 0;
+            }
+        </style>
     </head>
     <body>
         <h2>Produits</h2>
+        <a class="btn" href="{% url 'products:product_create' %}"
+            >+ Ajouter un produit</a
+        >
         <table style="border-collapse: collapse; text-align: left">
             <thead>
                 <tr>
@@ -20,14 +43,46 @@
             <tbody>
                 {% for product in product_list %}
                 <tr>
-                    {% for column in product %}
-                    <td style="border: 1px solid; padding: 5px">
-                        {{ column }}
+                    <td>{{ product.pk }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.stock_quantity }}</td>
+                    <td>{{ product.wholesale_unit_price }}</td>
+                    <td>{{ product.unit_price_sale }}</td>
+                    <td>{{ product.packaging_type }}</td>
+                    <td class="actions">
+                        <a
+                            href="{% url 'products:product_details' slug=product.slug %}"
+                            >Infos</a
+                        >
+                        <a
+                            href="{% url 'products:product_update' slug=product.slug %}"
+                            >Modifier</a
+                        >
+                        <form
+                            action="{% url 'products:product_delete' slug=product.slug %}"
+                            method="POST"
+                        >
+                            {% csrf_token %}
+                            <button class="delete_action" type="submit">
+                                Supprimer
+                            </button>
+                        </form>
                     </td>
-                    {% endfor %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+        <script>
+            document
+                .querySelector(".delete_action")
+                .addEventListener("click", (e) => {
+                    e.preventDefault();
+                    if (confirm("Etes-vous sure de supprimer ?")) {
+                        const form = e.target.closest("form");
+                        form.submit();
+                    }
+                });
+        </script>
     </body>
 </html>

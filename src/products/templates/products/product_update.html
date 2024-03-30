@@ -4,8 +4,22 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Gestion des produits</title>
+
+        <style>
+            form {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+        </style>
     </head>
     <body>
-        <h2>Update</h2>
+        <h2>Modifiez un produit</h2>
+        <form method="POST">
+            {% csrf_token %} {{ form }}
+            <button type="submit">Modifier</button>
+            <a href="{% url 'products:product_list' %}">Annuler</a>
+        </form>
     </body>
 </html>

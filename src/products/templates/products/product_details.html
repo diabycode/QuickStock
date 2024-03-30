@@ -5,7 +5,42 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Gestion des produits</title>
     </head>
+
+    <style>
+        .properties {
+            display: flex;
+            gap: 100px;
+        }
+        p {
+            font-size: 15px;
+        }
+        p span {
+            display: block;
+            font-weight: 600;
+            font-size: 18px;
+        }
+    </style>
     <body>
-        <h2>Details</h2>
+        <h2>Details produit</h2>
+        <a href="{% url 'products:product_list' %}">Retour</a>
+        <div class="properties">
+            <div>
+                <p>Nom <span>{{ product.name }}</span></p>
+                <p>
+                    Quantité en stock <span>{{ product.stock_quantity }}</span>
+                </p>
+                <p>Paquetage <span>{{ product.packaging_type }}</span></p>
+            </div>
+            <div>
+                <p>
+                    Prix unitaire gros (FCFA)
+                    <span>{{ product.wholesale_unit_price }}</span>
+                </p>
+                <p>
+                    Prix unitaire vente (FCFA)
+                    <span>{{ product.unit_price_sale }}</span>
+                </p>
+            </div>
+        </div>
     </body>
 </html>

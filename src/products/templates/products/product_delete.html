@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Supprimer une produit</title>
-    </head>
-    <body>
-        <p>Are you sure you want to delete : {{ product }}</p>
-        <form method="POST">
-            {% csrf_token %} <button type="submit">Confirm</button>
-        </form>
-    </body>
-</html>
+{% extends 'qstockapp/base.html' %}
+
+{% block head %}
+<title>Gestion des produits</title>
+{% endblock %}
+
+{% block body %}
+    <p>Vous etes sur de vouloir supprimer ? </p>
+    <form method="POST">
+        {% csrf_token %} <button type="submit">Je confirm</button>
+    </form>
+{% endblock %}

@@ -1,20 +1,17 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/accounts/style.css' %}">
 
-    <title>JAuthenticator</title>
+    <title>Se connecter</title>
 </head>
 <body>
     <main>
-        <h1>JAuthenticator</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eveniet provident quas voluptas voluptatibus! Eius ab qui odit ipsum saepe minus illum dicta odio deserunt, natus, nemo aliquam, ullam nisi quasi.</p>
-        
         <div class="form-container login">
             <h3>Connexion</h3>
             <form action="#" method="POST">
@@ -31,7 +28,6 @@
                     {{ form.password }}
                 </div>
                 <button type="submit">Connexion</button>
-                <a href="{% url 'accounts:register' %}">Inscription</a>
             </form>
         </div>
 

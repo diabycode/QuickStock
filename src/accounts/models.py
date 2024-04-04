@@ -38,7 +38,7 @@ class CustomUserManager(BaseUserManager):
 
 class UserModel(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=80, unique=True)
-    email = models.EmailField(max_length=255, unique=True)
+    email = models.EmailField(max_length=255, unique=True, blank=True, null=True)
     first_name = models.CharField(max_length=80, blank=True)
     last_name = models.CharField(max_length=80, blank=True)
     join_date = models.DateTimeField(auto_now_add=True)
@@ -57,6 +57,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
 
     @property
     def fullname(self):
-        return f"{self.first_name} {self.last_name}"
+        if self.last_name and self.first_name:
+            return f"{self.first_name} {self.last_name}"
 
 

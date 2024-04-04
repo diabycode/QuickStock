@@ -1,46 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Gestion des produits</title>
-    </head>
+{% extends 'qstockapp/base.html' %}
+{% load static %} 
 
-    <style>
-        .properties {
-            display: flex;
-            gap: 100px;
-        }
-        p {
-            font-size: 15px;
-        }
-        p span {
-            display: block;
-            font-weight: 600;
-            font-size: 18px;
-        }
-    </style>
-    <body>
-        <h2>Details produit</h2>
-        <a href="{% url 'products:product_list' %}">Retour</a>
-        <div class="properties">
-            <div>
-                <p>Nom <span>{{ product.name }}</span></p>
-                <p>
-                    Quantité en stock <span>{{ product.stock_quantity }}</span>
-                </p>
-                <p>Paquetage <span>{{ product.packaging_type }}</span></p>
-            </div>
-            <div>
-                <p>
-                    Prix unitaire gros (FCFA)
-                    <span>{{ product.wholesale_unit_price }}</span>
-                </p>
-                <p>
-                    Prix unitaire vente (FCFA)
-                    <span>{{ product.unit_price_sale }}</span>
-                </p>
-            </div>
-        </div>
-    </body>
-</html>
+<!-- head  -->
+{% block head %}
+    <title>Gestion des produits</title>
+    <link rel="stylesheet" href="{% static 'css/quickstockapp/details.css' %}">
+{% endblock %}
+
+<!-- extra styles  -->
+{% block extra_styles %} 
+  
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+    <h3>Details produit</h3>
+    <div class="properties">
+        <p>Nom <span>{{ product.name }}</span></p>
+        <p>
+            Quantité en stock <span>{{ product.stock_quantity }}</span>
+        </p>
+        <p>Paquetage <span>{{ product.packaging_type }}</span></p>
+        <p>
+            Prix unitaire gros (FCFA)
+            <span>{{ product.wholesale_unit_price }}</span>
+        </p>
+        <p>
+            Prix unitaire vente (FCFA)
+            <span>{{ product.unit_price_sale }}</span>
+        </p>
+    </div>
+
+    <a class="link accent" href="{% url 'products:product_update' slug=product.slug%}">modifier</a>
+    <a class="link danger" href="{% url 'products:product_delete' slug=product.slug %}">Supprimer</a>
+    <a class="link" href="{% url 'products:product_list' %}">Retour à liste produits</a>
+
+{% endblock %}
+
+

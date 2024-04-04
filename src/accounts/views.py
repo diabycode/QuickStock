@@ -28,6 +28,8 @@ class CustomLoginView(View):
         if request.user.is_authenticated:
             return redirect(self.success_redirect_url)
 
+        if not UserModel.objects.first():
+            return redirect("accounts:register")
         form = self.authentication_form()
         return render(request, self.template_name, {'form': form})
     
@@ -42,7 +44,7 @@ class CustomLoginView(View):
             try:
                 user = UserModel.objects.get(username=username)
             except UserModel.DoesNotExist:
-                return render(request, self.template_name, {'form': form, 'error': 'User does not exist'})
+                return render(request, self.template_name, {'form': form, 'error': 'Nom d\'utilisateur ou mot de passe incorrete'})
             else:
 
                 # verif password
@@ -55,7 +57,7 @@ class CustomLoginView(View):
                     redirect_url = request.GET.get("next", self.success_redirect_url) 
                     return redirect(redirect_url)
                 
-                return render(request, self.template_name, {'form': form, 'error': 'Password is incorrect'}) 
+                return render(request, self.template_name, {'form': form, 'error': 'Nom d\'utilisateur ou mot de passe incorrete'}) 
         
         return render(request, self.template_name, {'form': form})
     
@@ -71,6 +73,9 @@ class CustomRegistrationView(View):
         if request.user.is_authenticated:
             return redirect(self.success_redirect_url)
 
+        if UserModel.objects.first():
+            return redirect("accounts:login")
+
         form = self.registration_form()
         context = {
             'form': form
@@ -79,6 +84,9 @@ class CustomRegistrationView(View):
         return render(request, 'accounts/registration.html', context)
 
     def post(self, request):
+        if UserModel.objects.first():
+            return redirect("accounts:login")
+
         form = self.registration_form(request.POST)
         if form.is_valid():
             user = form.save()

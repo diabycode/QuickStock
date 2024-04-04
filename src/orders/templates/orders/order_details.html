@@ -1,11 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Gestion des commandes</title>
-    </head>
-    <body>
-        <h2>Details commandes</h2>
-    </body>
-</html>
+{% extends 'qstockapp/base.html' %}
+{% load static %} 
+
+<!-- head  -->
+{% block head %}
+<title>Gestion des commandes</title>
+<link rel="stylesheet" href="{% static 'css/quickstockapp/details.css' %}">
+{% endblock %}
+
+<!-- extra styles  -->
+{% block extra_styles %} 
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+<h3>Details commande</h3>
+<div class="properties">
+    <p>Date de la commande <span>{{ order.order_date }}</span></p>
+    <p>Statut <span class="{{ sale.status_class_name }}">{{ order.status_display }}</span></p>
+    <p>
+        Date de livraison
+        <span>
+            {% if order.arrived_date != None %} {{ order.arrived_date }} {% else %} - {% endif %}
+        </span>
+    </p>
+   
+    <p>
+        Produit
+        <span>{{ order.product }}</span>
+    </p>
+    <p>
+        Quantité
+        <span>{{ order.quantity }}</span>
+    </p>
+    <p>
+        Nom du fournisseur
+        <span>{% if order.provider_name  %} {{ order.provider_name }} {% else %} - {% endif %} </span>
+    </p>
+    <p>
+        Téléphone du fournisseur
+        <span>{{ order.provider_phone }}</span>
+    </p>
+    <p>
+        Frais de livraison (FCFA)
+        <span> {{ order.shipping_costs }} </span>
+    </p>
+    <p>
+        Description
+        <span>
+            {% if order.description %}{{ order.description }} {% else %} - {% endif %}
+        </span>
+    </p>
+</div>
+{% if order.status == '2' %}
+<a class="link danger" href="{% url 'orders:order_delete' pk=order.pk %}">Supprimer</a>
+{% else %}
+<form style="margin-bottom: 32px;" action="{% url 'orders:order_cancel' pk=order.pk %}" method="POST">
+    {% csrf_token %}
+    <button class="btn danger cancel_action" type="submit">Annuler cette commande</button>
+</form>
+{% endif %}
+<a class="link accent" href="{% url 'orders:order_update' pk=order.pk %}">Modifier</a>
+<a class="link" href="{% url 'orders:order_list' %}">Retour à la liste commandes</a>
+
+<script>
+    document.querySelector(".cancel_action").addEventListener("click", (e) => {
+       e.preventDefault();
+       if (confirm("Etes vous sur d'annuler cette commande ?")) {
+           const form = e.target.closest("form");
+           form.submit();
+       }
+   });
+</script>
+
+{% endblock %}

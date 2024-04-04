@@ -4,7 +4,7 @@ from .models import Order
 
 
 @admin.register(Order)
-class UserModelAdmin(admin.ModelAdmin):
+class OrderModelAdmin(admin.ModelAdmin):
     
     list_display = (
         'provider_name',

@@ -21,7 +21,7 @@ class UserRegistrationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget.attrs.update({'placeholder': 'Nom d\'utilisateur'})
-        self.fields['email'].widget.attrs.update({'placeholder': 'Email'})
+        self.fields['email'].widget.attrs.update({'placeholder': 'Email (optionel)'})
         self.fields['password'].widget.attrs.update({'placeholder': 'Mot de passe'})
         self.fields['first_name'].widget.attrs.update({'placeholder': 'Prénom'})
         self.fields['last_name'].widget.attrs.update({'placeholder': 'Nom'})
@@ -40,7 +40,7 @@ class UserRegistrationForm(forms.ModelForm):
 
         for c in username:
             if c in excluded:
-                raise forms.ValidationError("Username cannot contain special characters")
+                raise forms.ValidationError("Le nom d'utilisateur ne peut pas contenir de caractères spéciaux")
 
         return username
 
@@ -49,24 +49,24 @@ class UserRegistrationForm(forms.ModelForm):
         password.strip()
 
         if len(password) < 8:
-            raise forms.ValidationError("Password must be at least 8 characters long")
+            raise forms.ValidationError("Le mot de passe doit comporter au moins 8 caractères")
 
         # include numbers
         if not any(char.isdigit() for char in password):
-            raise forms.ValidationError("Password must contain at least one number")
+            raise forms.ValidationError("Le mot de passe doit contenir au moins un chiffre")
         
         # include uppercase
         if not any(char.isupper() for char in password):
-            raise forms.ValidationError("Password must contain at least one uppercase letter")
+            raise forms.ValidationError("Le mot de passe doit contenir au moins une lettre majuscule")
         
         # include lowercase
         if not any(char.islower() for char in password):
-            raise forms.ValidationError("Password must contain at least one lowercase letter")
+            raise forms.ValidationError("Le mot de passe doit contenir au moins une lettre minuscule")
     
         # include special characters
         special_characters = ["@", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "{", "}", "[", "]", ":", ";", "'", '"', "<", ">", ",", ".", "?", "/", "|", "~", "`"]
         if not any(char in special_characters for char in password):
-            raise forms.ValidationError("Password must contain at least one special character")
+            raise forms.ValidationError("Le mot de passe doit contenir au moins un caractère spécial")
         
         return password
 
@@ -76,7 +76,7 @@ class UserRegistrationForm(forms.ModelForm):
 
         r = re.compile(r'^[a-zA-Z]+$')
         if not r.match(last_name):
-            raise forms.ValidationError("Last name must only contain letters")
+            raise forms.ValidationError("Le nom de famille ne doit contenir que des lettres")
 
         return last_name
     
@@ -88,7 +88,7 @@ class UserRegistrationForm(forms.ModelForm):
         r = re.compile(r'^[a-zA-Z ]+$')
 
         if not r.match(first_name):
-            raise forms.ValidationError("Fisrt name must only contain letters")
+            raise forms.ValidationError("Le prénom ne doit contenir que des lettres")
 
         return first_name
 

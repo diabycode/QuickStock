@@ -1,11 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Gestion des commandes</title>
-    </head>
-    <body>
-        <h2>Update commandes</h2>
-    </body>
-</html>
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+<!-- head  -->
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+<title>Gestion des commandes</title>
+
+{% endblock %}
+
+<!-- extra styles  -->
+{% block extra_styles %} 
+ 
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+<h3>Modifier une commande</h3>
+<form method="POST">
+    {% csrf_token %} 
+    <div class="form-content">
+        {{ form }}
+    </div>
+    <button type="submit">Modifier</button>
+    <a class="link" href="{% url 'orders:order_details' pk=order.pk %}">Annuler</a>
+</form>
+{% endblock %}

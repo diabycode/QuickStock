@@ -1,0 +1,118 @@
+
+main {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+h3 {
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+.btn {
+    padding: 5px 10px;
+    border: 1px solid var(--gray);
+    background-color: var(--subwhite);
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+}
+.btn.accent {
+    color: var(--white);
+    background-color: var(--accent);
+}
+.btn.primary {
+    color: var(--white);
+    background-color: var(--primary);
+}
+.btn.secondary {
+    color: var(--white);
+    background-color: var(--secondary);
+}
+.btn.danger {
+    color: var(--white);
+    background-color: var(--error);
+}
+.link {
+    font-weight: 600;
+    text-decoration: underline;
+    margin-right: .8rem;
+    display: inline-block;
+}
+.link:hover {
+    text-decoration: none;
+}
+.link.accent {
+    color: var(--accent);
+}
+.link.primary {
+    color: var(--primary);
+}
+.link.secondary {
+    color: var(--secondary);
+}
+.link.danger {
+    color: var(--error);
+}
+.container {
+    flex-grow: 2;
+    
+}
+.body_content {
+    background-color: var(--subwhite);
+    padding: 20px;
+    height: 100%;
+    overflow: scroll;
+}
+.app_name {
+    margin-bottom: 2rem;
+    padding: 10px;
+}
+.sidebar {
+    background-color: var(--black);
+    height:  100vh;
+}
+.sidebar * {
+    color: var(--white);
+}
+.menu {
+    border-top: 1px solid var(--gray);
+    padding: 10px 0;
+}
+.menu a {
+    padding: 10px 18px;
+    display: inline-block;
+    width: 100%;
+    transition: all 100ms ease;
+}
+.menu a:hover {
+    border-left: 3px solid var(--accent);
+    /* background-color: var(--gray); */
+}
+.user {
+    font-weight: 600;
+}
+header {
+    padding: 10px;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    /* background-color: var(--gray); */
+}
+header div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+}
+.heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--gray);
+    margin-bottom: 1.5rem;
+    padding: 10px;
+}
+.status.validated {
+    color: var(--accent);
+}
+

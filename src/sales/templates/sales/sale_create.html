@@ -1,0 +1,28 @@
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+<!-- head  -->
+{% block head %}
+<title>Gestion des ventes</title>
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+
+{% endblock %}
+
+<!-- extra styles  -->
+{% block extra_styles %} 
+
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+<h3>Ajoutez une vente</h3>
+<form method="POST">
+    {% csrf_token %} 
+    <div class="form-content">
+        {{ form }}
+    </div>
+    <button type="submit">Enrégistrer</button>
+    <a class="link" href="{% url 'sales:sale_list' %}">Annuler</a>
+</form>
+{% endblock %}
+

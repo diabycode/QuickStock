@@ -1,0 +1,33 @@
+table {
+    border-collapse: collapse;
+}
+td,th {
+    padding: 10px;
+    text-align: left;
+    white-space: nowrap;
+}
+td {
+    font-size: 1.12rem;
+}
+th {
+    font-size: 1rem;
+    font-weight: 600;
+}
+tbody tr {
+    background-color: var(--white);
+}
+td.actions {
+    display: flex;
+    gap: 10px;
+}
+td.actions svg:hover path {
+    fill: var(--accent);
+}
+tr.alert {
+    background-color: var(--product-stock-alert-background);
+    border: 1px solid var(--product-stock-alert-border);
+}
+tr.warn {
+    background-color: var(--product-stock-warn-background);
+    border: 1px solid var(--product-stock-warn-border);
+}

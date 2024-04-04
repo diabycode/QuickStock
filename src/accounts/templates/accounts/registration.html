@@ -6,17 +6,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAuthenticator</title>
+    <title>Créer un compte</title>
     <link rel="stylesheet" href="{% static 'css/accounts/style.css' %}">
 
 </head>
 <body>
     <main>
-        <h1>JAuthenticator</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eveniet provident quas voluptas voluptatibus! Eius ab qui odit ipsum saepe minus illum dicta odio deserunt, natus, nemo aliquam, ullam nisi quasi.</p>
-
         <div class="form-container">
-            <h3>Inscription</h3>
+            <h3>Créer un compte</h3>
             <form action="#" method="POST">
                 {% csrf_token %}
                 <div>
@@ -74,9 +71,7 @@
                         </div>
                     </div>
                 </div>
-
                 <button type="submit">Inscription</button>
-                <a href="{% url 'accounts:login' %}">Connexion</a>
             </form>
         </div>
 

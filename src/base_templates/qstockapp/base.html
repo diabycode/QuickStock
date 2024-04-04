@@ -1,0 +1,68 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="{% static 'css/qstockapp/reset.css' %}">
+        <link rel="stylesheet" href="{% static 'css/qstockapp/base.css' %}">
+        {% block head %}
+        <title>QuickStock</title>
+        {% endblock %}
+        <style>
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            li {
+                list-style: none;
+            }
+            
+            h1 {
+                font-size: 25px;
+            }
+            .menu ul {
+
+                padding: 0;
+            }
+            {% block extra_styles %}
+            {% endblock %}
+        </style>
+    </head>
+    <body>
+        <main>
+            <div class="sidebar">
+                <div class="app_name">
+                    <h1>QuickStock</h1>
+                </div>
+                <div class="menu">
+                    <ul>
+                        <li><a href="{% url 'home' %}">Tableau de bord</a></li>
+                        <li><a href="{% url 'products:product_list' %}">Produits</a></li>
+                        <li><a href="{% url 'orders:order_list' %}">Commandes</a></li>
+                        <li><a href="{% url 'sales:sale_list' %}">Ventes</a></li> 
+                    </ul>
+                </div>
+            </div>
+            <div class="container">
+                <header>
+                    <div>
+                        <span class="user">
+                            {% if user.fullname != None %}
+                                {{ user.fullname|title }}
+                            {% else %}
+                                {{ user.username }}
+                            {% endif %}
+                        </span>
+                        <a href="{% url 'accounts:logout' %}" style="text-decoration: underline;">Déconnexion</a>
+                    </div>
+                </header>
+                <div class="body_content">
+                    
+                    {% block body %} {% endblock %}
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

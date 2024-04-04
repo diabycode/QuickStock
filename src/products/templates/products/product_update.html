@@ -1,25 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Gestion des produits</title>
+{% extends 'qstockapp/base.html' %}
+{% load static %}
 
-        <style>
-            form {
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
-                align-items: flex-start;
-            }
-        </style>
-    </head>
-    <body>
-        <h2>Modifiez un produit</h2>
-        <form method="POST">
-            {% csrf_token %} {{ form }}
-            <button type="submit">Modifier</button>
-            <a href="{% url 'products:product_list' %}">Annuler</a>
-        </form>
-    </body>
-</html>
+<!-- head  -->
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+<title>Gestion des produits</title>
+{% endblock %}
+
+<!-- extra styles  -->
+{% block extra_styles %} 
+
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+    <h3>Modifiez un produit</h3>
+    <form method="POST">
+        {% csrf_token %} 
+        <div class="form-content">
+            {{ form }}
+        </div>
+        <button type="submit">Modifier</button>
+        <a class="link" href="{% url 'products:product_details' slug=product.slug %}">Annuler</a>
+    </form>
+{% endblock %}
+

@@ -1,0 +1,59 @@
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+<!-- head  -->
+{% block head %}
+    <title>Gestion des ventes</title>
+    <link rel="stylesheet" href="{% static 'css/quickstockapp/details.css' %}">
+{% endblock %}
+
+<!-- extra styles  -->
+{% block extra_styles %} 
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+    <h3>Details vente</h3>
+    <div class="properties">
+        <p>Date de la vente <span>{{ sale.sale_date }}</span></p>
+        <p>Statut <span class="{{ sale.status_class_name }}">{{ sale.status_display }}</span></p>
+        <p>
+            Produit vendu <span>{{ sale.product }}</span>
+        </p>
+        <p>Quantité vendu <span>{{ sale.quantity }}</span></p> 
+        <p>Nom de l'acheteur 
+            <span>
+                {% if sale.buyer_name != None %}{{ sale.buyer_name }} {% else %} - {% endif %}
+            </span>
+        </p> 
+        <p>Téléphone de l'acheteur 
+            <span>
+                {% if sale.buyer_phone != None %}{{ sale.buyer_phone }} {% else %} - {% endif %}
+            </span>
+        </p> 
+    </div>
+    
+    {% if sale.status == '2' %}
+    <a class="link danger" href="{% url 'sales:sale_delete' pk=sale.pk %}">Supprimer</a>
+    {% else %}
+    <form style="margin-bottom: 32px;" action="{% url 'sales:sale_cancel' pk=sale.pk %}" method="POST">
+        {% csrf_token %}
+        <button class="btn danger cancel_action" type="submit">Annuler la vente</button>
+    </form>
+    {% endif %}
+    <a class="link accent" href="{% url 'sales:sale_update' pk=sale.pk %}">Modifier</a>
+    <a class="link" href="{% url 'sales:sale_list' %}">Retour à la liste ventes</a>
+    
+    <script>
+         document.querySelector(".cancel_action").addEventListener("click", (e) => {
+            e.preventDefault();
+            if (confirm("Etes vous sur d'annuler cette vente ?")) {
+                const form = e.target.closest("form");
+                form.submit();
+            }
+        });
+
+    </script>
+{% endblock %}
+
+

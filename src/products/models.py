@@ -8,8 +8,9 @@ class Product(models.Model):
     stock_quantity = models.PositiveIntegerField(default=0, verbose_name="Quantité en stock")
     wholesale_unit_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, verbose_name="Prix unitaire gros")
     unit_price_sale = models.DecimalField(max_digits=10, decimal_places=2, null=True, verbose_name="Prix unitaire vente")
-    packaging_type = models.CharField(max_length=100, null=True, verbose_name="Paquetage")
+    packaging_type = models.CharField(max_length=100, null=True, verbose_name="Paquetage", blank=True)
     slug = models.SlugField(blank=True, null=True)
+    store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
 
     stock_warn_limit = 10
     stock_alert_limit = 5

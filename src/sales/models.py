@@ -15,6 +15,7 @@ class Sale(models.Model):
     buyer_name = models.CharField(max_length=100, null=True, blank=True, verbose_name="Nom de l'acheteur")
     buyer_phone = models.CharField(max_length=100, null=True, blank=True, verbose_name="Téléphone de l'acheteur")
     status = models.CharField(max_length=30, choices=SaleStatus.choices, default=SaleStatus.VALIDATED, verbose_name="Statut")
+    store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
 
     def save(self, *args, **kwargs):
         if self.quantity > self.product.stock_quantity:

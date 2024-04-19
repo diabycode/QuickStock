@@ -20,7 +20,7 @@
         <p>
             Quantité en stock <span>{{ product.stock_quantity }}</span>
         </p>
-        <p>Paquetage <span>{{ product.packaging_type }}</span></p>
+        <p>Paquetage <span>{% if product.packaging_type %} {{ product.packaging_type }} {% else %} - {% endif %}</span></p>
         <p>
             Prix unitaire gros (FCFA)
             <span>{{ product.wholesale_unit_price }}</span>

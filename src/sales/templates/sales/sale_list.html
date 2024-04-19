@@ -15,9 +15,7 @@
 <!-- body content -->
 {% block body %}
     <div class="heading">
-        <h2>Ventes</h2>
-    <a class="btn primary" href="{% url 'sales:sale_create' %}">+ Ajouter une vente</a>
-    
+        <a class="btn primary" href="{% url 'sales:sale_create' %}">+ Ajouter une vente</a>
     </div>
     {% if sale_list %}
     <table>
@@ -31,7 +29,6 @@
         <tbody>
             {% for sale in sale_list %}
             <tr>
-                <td>{{ sale.pk }}</td>
                 <td>{{ sale.sale_date }}</td>
                 <td class="{{ sale.status_class_name }}">{{ sale.status_display }}</td>
                 <td>{{ sale.product }}</td>

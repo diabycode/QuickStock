@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 
 from .models import Order, OrderStatus
+from stores.models import Store
 
 
 class OrderListView(LoginRequiredMixin, ListView):
@@ -27,9 +28,12 @@ class OrderListView(LoginRequiredMixin, ListView):
             Order.provider_name.field.verbose_name,
             Order.shipping_costs.field.verbose_name + " (FCFA)",
         ]
+
+        store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
         
         context["order_column_names"] = order_column_names
-        context["order_list"] = Order.objects.all()
+        context["order_list"] = Order.objects.filter(store=store).order_by("order_date")
+        context["page_title"] = "Commandes"
         return context
 
 
@@ -45,6 +49,7 @@ class OrderUpdateView(LoginRequiredMixin, UpdateView):
     fields = [
         'product', # locked
         'quantity', # locked
+        'store', 
         'provider_name', 
         'provider_phone',
         'status', # locked if not in progress
@@ -96,6 +101,7 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
     fields = [
         'product',
         'quantity',
+        'store',
         'provider_name',
         'provider_phone',
         'status',
@@ -106,20 +112,15 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
     template_name = "orders/order_create.html"
     success_url = reverse_lazy("orders:order_list")
 
-    # def form_valid(self, form):
-    #     response = super().form_valid(form)
-    #     obj = self.get_object()
-    #     form_status_value = form.cleaned_data.get("status")
-    #     if form_status_value == OrderStatus.SHIPPED:
-    #         # order shipped signal
-    #         from products.signals import update_quantity_on_order_shipped
-    #         from orders.signals import order_shipped_signal
-    #         order_shipped_signal.send(update_quantity_on_order_shipped, instance=obj)
-
-    #     return response
-    
-    # def get_success_url(self) -> str:
-    #     return reverse("orders:order_details", kwargs={"pk": self.kwargs.get("pk")})
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        
+        current_store = self.request.session.get("current_store_pk", None)
+        if current_store:
+            from stores.models import Store
+            form.fields["store"].initial = get_object_or_404(Store, pk=current_store)
+        # print(dir(form.fields["store"]))
+        return form
 
 
 class OrderDeleteView(LoginRequiredMixin, DeleteView):

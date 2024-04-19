@@ -20,6 +20,7 @@ class Order(models.Model):
     product = models.ForeignKey("products.Product", on_delete=models.CASCADE, null=True, verbose_name="Produit")
     quantity = models.PositiveIntegerField(default=0, null=True, verbose_name="Quantité")
     status = models.CharField(max_length=30, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS)
+    store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
 
     def __str__(self) -> str:
         return f"Order from {self.provider_name}"

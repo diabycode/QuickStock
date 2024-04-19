@@ -1,0 +1,16 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+}
+h2 {
+    margin-bottom: 2rem;
+}
+.form-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 350px;
+    max-width: 400px;
+}
+

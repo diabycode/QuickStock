@@ -6,7 +6,9 @@ from django.shortcuts import render
 
 @login_required(login_url='/accounts/login/')
 def home(request):
-    return render(request, "quickstockapp/dashboard.html")
+    context = {}
+    context["page_title"] = "Tableau de bord"
+    return render(request, "quickstockapp/dashboard.html", context=context)
 
 
 

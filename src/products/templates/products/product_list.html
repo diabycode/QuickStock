@@ -14,7 +14,6 @@
 <!-- body content -->
 {% block body %}
     <div class="heading">
-        <h2>Produits</h2>
         <a class="btn primary" href="{% url 'products:product_create' %}">+ Ajouter un produit</a>
     </div>
     
@@ -30,12 +29,11 @@
         <tbody>
             {% for product in product_list %}
             <tr class="{% if product.stock_alert != None %} {{ product.stock_alert }} {% endif %}">
-                <td>{{ product.pk }}</td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.stock_quantity }}</td>
                 <td>{{ product.wholesale_unit_price }}</td>
                 <td>{{ product.unit_price_sale }}</td>
-                <td>{{ product.packaging_type }}</td>
+                <td> {% if product.packaging_type %} {{ product.packaging_type }} {% else %} - {% endif %}</td>
                 <td class="actions">
                     <a href="{% url 'products:product_details' slug=product.slug %}">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

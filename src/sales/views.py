@@ -10,6 +10,7 @@ from django.http import HttpRequest, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 
 from .models import Sale, SaleStatus
+from stores.models import Store
 
 
 class SaleListView(LoginRequiredMixin, ListView):
@@ -22,7 +23,6 @@ class SaleListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(*args, **kwargs)
 
         sale_column_names = [
-            "#",
             Sale.sale_date.field.verbose_name,
             Sale.status.field.verbose_name,
             Sale.product.field.verbose_name,
@@ -31,8 +31,11 @@ class SaleListView(LoginRequiredMixin, ListView):
             Sale.buyer_phone.field.verbose_name,
         ]
         
+        store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
+
         context["sale_column_names"] = sale_column_names
-        context["sale_list"] = Sale.objects.all()
+        context["sale_list"] = Sale.objects.filter(store=store).order_by("sale_date")
+        context["page_title"] = "Ventes"
         return context
 
 
@@ -48,6 +51,7 @@ class SaleCreateView(LoginRequiredMixin, CreateView):
     fields = [
         'sale_date',
         'product',
+        'store',
         'quantity',
         'buyer_name',
         'buyer_phone',
@@ -70,12 +74,22 @@ class SaleCreateView(LoginRequiredMixin, CreateView):
 
         return super().form_valid(form) 
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        current_store = self.request.session.get("current_store_pk", None)
+        if current_store:
+            from stores.models import Store
+            form.fields["store"].initial = get_object_or_404(Store, pk=current_store)
+        return form
+
 
 class SaleUpdateView(LoginRequiredMixin, UpdateView):
     model = Sale
     fields = [
         'sale_date',
         'product', # locked
+        'store', 
         'quantity', # locked
         'buyer_name',
         'buyer_phone',

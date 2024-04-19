@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/qstockapp/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/stores/form.css' %}">
+
+    <title>Ajouter un magasin</title>
+</head>
+<body>
+    <main>
+        <h2>Nouveau magasin</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-content">
+                {{ form }}
+            </div>
+            <button type="submit">Enrégistrer</button>
+        </form>
+    </main>
+</body>
+</html>
+
+
+
+

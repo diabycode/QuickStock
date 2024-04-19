@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerer les magasins</title>
+    <link rel="stylesheet" href="{% static 'css/qstockapp/reset.css' %}">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            height: 90vh;
+            align-items: center;
+        }
+        h2 {
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+        .add {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: .5rem;
+        }
+        .add a {
+            text-decoration: underline;
+            font-size: 1rem;
+            font-weight: 500;
+            display: inline-block;
+
+        }
+        .stores {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .store {
+            border: 1px solid var(--gray);
+            border-radius: 5px;
+            padding: 5px;
+            min-width: 300px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+        .store:hover {
+            border-color: var(--primary);
+        }
+        .store p {
+            font-size: .85rem;
+        }
+        .store p.name {
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        .store .content a {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .store .options {
+            display: none;
+            margin-top: 1rem;
+        }
+        .store.edit .options {
+            display: block;
+        }
+        .store .options a {
+            text-decoration: underline;
+            position: relative;
+            z-index: 1000;
+            /* color: var(--primary); */
+        }
+        .store .options a:hover {
+            text-decoration: none;
+        }
+        
+        button {
+            padding: 5px 10px;
+            background-color: var(--primary);
+            border-radius: 2px;
+            border: none;
+            color: var(--white);
+            font-weight: 500;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h2>Liste des magasins</h2>
+        <div class="add">
+            <a href="{% url 'stores:store_create' %}">+ Nouveau magasin</a>
+        </div>
+        <div class="stores">
+            {% for store in store_list %}
+            <div class="store">
+                <div class="content">
+                    <p class="name">{{ store.name }}</p>
+                    <p>{{ store.address }}</p>
+                    <a href="{% url 'stores:change_store' pk=store.pk %}"></a>
+                </div>
+                <div class="options">
+                    <a href="{% url 'stores:store_update' pk=store.pk %}">modifier</a>
+                    <a style="color: var(--error);" href="{% url 'stores:store_delete' pk=store.pk %}">supprimer</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button>Modifier</button>
+    </main>
+
+    <script>
+        document.querySelector("button").addEventListener("click", (e) => {
+            // e.target.classList.add("edit")
+            if (e.target.innerText !== "Terminer") {
+                e.target.innerText = "Terminer";
+                Array.from(document.querySelectorAll(".store")).forEach(store => {
+                    store.classList.toggle("edit")
+                })
+                
+            } else {
+                e.target.innerText = "Modifier";
+                Array.from(document.querySelectorAll(".store")).forEach(store => {
+                    store.classList.remove("edit")
+                })
+
+            }
+        })
+    </script>
+</body>
+</html>
+
+
+
+

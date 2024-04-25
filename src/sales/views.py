@@ -11,9 +11,10 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Sale, SaleStatus
 from stores.models import Store
+from stores.mixins import NotCurrentStoreMixin
 
 
-class SaleListView(LoginRequiredMixin, ListView):
+class SaleListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
 
     model = Sale
     template_name = "sales/sale_list.html"
@@ -39,13 +40,13 @@ class SaleListView(LoginRequiredMixin, ListView):
         return context
 
 
-class SaleDetailsView(LoginRequiredMixin, DetailView):
+class SaleDetailsView(LoginRequiredMixin, NotCurrentStoreMixin, DetailView):
     model = Sale
     template_name = "sales/sale_details.html"
     context_object_name = "sale"
 
 
-class SaleCreateView(LoginRequiredMixin, CreateView):
+class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
 
     model = Sale
     fields = [
@@ -84,7 +85,7 @@ class SaleCreateView(LoginRequiredMixin, CreateView):
         return form
 
 
-class SaleUpdateView(LoginRequiredMixin, UpdateView):
+class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
     model = Sale
     fields = [
         'sale_date',
@@ -118,7 +119,7 @@ class SaleUpdateView(LoginRequiredMixin, UpdateView):
         return reverse("sales:sale_details", kwargs={"pk": self.kwargs.get("pk")})
 
 
-class SaleDeleteView(LoginRequiredMixin, DeleteView):
+class SaleDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
     model = Sale
     context_object_name = "sale"
     template_name = "sales/sale_delete.html"

@@ -5,9 +5,10 @@ from django.urls import reverse_lazy, reverse
 
 from .models import Product
 from stores.models import Store
+from stores.mixins import NotCurrentStoreMixin
 
 
-class ProductListView(LoginRequiredMixin, ListView):
+class ProductListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
 
     model = Product
     template_name = "products/product_list.html"
@@ -24,7 +25,15 @@ class ProductListView(LoginRequiredMixin, ListView):
             Product.packaging_type.field.verbose_name,
         ]
         
-        store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
+        
+
+        try:
+            store = Store.objects.get(pk=self.request.session.get("current_store_pk"))
+        except Store.DoesNotExist:
+            store = Store.objects.first()
+            if store:
+                self.request.session["current_store_pk"] = store.pk
+
 
         context["product_column_names"] = product_column_names
         context["product_list"] = Product.objects.filter(store=store).order_by("-pk")
@@ -32,14 +41,14 @@ class ProductListView(LoginRequiredMixin, ListView):
         return context
 
 
-class ProductDetailsView(LoginRequiredMixin, DetailView):
+class ProductDetailsView(LoginRequiredMixin, NotCurrentStoreMixin, DetailView):
 
     model = Product
     template_name = "products/product_details.html"
     context_object_name = "product"
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
 
     model = Product
     fields = [
@@ -55,7 +64,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         return reverse("products:product_details", kwargs={"slug": self.kwargs.get("slug")})
 
 
-class ProductCreateView(LoginRequiredMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
 
     model = Product
     fields = [
@@ -79,7 +88,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return form 
 
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):
+class ProductDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
     model = Product
     context_object_name = "product"
     template_name = "products/product_delete.html"

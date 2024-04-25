@@ -8,9 +8,10 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Order, OrderStatus
 from stores.models import Store
+from stores.mixins import NotCurrentStoreMixin
 
 
-class OrderListView(LoginRequiredMixin, ListView):
+class OrderListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
 
     model = Order
     context_object_name = "orders"
@@ -37,14 +38,14 @@ class OrderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class OrderDetailsView(LoginRequiredMixin, DetailView):
+class OrderDetailsView(LoginRequiredMixin, NotCurrentStoreMixin, DetailView):
 
     model = Order
     template_name = "orders/order_details.html"
     context_object_name = "order"
 
 
-class OrderUpdateView(LoginRequiredMixin, UpdateView):
+class OrderUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
     model = Order
     fields = [
         'product', # locked
@@ -96,7 +97,7 @@ class OrderUpdateView(LoginRequiredMixin, UpdateView):
         return reverse("orders:order_details", kwargs={"pk": self.kwargs.get("pk")})
 
 
-class OrderCreateView(LoginRequiredMixin, CreateView):
+class OrderCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
     model = Order
     fields = [
         'product',
@@ -123,7 +124,7 @@ class OrderCreateView(LoginRequiredMixin, CreateView):
         return form
 
 
-class OrderDeleteView(LoginRequiredMixin, DeleteView):
+class OrderDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
     model = Order
     context_object_name = "order"
     template_name = "orders/order_delete.html"

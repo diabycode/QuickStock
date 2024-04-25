@@ -33,3 +33,7 @@ class Sale(models.Model):
                 return "status validated"
             case SaleStatus.CANCELLED:
                 return "status cancelled"
+    
+    @property
+    def total_amount(self):
+        return self.product.unit_price_sale * self.quantity

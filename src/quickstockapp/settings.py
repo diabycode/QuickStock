@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+from django.contrib.staticfiles import finders
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
     'products',
     'orders',
     'sales',
+    'pwa',
 ]
 
 MIDDLEWARE = [
@@ -139,3 +142,51 @@ STATICFILES_DIRS = [
     BASE_DIR / "base_staticfiles",
     BASE_DIR / "quickstockapp/static",
 ]
+
+# PWA_SERVICE_WORKER_PATH = BASE_DIR / "quickstockapp/static/js/quickstockapp" / "serviceworker.js"
+PWA_SERVICE_WORKER_PATH = finders.find("js/quickstockapp/serviceworker.js")
+PWA_APP_NAME = 'QuickStock'
+PWA_APP_DESCRIPTION = "QuickStock PWA"
+# PWA_APP_THEME_COLOR = '#000000'
+# PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/dashbord/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/icons/quickstockapp/logo150x150.png',
+        'sizes': '150x150'
+    },
+    {
+        'src': '/static/icons/quickstockapp/logo144x144.png',
+        'sizes': '144x144'
+    },
+    {
+        'src': '/static/icons/quickstockapp/logo225x225.png',
+        'sizes': '225x225'
+    },
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/icons/quickstockapp/logo150x150.png',
+        'sizes': '150x150'
+    },
+    {
+        'src': '/static/icons/quickstockapp/logo144x144.png',
+        'sizes': '144x144'
+    },
+    {
+        'src': '/static/icons/quickstockapp/logo225x225.png',
+        'sizes': '225x225'
+    },
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': '/static/icons/quickstockapp/logo22x22.png',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'fr-FR'

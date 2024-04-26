@@ -11,23 +11,23 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import json
+import sys
 
 from django.contrib.staticfiles import finders
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+try:
+    with open(BASE_DIR / ".eVars.json") as env_file:
+        ENV = json.load(env_file)
+except FileNotFoundError:
+    raise FileNotFoundError("Env vars file not found !")
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&m22&13no-=fa6dby@tp%!u+owo9789z*hj9j24)ye#cr7cg($'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ["*"]
+SECRET_KEY = ENV.get("SECRET_KEY")
+DEBUG = ENV.get("DEBUG")
+ALLOWED_HOSTS = ENV.get("ALLOWED_HOSTS")
 
 
 # Application definition
@@ -127,14 +127,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.UserModel'
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "mediafiles"
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"

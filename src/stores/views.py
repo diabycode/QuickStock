@@ -47,4 +47,4 @@ def change_store(request, pk):
     # print("current :", current_store)
     object = get_object_or_404(Store, pk=pk)
     request.session["current_store_pk"] = object.pk
-    return redirect("products:product_list")
+    return redirect("home")

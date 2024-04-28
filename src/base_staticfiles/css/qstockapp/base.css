@@ -69,6 +69,12 @@ h3 {
     margin-bottom: 2rem;
     padding: 10px;
 }
+.app_name h1 {
+    white-space: nowrap;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .sidebar {
     background-color: var(--black);
     height:  100vh;

@@ -14,6 +14,7 @@ urlpatterns = [
     path('orders/', include('orders.urls')),
     path('sales/', include('sales.urls')),
     path('stores/', include('stores.urls')),
+    path('settings/', include('settings.urls')),
     path('', include('pwa.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="{% static 'css/qstockapp/reset.css' %}">
         <link rel="stylesheet" href="{% static 'css/qstockapp/base.css' %}">
         {% block head %}
-        <title>QuickStock</title>
+        <title>{% if company_name %} {{ company_name }} {% else %} QuickStock {% endif %}</title>
         {% endblock %}
         <style>
             body {
@@ -36,7 +36,7 @@
         <main>
             <div class="sidebar">
                 <div class="app_name">
-                    <h1>QuickStock</h1>
+                    <h1>{% if company_name %} {{ company_name }} {% else %} QuickStock {% endif %}</h1>
                 </div>
                 <div class="menu">
                     <ul>
@@ -44,6 +44,7 @@
                         <li><a href="{% url 'products:product_list' %}">Produits</a></li>
                         <li><a href="{% url 'orders:order_list' %}">Commandes</a></li>
                         <li><a href="{% url 'sales:sale_list' %}">Ventes</a></li> 
+                        <li><a href="{% url 'settings:settings_update' %}">Paramètres</a></li> 
                     </ul>
                 </div>
             </div>

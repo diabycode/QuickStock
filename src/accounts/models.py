@@ -50,7 +50,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
 
-    objects = CustomUserManager()
+    objects: CustomUserManager = CustomUserManager()
 
     def __str__(self):
         return self.username

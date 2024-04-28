@@ -1,0 +1,32 @@
+.stats {
+    display: flex;
+    /* gap: 2rem; */
+    justify-content: space-between;
+    background-color: var(--white);
+    padding: 1.25rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+.stats p {
+    font-size: 3rem;
+    font-weight: 700;
+}
+.stats p.label {
+    font-weight: 500;
+    font-size: 1rem;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.products-status {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    align-items: flex-start;
+}
+.products-status > div {
+    background-color: var(--white);
+    padding: 1.25rem;
+    border-radius: 10px;
+    flex-grow: 2;
+}

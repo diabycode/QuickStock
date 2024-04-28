@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'products',
     'orders',
     'sales',
+    'settings',
     'pwa',
 ]
 
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'quickstockapp.middleware.SessionTimeoutMiddleware',
 ]
 
 ROOT_URLCONF = 'quickstockapp.urls'
@@ -73,7 +75,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'stores.context_processors.stores'
+                'stores.context_processors.stores',
+                'settings.context_processors.settings_context',
             ],
         },
     },

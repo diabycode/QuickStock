@@ -1,5 +1,7 @@
 import datetime
 from django.contrib.auth import logout
+from django.http.request import HttpRequest
+
 
 class SessionTimeoutMiddleware:
 
@@ -20,3 +22,6 @@ class SessionTimeoutMiddleware:
             request.session['last_activity'] = current_time
         response = self.get_response(request)
         return response
+    
+
+

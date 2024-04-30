@@ -11,7 +11,11 @@ def stores(request):
     if request.session.get("current_store_pk") is None:
         return context
     
-    current_store = get_object_or_404(Store, pk=request.session.get("current_store_pk"))
+    try:
+        current_store = get_object_or_404(Store, pk=request.session.get("current_store_pk"))
+    except:
+        return context
+    
     context["current_store"] = current_store
     return context
 

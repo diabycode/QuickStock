@@ -5,11 +5,11 @@ from django.contrib.sessions.models import Session
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
-
+from stores.mixins import NotCurrentStoreMixin
 from stores.models import Store
 
 
-class StoreListView(LoginRequiredMixin, ListView):
+class StoreListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
     model = Store
     context_object_name = "store_list"
     template_name = "store/store_list.html"

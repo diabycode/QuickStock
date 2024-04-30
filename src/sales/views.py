@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Sale, SaleStatus
 from stores.models import Store
 from stores.mixins import NotCurrentStoreMixin
+from products.models import Product
 
 
 class SaleListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
@@ -79,9 +80,12 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         form = super().get_form(form_class)
 
         current_store = self.request.session.get("current_store_pk", None)
+        from stores.models import Store
         if current_store:
-            from stores.models import Store
             form.fields["store"].initial = get_object_or_404(Store, pk=current_store)
+
+        store = get_object_or_404(Store, pk=current_store)
+        form.fields["product"].queryset = Product.objects.filter(store=store)
         return form
 
 

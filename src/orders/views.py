@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 
@@ -153,7 +153,7 @@ def cancel_order(request, pk):
             from products.signals import update_quantity_on_order_cancelled
             from orders.signals import order_cancelled_signal
             order_cancelled_signal.send(update_quantity_on_order_cancelled, instance=obj)
-        return HttpResponse("Commande annulé avec succès.")
+        return redirect(reverse("orders:order_details", kwargs={"pk": obj.pk}))
     return HttpResponseBadRequest("Bad request")
 
 

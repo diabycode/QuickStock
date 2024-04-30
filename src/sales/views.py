@@ -8,6 +8,7 @@ from django.urls import reverse_lazy, reverse
 from django.forms.utils import ErrorList
 from django.http import HttpRequest, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 
 from .models import Sale, SaleStatus
 from stores.models import Store
@@ -148,7 +149,8 @@ def cancel_sale(request, pk):
             from products.signals import update_quantity_on_sale_cancellation
             from sales.signals import sale_cancelled_signal
             sale_cancelled_signal.send(update_quantity_on_sale_cancellation, instance=obj)
-        return HttpResponse("Vente annulé avec succès.")
+
+        return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
     return HttpResponseBadRequest("Bad request")
 
 

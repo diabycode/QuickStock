@@ -38,14 +38,21 @@
                 <div class="app_name">
                     <h1>{% if company_name %} {{ company_name }} {% else %} QuickStock {% endif %}</h1>
                 </div>
-                <div class="menu">
-                    <ul>
-                        <li><a href="{% url 'home' %}">Tableau de bord</a></li>
-                        <li><a href="{% url 'products:product_list' %}">Produits</a></li>
-                        <li><a href="{% url 'orders:order_list' %}">Commandes</a></li>
-                        <li><a href="{% url 'sales:sale_list' %}">Ventes</a></li> 
+                <div class="sidebar-content">
+                    <div class="menu">
+                        <ul>
+                            <li><a href="{% url 'home' %}">Tableau de bord</a></li>
+                            <li><a href="{% url 'products:product_list' %}">Produits</a></li>
+                            <li><a href="{% url 'orders:order_list' %}">Commandes</a></li>
+                            <li><a href="{% url 'sales:sale_list' %}">Ventes</a></li> 
+                        </ul>
+                    </div>
+                    <div class="bottom">
                         <li><a href="{% url 'settings:setting_update' %}">Paramètres</a></li> 
-                    </ul>
+                        <li>
+                            <a href="{% url 'accounts:logout' %}">Déconnexion</a>
+                        </li>
+                    </div>
                 </div>
             </div>
             <div class="container">
@@ -66,14 +73,15 @@
                                     </a>
                                 </span>
                         </div>
-                        <span class="user">
-                            {% if user.fullname != None %}
-                                {{ user.fullname|title }}
-                            {% else %}
-                                {{ user.username }}
-                            {% endif %}
+                        <span>
+                            <a class="user" href="{% url 'accounts:details' %}">
+                                {% if user.fullname != None %}
+                                    {{ user.fullname|title }}
+                                {% else %}
+                                    {{ user.username }}
+                                {% endif %}
+                            </a>
                         </span>
-                        <a href="{% url 'accounts:logout' %}" style="text-decoration: underline;">Déconnexion</a>
                     </div>
                 </header>
                 <div class="body_content">

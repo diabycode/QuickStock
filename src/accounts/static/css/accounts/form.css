@@ -1,0 +1,15 @@
+.form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+}
+input {
+    padding: 10px;
+}
+h4 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    margin-top: 3rem;
+    /* font-weight: ; */
+}

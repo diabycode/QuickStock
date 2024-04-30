@@ -1,0 +1,33 @@
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+{% block head %}
+<title>Profile utilisateur</title>
+<link rel="stylesheet" href="{% static 'css/quickstockapp/details.css' %}">
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+<link rel="stylesheet" href="{% static 'css/accounts/form.css' %}">
+{% endblock %}
+
+
+{% block body %}
+<h3>Informations utilisateur</h3>
+<div class="properties">
+    <p>Nom d'utilisateur <span>{{ user.username }}</span></p>
+    <p>email <span>{% if user.email %} {{ user.email }} {% else %} _ {% endif %}</span></p>
+    <p>Nom <span>{% if user.last_name %} {{ user.last_name }} {% else %} _ {% endif %}</span></p>
+    <p>Prénom <span>{% if user.first_name %} {{ user.first_name }} {% else %} _ {% endif %}</span></p>
+</div>
+<div class="password-edit">
+    <h4>Modifier votre mot de passe</h4>
+    <div class="error">{{ password_change_faild }}</div>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-content">
+            <input type="password" required placeholder="Mot de passe actuel" name="current_password">
+            <input type="password" required placeholder="Nouveau mot de passe" name="new_password">
+            <input type="password" required placeholder="Répéter nouveau mot de passe" name="new_password_repeat">
+        </div>
+        <button type="submit">Valider</button>
+    </form>
+</div>
+{% endblock %}

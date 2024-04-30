@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
 from django.views.generic import View
+from django.contrib.auth import login
+from django.http import HttpRequest
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 from .forms import UserLoginForm, UserRegistrationForm
 from .models import UserModel
@@ -103,3 +106,42 @@ class CustomRegistrationView(View):
         }
         return render(request, self.template_name, context)
 
+
+class AccountDetailsView(LoginRequiredMixin, View):
+
+    def get(self, request: HttpRequest):
+        context = self.get_context_data(request)
+        return render(request, "accounts/details.html", context)
+    
+    def post(self, request: HttpRequest):
+        data = request.POST
+        user = request.user
+
+        current_password: str = data.get("current_password")
+        if not user.check_password(current_password):
+            context = self.get_context_data(request)
+            context["password_change_faild"] = "Mot de passe actuel incorrect"
+            return render(request, "accounts/details.html", context)
+        
+        new_password: str = data.get("new_password")
+        new_password_repeat = data.get("new_password_repeat")
+        if not new_password == new_password_repeat:
+            context = self.get_context_data(request)
+            context["password_change_faild"] = "Nouveaux mot de passe différents"
+            return render(request, "accounts/details.html", context)
+
+        user.set_password(new_password)
+        user.save()  
+        login(request=request, user=user)
+        return redirect("accounts:password_changed")
+
+    def get_context_data(self, request: HttpRequest) -> dict:
+        context = {
+            "user": request.user 
+        }
+        return context
+
+
+@login_required(login_url="/accounts/login/")
+def password_changed(request):
+    return render(request, "accounts/password_changed.html")

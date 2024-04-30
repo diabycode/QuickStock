@@ -34,6 +34,10 @@ h3 {
     color: var(--white);
     background-color: var(--error);
 }
+.error {
+    color: var(--error);
+    margin-bottom: 1rem;
+}
 .link {
     font-weight: 600;
     text-decoration: underline;
@@ -79,9 +83,24 @@ h3 {
     background-color: var(--black);
     height:  100vh;
     padding-right: 2rem;
+    position: relative;
 }
 .sidebar * {
     color: var(--white);
+}
+.sidebar .bottom {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+.sidebar .bottom li {
+    padding: 10px;
+}
+.sidebar .bottom a {
+    text-decoration: none;
+}
+.sidebar .bottom a:hover {
+    text-decoration: underline;
 }
 .menu {
     border-top: 1px solid var(--gray);
@@ -99,6 +118,10 @@ h3 {
 }
 .user {
     font-weight: 600;
+    background-color: var(--primary);
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 5px;
 }
 header {
     padding: 10px;

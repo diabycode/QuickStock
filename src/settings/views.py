@@ -15,7 +15,7 @@ class SettingsUpdate(UpdateView):
         "pin_code"
     ]
     template_name = "settings/update.html"
-    success_url = reverse_lazy("settings:settings_update")
+    success_url = reverse_lazy("settings:setting_update")
     
     def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)

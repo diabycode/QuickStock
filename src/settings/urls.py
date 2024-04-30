@@ -5,7 +5,7 @@ from . import views
 app_name = "settings"
 
 urlpatterns = [
-    path('', views.SettingsUpdate.as_view(), name='settings_update'),
+    path('', views.SettingsUpdate.as_view(), name='setting_update'),
 ]
 
 

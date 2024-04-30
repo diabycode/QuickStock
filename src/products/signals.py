@@ -17,7 +17,7 @@ def update_quantity_on_sale_confirmation(sender, instance, created, **kwargs):
         product.stock_quantity -= instance.quantity
         product.save()
 
-        print(f"Quantity updated for {product.name}. New quantity: {product.stock_quantity}")
+        # print(f"Quantity updated for {product.name}. New quantity: {product.stock_quantity}")
 
 @receiver(sale_cancelled_signal)
 def update_quantity_on_sale_cancellation(sender, instance, **kwargs):
@@ -28,7 +28,7 @@ def update_quantity_on_sale_cancellation(sender, instance, **kwargs):
     product.stock_quantity += instance.quantity
     product.save()
 
-    print(f"Quantity updated for {product.name}. New quantity: {product.stock_quantity}")
+    # print(f"Quantity updated for {product.name}. New quantity: {product.stock_quantity}")
 
 @receiver(order_shipped_signal)
 @receiver(post_save, sender=Order)
@@ -39,7 +39,7 @@ def update_quantity_on_order_shipped(sender, instance, **kwargs):
         product.stock_quantity += instance.quantity
         product.save()
     
-        print(f"Quantity updated for {product.name}. New quantity: {product.stock_quantity}")
+        # print(f"Quantity updated for {product.name}. New quantity: {product.stock_quantity}")
 
 @receiver(order_cancelled_signal)
 def update_quantity_on_order_cancelled(sender, instance, **kwarsg):
@@ -49,4 +49,4 @@ def update_quantity_on_order_cancelled(sender, instance, **kwarsg):
     product.stock_quantity -= instance.quantity
     product.save()
     
-    print(f"Quantity updated for {product.name}. New quantity: {product.stock_quantity}")
+    # print(f"Quantity updated for {product.name}. New quantity: {product.stock_quantity}")

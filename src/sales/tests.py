@@ -1,6 +1,5 @@
 import datetime
 
-from django.test import TestCase
 from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth import login
 from django.urls import reverse

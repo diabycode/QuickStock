@@ -13,9 +13,18 @@
     <div class="period_form">
         <span>Période :</span>
         <form action="/dashbord/" method="GET">
-            <select name="period" id="period">
-                {% for period in month_list %}
-                    <option value="{{ period.month }}-{{ period.year }}">{{ period.month|stringformat:'02d'  }}/{{ period.year }}</option>
+            <select name="current_period" id="period">
+                {% for period in periods %}
+                    {% if period.month == current_month and period.year == current_year %} 
+                    <option selected value="{{ period.month }}-{{ period.year }}">
+                        {{ period.month|stringformat:'02d'  }}/{{ period.year }}
+                    </option>
+                    {% else %}
+                    <option value="{{ period.month }}-{{ period.year }}">
+                        {{ period.month|stringformat:'02d'  }}/{{ period.year }}
+                    </option>
+                    {% endif %}
+                    
                 {% endfor %}
             </select>
             <input type="submit" id="submit_period" style="display: none;">

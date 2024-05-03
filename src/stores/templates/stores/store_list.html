@@ -6,117 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerer les magasins</title>
     <link rel="stylesheet" href="{% static 'css/qstockapp/reset.css' %}">
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            height: 90vh;
-            align-items: center;
-        }
-        h2 {
-            margin-bottom: 2rem;
-            font-weight: 600;
-        }
-        .add {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            padding: 10px 0;
-            margin-bottom: .5rem;
-        }
-        .add a {
-            text-decoration: underline;
-            font-size: 1rem;
-            font-weight: 500;
-            display: inline-block;
-
-        }
-        .stores {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        .store {
-            border: 1px solid var(--gray);
-            border-radius: 5px;
-            padding: 5px;
-            min-width: 300px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            justify-content: space-between;
-        }
-        .store:hover {
-            border-color: var(--primary);
-        }
-        .store p {
-            font-size: .85rem;
-            color: var(--white);
-        }
-        .store p.name {
-            font-weight: 700;
-            font-size: 1rem;
-        }
-        .store .content a {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-        }
-        .store .options {
-            display: none;
-            gap: 5px;
-            margin-top: 1rem;
-        }
-        .store.edit .options {
-            display: flex;
-
-        }
-        .store .options a {
-            text-decoration: underline;
-            position: relative;
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: var(--white);
-            border-radius: 5px;
-            transition: transform 100ms ease;
-            /* color: var(--primary); */
-        }
-        .store .options a:hover {
-            transform: scale(1.12);
-        }
-        .store .options a:hover {
-            text-decoration: none;
-        }
-        
-        button {
-            padding: 5px 10px;
-            border: 1px solid var(--black);
-            color: var(--black);
-            border-radius: 2px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        #edit_ico {
-            fill: var(--gray);
-        }
-        #delete_ico {
-            fill: var(--error);
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/stores/store_list.css' %}">
 </head>
 <body>
     <main>
         <h2>Liste des magasins</h2>
-        <div class="add">
-            <a href="{% url 'stores:store_create' %}">+ Nouveau magasin</a>
+        <div class="heading">
+            <div>
+                <button>Modifier</button>
+                <div class="add">
+                    <a class="btn primary" href="{% url 'stores:store_create' %}">+ Nouveau magasin</a>
+                </div>
+            </div>
         </div>
+
+
         <div class="stores">
             {% for store in store_list %}
             <div class="store" style="background-color: {{ store.accent_color_code }};">
@@ -139,8 +43,8 @@
                 </div>
             </div>
             {% endfor %}
+            
         </div>
-        <button>Modifier</button>
     </main>
 
     <script>

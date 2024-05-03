@@ -20,7 +20,8 @@ class StoreCreateView(LoginRequiredMixin, CreateView):
     template_name = "stores/store_create.html"
     fields = [
         "name",
-        "address"
+        "address",
+        "accent_color_code",
     ]
     success_url = reverse_lazy("stores:store_list")
     
@@ -30,7 +31,8 @@ class StoreUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "stores/store_update.html"
     fields = [
         "name",
-        "address"
+        "address",
+        "accent_color_code"
     ]
     success_url = reverse_lazy("stores:store_list")
 

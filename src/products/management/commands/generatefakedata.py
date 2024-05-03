@@ -86,9 +86,9 @@ class Command(BaseCommand):
             --sales-max    -sc  default=3000
         """
 
-        parser.add_argument("--products-count", "-pc", dest="products_count", type=int, default=50, help="Number of products to gen")
+        parser.add_argument("--products-count", "-pc", dest="products_count", type=int, default=35, help="Number of products to gen")
         parser.add_argument("--orders-max", "-oc", dest="orders_max", type=int, default=100, help="Limit of orders to gen")
-        parser.add_argument("--sales-max", "-sc", dest="sales_max", type=int, default=3000, help="Limit of sales to gen")
+        parser.add_argument("--sales-max", "-sc", dest="sales_max", type=int, default=5000, help="Limit of sales to gen")
 
     def handle(self, *args, **options):
         """
@@ -146,6 +146,8 @@ class Command(BaseCommand):
         sales_max: int = options.get("sales_max")
 
         stores = [s for s in Store.objects.all()]
+        if not stores:
+            store = Store.objects.create(name="Auto generated store")
 
         print(f"Generating for {products_count} products...")
         for i in range(products_count):
@@ -162,7 +164,12 @@ class Command(BaseCommand):
             product.unit_price_sale = product.wholesale_unit_price + get_random_num(2000, 7000)
             product.save()
 
-            # generate orders for this product
+        products = list(Product.objects.all())
+        while orders_max or sales_max:
+            # generate orders for products
+            product = random.choice(products)
+            store = random.choice(stores)
+
             if orders_max: 
                 
                 # choose arbitrary orders_count [2-15] 
@@ -181,7 +188,7 @@ class Command(BaseCommand):
 
                     order_date = get_random_date(
                         datetime.now().date(),
-                        datetime.now().date() + timedelta(days=30)
+                        datetime.now().date() + timedelta(days=365)
                     )
                     order.order_date = order_date
                     order.arrived_date = order_date 
@@ -208,7 +215,7 @@ class Command(BaseCommand):
                     sale.quantity = get_random_num(5, 20)
                     sale.sale_date = get_random_date(
                         datetime.now().date(),
-                        datetime.now().date() + timedelta(days=30),
+                        datetime.now().date() + timedelta(days=365),
                     ) 
                     sale.store = store
                     sale.buyer_name = get_random_person_name()

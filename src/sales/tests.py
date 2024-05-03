@@ -11,7 +11,7 @@ from products.models import Product
 
 
 class SaleViewsRenderingTest(TestCase):
-    # databases = {"default"}
+    databases = {"default"}
 
     def setUp(self) -> None:
         self.client = Client()

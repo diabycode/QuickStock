@@ -9,11 +9,14 @@
     <link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
     <link rel="stylesheet" href="{% static 'css/stores/form.css' %}">
 
+    <script src="{% static 'js/stores/theme_color.js' %}" defer></script>
+
     <title>Ajouter un magasin</title>
 </head>
 <body>
     <main>
         <h2>Nouveau magasin</h2>
+        <p>Ajouter un magasin pour commencer</p>
         <form method="POST">
             {% csrf_token %}
             <div class="form-content">

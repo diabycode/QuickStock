@@ -59,7 +59,7 @@
     <button class="btn danger cancel_action" type="submit">Annuler cette commande</button>
 </form>
 {% endif %}
-<a class="link accent" href="{% url 'orders:order_update' pk=order.pk %}">Modifier</a>
+<a class="link primary" href="{% url 'orders:order_update' pk=order.pk %}">Modifier</a>
 <a class="link" href="{% url 'orders:order_list' %}">Retour à la liste commandes</a>
 
 <script>
@@ -73,3 +73,5 @@
 </script>
 
 {% endblock %}
+
+

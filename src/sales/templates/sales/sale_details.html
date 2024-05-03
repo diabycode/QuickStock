@@ -41,7 +41,7 @@
         <button class="btn danger cancel_action" type="submit">Annuler la vente</button>
     </form>
     {% endif %}
-    <a class="link accent" href="{% url 'sales:sale_update' pk=sale.pk %}">Modifier</a>
+    <a class="link primary" href="{% url 'sales:sale_update' pk=sale.pk %}">Modifier</a>
     <a class="link" href="{% url 'sales:sale_list' %}">Retour à la liste ventes</a>
     
     <script>

@@ -1,5 +1,8 @@
+from django.db.models.base import Model as Model
+from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
+from django.views.generic import UpdateView
 from django.views.generic import View
 from django.contrib.auth import login
 from django.http import HttpRequest
@@ -141,6 +144,21 @@ class AccountDetailsView(LoginRequiredMixin, View):
         }
         return context
 
+
+class AccountUpdateView(LoginRequiredMixin, UpdateView):
+    model = UserModel
+    fields = [
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+    ]
+    template_name = "accounts/update.html"
+    success_url = reverse_lazy("accounts:details")
+
+    def get_object(self, queryset=None):
+        return self.request.user
+    
 
 @login_required(login_url="/accounts/login/")
 def password_changed(request):

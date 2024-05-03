@@ -1,4 +1,6 @@
-
+body {
+    position: relative;
+}
 main {
     display: flex;
     height: 100vh;
@@ -113,7 +115,7 @@ h3 {
     transition: all 100ms ease;
 }
 .menu a:hover {
-    border-left: 3px solid var(--accent);
+    border-left: 3px solid var(--primary);
     /* background-color: var(--gray); */
 }
 .user {
@@ -122,6 +124,14 @@ h3 {
     color: var(--white);
     padding: 10px 18px;
     border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.user span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 header {
     padding: 10px;
@@ -183,4 +193,20 @@ header > div {
 }
 .current-store .edit svg path {
     fill: var(--primary);
+}
+.messages {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    position: absolute;
+    bottom: 1rem;
+    right: 3rem;
+}
+.message {
+    max-width: 500px;
+    background-color: var(--black);
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    /* white-space: nowrap; */
 }

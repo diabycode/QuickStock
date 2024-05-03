@@ -31,7 +31,7 @@
         </p>
     </div>
 
-    <a class="link accent" href="{% url 'products:product_update' slug=product.slug%}">modifier</a>
+    <a class="link primary" href="{% url 'products:product_update' slug=product.slug%}">modifier</a>
     <a class="link danger" href="{% url 'products:product_delete' slug=product.slug %}">Supprimer</a>
     <a class="link" href="{% url 'products:product_list' %}">Retour à liste produits</a>
 

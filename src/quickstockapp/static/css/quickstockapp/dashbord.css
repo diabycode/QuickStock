@@ -30,3 +30,22 @@
     border-radius: 10px;
     flex-grow: 2;
 }
+.out-products > p {
+    margin-top: 1rem;
+}
+.out-products p > a {
+    display: inline-block;
+    color: var(--primary);
+    /* text-decoration: underline; */
+    /* font-weight: 700; */
+}
+.period {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 0;
+}
+.period_form {
+    display: flex;
+    gap: 10px;
+}

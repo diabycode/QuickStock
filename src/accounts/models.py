@@ -37,10 +37,10 @@ class CustomUserManager(BaseUserManager):
 
 
 class UserModel(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=80, unique=True)
-    email = models.EmailField(max_length=255, unique=True, blank=True, null=True)
-    first_name = models.CharField(max_length=80, blank=True)
-    last_name = models.CharField(max_length=80, blank=True)
+    username = models.CharField(max_length=80, unique=True, verbose_name="Nom d'utilisateur")
+    email = models.EmailField(max_length=255, unique=True, blank=True, null=True, verbose_name="Adresse mail")
+    first_name = models.CharField(max_length=80, blank=True, verbose_name="Prénom")
+    last_name = models.CharField(max_length=80, blank=True, verbose_name="Nom")
     join_date = models.DateTimeField(auto_now_add=True)
 
     is_staff = models.BooleanField(default=False)

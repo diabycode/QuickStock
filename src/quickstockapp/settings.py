@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'sales',
     'settings',
     'pwa',
+    'livereload',
+
 ]
 
 MIDDLEWARE = [
@@ -57,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'quickstockapp.middleware.SessionTimeoutMiddleware',
+    'livereload.middleware.LiveReloadScript',
 ]
 
 ROOT_URLCONF = 'quickstockapp.urls'

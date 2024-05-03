@@ -19,7 +19,7 @@ class Sale(models.Model):
 
     def save(self, *args, **kwargs):
         if self.quantity > self.product.stock_quantity:
-            raise ValueError("Quantity sold can't exceed the stock quantity.")
+            raise ValueError(f"Quantity sold can't exceed the stock quantity. {self.quantity} > {self.product.stock_quantity}")
         return super().save(*args, **kwargs)
     
     @property

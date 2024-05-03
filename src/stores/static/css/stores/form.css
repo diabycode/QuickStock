@@ -7,10 +7,19 @@ body {
 h2 {
     margin-bottom: 2rem;
 }
+p {
+    margin-bottom: 1.2rem;
+}
 .form-content {
     display: flex;
     flex-direction: column;
     min-width: 350px;
     max-width: 400px;
 }
-
+.theme-ilustration {
+    display: inline-block;
+    width: 100px;
+    height: 15px;
+    border-radius: 2px;
+    margin-left: 1rem;
+}

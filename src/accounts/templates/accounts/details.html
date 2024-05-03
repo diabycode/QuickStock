@@ -17,6 +17,9 @@
     <p>Nom <span>{% if user.last_name %} {{ user.last_name }} {% else %} _ {% endif %}</span></p>
     <p>Prénom <span>{% if user.first_name %} {{ user.first_name }} {% else %} _ {% endif %}</span></p>
 </div>
+<p>
+    <a href="{% url 'accounts:update' %}" class="btn primary">Modifier mes informations</a>
+</p>
 <div class="password-edit">
     <h4>Modifier votre mot de passe</h4>
     <div class="error">{{ password_change_faild }}</div>

@@ -9,6 +9,7 @@ from django.forms.utils import ErrorList
 from django.http import HttpRequest, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+from django.contrib import messages
 
 from .models import Sale, SaleStatus
 from stores.models import Store
@@ -142,14 +143,24 @@ def cancel_sale(request, pk):
         obj = get_object_or_404(Sale, pk=pk)
         old_status = obj.status
         obj.status = SaleStatus.CANCELLED
-        obj.save()
 
+        try:
+            obj.save()
+        except ValueError:
+            messages.error(request, "Impossible d'annuler cette vente", extra_tags="message")
+            return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
+        
         if old_status != SaleStatus.CANCELLED:
-            # sale cancel signal
-            from products.signals import update_quantity_on_sale_cancellation
-            from sales.signals import sale_cancelled_signal
-            sale_cancelled_signal.send(update_quantity_on_sale_cancellation, instance=obj)
-
+            try:
+                # sale cancel signal
+                from products.signals import update_quantity_on_sale_cancellation
+                from sales.signals import sale_cancelled_signal
+                sale_cancelled_signal.send(update_quantity_on_sale_cancellation, instance=obj)
+            except:
+                obj.status = old_status
+                obj.save()
+                messages.error(request, "Impossible d'annuler cette vente", extra_tags="message")
+                return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
         return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
     return HttpResponseBadRequest("Bad request")
 

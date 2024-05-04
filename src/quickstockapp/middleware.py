@@ -5,7 +5,7 @@ from django.http.request import HttpRequest
 
 class SessionTimeoutMiddleware:
 
-    time_out = 300 # en sec
+    time_out = 600 # en sec 
     date_format = '%Y-%m-%d %H:%M:%S'
 
     def __init__(self, get_response):

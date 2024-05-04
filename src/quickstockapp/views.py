@@ -35,7 +35,7 @@ def home(request):
         current_period = request.session.get("current_period", None)
         if not current_period:
             # get default period
-            period_obj = periods.last()
+            period_obj = periods.first()
             if period_obj:
                 current_period = f"{period_obj['month']}-{period_obj['year']}"
                 request.session["current_period"] = current_period
@@ -46,21 +46,14 @@ def home(request):
 
     store = get_object_or_404(Store, pk=request.session.get("current_store_pk"))
 
-    best_products = []
-    for p in Inventory.best_products(store=store, month=selected_month, year=selected_year):
-        best_products.append(
-            {
-                "product": p,
-                "count": p.get_sales_count()
-            }
-        )
-
     context = {
         "page_title": "Tableau de bord",
         "total_earned": Inventory.total_earned(store=store, month=selected_month, year=selected_year),
+        "net_incomme": Inventory.net_incomme(store=store, month=selected_month, year=selected_year),
+        "shipping_fees": Inventory.get_shipping_fees(store=store, month=selected_month, year=selected_year),
         "sales_count": Inventory.sales_count(store=store, month=selected_month, year=selected_year),
         "products_count": Inventory.products_count(store=store),
-        "best_products": best_products,
+        "best_products": Inventory.best_products(store=store, month=selected_month, year=selected_year),
         "out_of_stock_products": Inventory.out_of_stock_products(store=store),
         "total_stock": Inventory.get_total_stock(store=store),
         "periods": periods,

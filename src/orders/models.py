@@ -16,7 +16,7 @@ class Order(models.Model):
     arrived_date = models.DateField(null=True, blank=True, verbose_name="Date de livraison")    
     description = models.TextField(null=True, blank=True, verbose_name="Description")
     is_shipped = models.BooleanField(default=False, blank=True, verbose_name="Livré")
-    shipping_costs = models.FloatField(default=.0, null=True, verbose_name="Frais de livraison")
+    shipping_costs = models.DecimalField(null=True, max_digits=10, decimal_places=2, verbose_name="Frais de livraison")
     product = models.ForeignKey("products.Product", on_delete=models.CASCADE, null=True, verbose_name="Produit")
     quantity = models.PositiveIntegerField(default=0, null=True, verbose_name="Quantité")
     status = models.CharField(max_length=30, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS)

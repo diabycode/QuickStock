@@ -37,3 +37,7 @@ class Sale(models.Model):
     @property
     def total_amount(self):
         return self.product.unit_price_sale * self.quantity
+    
+    @property
+    def income(self):
+        return (self.product.unit_price_sale - self.product.wholesale_unit_price) * self.quantity

@@ -210,3 +210,24 @@ header > div {
     font-size: 1.1rem;
     /* white-space: nowrap; */
 }
+.loader {
+    position: absolute;
+    top: .5rem;
+    left: .5rem;
+    z-index: 1000;
+    width: 90px;
+    height: 5px;
+    --c:var(--black) 50%,var(--primary) 0;
+    background: 
+        linear-gradient( 90deg,var(--c)) 0 0,
+        linear-gradient(-90deg,var(--c)) 0 0;
+    background-size: 20px 100%;
+    background-repeat: repeat-x;
+    animation: loader .7s infinite linear;
+}
+.loader.hide {
+    display: none;
+}
+@keyframes loader {
+    100% {background-position: -20px 0,20px 0}
+}

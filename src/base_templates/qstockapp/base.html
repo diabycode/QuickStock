@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="{% static 'css/qstockapp/reset.css' %}">
         <link rel="stylesheet" href="{% static 'css/qstockapp/base.css' %}">
         <script src="{% static 'js/qstockapp/theme.js' %}" defer></script>
+        <script src="{% static 'js/qstockapp/loader.js' %}" defer></script>
         {% block head %}
         <title>{% if company_name %} {{ company_name }} {% else %} QuickStock {% endif %}</title>
         {% endblock %}
@@ -35,6 +36,7 @@
     </head>
     <body>
         <div class="theme_color" style="display: none;">{{ current_store.accent_color_code }}</div>
+        <div class="loader"></div>
         <main>
             <div class="sidebar">
                 <div class="app_name">

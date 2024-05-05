@@ -6,13 +6,39 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
 from stores.mixins import NotCurrentStoreMixin
-from stores.models import Store
+from stores.models import Store, StoreCategory
 
 
 class StoreListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
     model = Store
     context_object_name = "store_list"
     template_name = "store/store_list.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        """
+        store_categories = [
+            {
+                'category_name': '...',
+                'store_list': [
+                    store...
+                ]
+            }, ...
+        ]
+        for category in store_categories:
+            show : category.category_name
+            for store in category.store_list:
+                show : store
+        """
+        store_categories = []
+        category_list = StoreCategory.choices
+        for category in category_list:
+            store_categories.append({
+                "category_name": category[1],
+                "store_list": Store.objects.filter(category=category[0])
+            })
+        context["store_categories"] = store_categories
+        return context
 
 
 class StoreCreateView(LoginRequiredMixin, CreateView):
@@ -21,6 +47,7 @@ class StoreCreateView(LoginRequiredMixin, CreateView):
     fields = [
         "name",
         "address",
+        "category",
         "accent_color_code",
     ]
     success_url = reverse_lazy("stores:store_list")
@@ -32,6 +59,7 @@ class StoreUpdateView(LoginRequiredMixin, UpdateView):
     fields = [
         "name",
         "address",
+        "category",
         "accent_color_code"
     ]
     success_url = reverse_lazy("stores:store_list")

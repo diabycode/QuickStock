@@ -193,7 +193,7 @@ class Command(BaseCommand):
                     order.order_date = order_date
                     order.arrived_date = order_date 
                     order.store = store
-                    order.shipping_costs = get_random_num(1500, 20000)
+                    order.shipping_costs = get_random_num(1500, 5000)
                     order.status = OrderStatus.SHIPPED
                     order.provider_name = get_random_person_name()
                     order.save()

@@ -2,6 +2,7 @@ import datetime
 
 from django.db import models
 from django.utils.text import slugify
+from unidecode import unidecode
 
 
 class Product(models.Model):
@@ -13,7 +14,7 @@ class Product(models.Model):
     packaging_type = models.CharField(max_length=100, null=True, verbose_name="Paquetage", blank=True)
     slug = models.SlugField(blank=True, null=True)
     store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name="Ajouté le")
 
     stock_warn_limit = 10
     stock_alert_limit = 5
@@ -41,6 +42,10 @@ class Product(models.Model):
         year = datetime.datetime.now().year if not year else year
         return self.sale_set.filter(sale_date__month=month, sale_date__year=year).count()
     
+    @property
+    def unaccent_name(self):
+        return unidecode(self.name)
+
     @property
     def stock_alert(self):
         if self.stock_quantity <= self.stock_alert_limit:

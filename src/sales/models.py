@@ -1,4 +1,5 @@
 from django.db import models
+from unidecode import unidecode
 
 from sales.signals import sale_cancelled_signal
 
@@ -41,3 +42,9 @@ class Sale(models.Model):
     @property
     def income(self):
         return (self.product.unit_price_sale - self.product.wholesale_unit_price) * self.quantity
+
+    @property
+    def unaccent_buyer_name(self):
+        return unidecode(self.buyer_name) if self.buyer_name else None
+    
+    

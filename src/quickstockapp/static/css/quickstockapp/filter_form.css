@@ -1,0 +1,4 @@
+.filter-form form {
+    display: flex;
+    gap: 1rem;
+}

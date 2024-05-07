@@ -15,19 +15,28 @@
         <form action="/dashbord/" method="GET">
             <select name="current_period" id="period">
                 {% for period in periods %}
-                    {% if period.month == current_month and period.year == current_year %} 
+                    {% if period.month == current_month and period.year == current_year %}
+                    
                     <option selected value="{{ period.month }}-{{ period.year }}">
+                        {% if period.month == now_period.month and period.year == now_period.year %}
+                        Ce mois-ci
+                        {% else %}
                         {{ period.month|stringformat:'02d'  }}/{{ period.year }}
+                        {% endif %}
                     </option>
                     {% else %}
                     <option value="{{ period.month }}-{{ period.year }}">
+                        {% if period.month == now_period.month and period.year == now_period.year %}
+                        Ce mois-ci
+                        {% else %}
                         {{ period.month|stringformat:'02d'  }}/{{ period.year }}
+                        {% endif %}
                     </option>
                     {% endif %}
                     
                 {% endfor %}
             </select>
-            <input type="submit" id="submit_period" style="display: none;">
+            <button type="submit" style="display: none;"></button>
         </form>
     </div>
 </div>

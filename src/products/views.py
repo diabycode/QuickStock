@@ -1,7 +1,11 @@
+import datetime
+
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import UpdateView, CreateView, DetailView, ListView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
+from unidecode import unidecode
 
 from .models import Product
 from stores.models import Store
@@ -22,11 +26,8 @@ class ProductListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
             Product.stock_quantity.field.verbose_name,
             Product.wholesale_unit_price.field.verbose_name + " (FCFA)",
             Product.unit_price_sale.field.verbose_name + " (FCFA)",
-            Product.packaging_type.field.verbose_name,
+            Product.created_at.field.verbose_name,
         ]
-        
-        
-
         try:
             store = Store.objects.get(pk=self.request.session.get("current_store_pk"))
         except Store.DoesNotExist:
@@ -34,10 +35,24 @@ class ProductListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
             if store:
                 self.request.session["current_store_pk"] = store.pk
 
+        products_list = Product.objects.filter(store=store).order_by("-pk")
+
+        isfilters = False
+
+        # filters
+        search_query = self.request.GET.get("q", None)
+        if search_query:
+            isfilters = True
+            def func(p):
+                return unidecode(search_query).lower() in p.unaccent_name.lower()
+            products_list = filter(func, products_list)
 
         context["product_column_names"] = product_column_names
-        context["product_list"] = Product.objects.filter(store=store).order_by("-pk")
+        context["product_list"] = products_list
         context["page_title"] = "Produits"
+        context["isfilters"] = isfilters
+        if search_query:
+            context["search_query"] = search_query 
         return context
 
 

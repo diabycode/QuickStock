@@ -1,3 +1,4 @@
 document.querySelector("#period").addEventListener("change", (e) => {
-    document.querySelector("#submit_period").click();
+    e.target.closest("form").submit()
+    // document.querySelector("#submit_period").click();
 })

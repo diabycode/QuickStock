@@ -148,11 +148,22 @@ header > div {
 }
 .heading {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--gray);
     margin-bottom: 1.5rem;
     padding: 10px;
+}
+.heading input[type=text] {
+    width: 100%;
+    min-width: 320px;
+    max-width: 380px;
+    padding: 8px;
+    border: 1px solid var(--gray);
+    border-radius: 5px;
+    background-color: var(--subwhite);
+    outline: none;
+    font-weight: 700;
 }
 .status.validated {
     color: var(--accent);

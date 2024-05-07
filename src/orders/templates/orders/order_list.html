@@ -3,9 +3,10 @@
 
 <!-- head  -->
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/quickstockapp/table.css' %}">
 <title>Gestion des commandes</title>
-
+<link rel="stylesheet" href="{% static 'css/quickstockapp/table.css' %}">
+<link rel="stylesheet" href="{% static 'css/quickstockapp/filter_form.css' %}">
+<script src="{% static 'js/quickstockapp/period_change.js' %}" defer></script>
 {% endblock %}
 
 <!-- extra styles  -->
@@ -16,7 +17,41 @@
 <!-- body content -->
 {% block body %}
 <div class="heading">
-    <a class="btn primary" href="{% url 'orders:order_create' %}">+ Ajouter une commande</a>
+    <div class="filter-form">
+        <form method="GET">
+            <input type="text" name="q" placeholder="Chercher une commande (nom du produit)" value="{{ search_query }}">
+            <select name="current_period" id="period">
+                {% for period in periods %}
+                    {% if period.month == current_month and period.year == current_year %}
+                    
+                    <option selected value="{{ period.month }}-{{ period.year }}">
+                        {% if period.month == now_period.month and period.year == now_period.year %}
+                        Ce mois-ci
+                        {% else %}
+                        {{ period.month|stringformat:'02d'  }}/{{ period.year }}
+                        {% endif %}
+                    </option>
+                    {% else %}
+                    <option value="{{ period.month }}-{{ period.year }}">
+                        {% if period.month == now_period.month and period.year == now_period.year %}
+                        Ce mois-ci
+                        {% else %}
+                        {{ period.month|stringformat:'02d'  }}/{{ period.year }}
+                        {% endif %}
+                    </option>
+                    {% endif %}
+                    
+                {% endfor %}
+            </select>
+            <button type="submit" style="display: none;"></button>
+        </form>
+        {% if isfilters %}
+        <a href="{% url 'orders:order_list' %}">x Annuler tous les filtres</a>
+        {% endif %}
+    </div>
+    <div>
+        <a class="btn primary" href="{% url 'orders:order_create' %}">+ Ajouter une commande</a>
+    </div>
 </div>
 
 {% if order_list %}
@@ -32,7 +67,7 @@
         <tbody>
             {% for order in order_list %}
             <tr>
-                <td>{{ order.order_date }}</td>
+                <td>{{ order.order_date|date:"d/m/Y" }}</td>
                 <td class="{{ order.status_class_name }}">{{ order.status_display }}</td>
                 <td>{{ order.product }}</td>
                 <td>{{ order.quantity }}</td>

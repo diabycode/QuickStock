@@ -14,7 +14,18 @@
 <!-- body content -->
 {% block body %}
     <div class="heading">
-        <a class="btn primary" href="{% url 'products:product_create' %}">+ Ajouter un produit</a>
+        <div>
+            <form method="GET">
+                <input type="text" name="q" placeholder="Chercher un produit" value="{{ search_query }}">
+                <button type="submit" style="display: none;"></button>
+            </form>
+            {% if isfilters %}
+            <a href="{% url 'products:product_list' %}">x Annuler tous les filtres</a>
+            {% endif %}
+        </div>
+        <div>
+            <a class="btn primary" href="{% url 'products:product_create' %}">+ Ajouter un produit</a>
+        </div>
     </div>
     
     {% if product_list %}
@@ -33,7 +44,7 @@
                 <td>{{ product.stock_quantity }}</td>
                 <td>{{ product.wholesale_unit_price }}</td>
                 <td>{{ product.unit_price_sale }}</td>
-                <td> {% if product.packaging_type %} {{ product.packaging_type }} {% else %} - {% endif %}</td>
+                <td> {% if product.created_at %} {{ product.created_at|date:"d/m/Y" }} {% else %} - {% endif %}</td>
                 <td class="actions">
                     <a href="{% url 'products:product_details' slug=product.slug %}">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

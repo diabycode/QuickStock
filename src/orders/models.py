@@ -19,7 +19,7 @@ class Order(models.Model):
     shipping_costs = models.DecimalField(null=True, max_digits=10, decimal_places=2, verbose_name="Frais de livraison")
     product = models.ForeignKey("products.Product", on_delete=models.CASCADE, null=True, verbose_name="Produit")
     quantity = models.PositiveIntegerField(default=0, null=True, verbose_name="Quantité")
-    status = models.CharField(max_length=30, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS)
+    status = models.CharField(max_length=30, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS, verbose_name="Livraison")
     store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
 
     def __str__(self) -> str:

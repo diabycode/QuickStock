@@ -92,7 +92,7 @@ class Inventory:
         sales = Sale.objects.filter(store=store, sale_date__year=year, sale_date__month=month)
         for sale in sales:
             total += sale.income
-
+        total -= cls.get_shipping_fees(store=store, month=month, year=year, string=False)
         total_str = format_number_with_space_separator(total)
         return total_str
 
@@ -116,7 +116,7 @@ class Inventory:
                 .order_by("stock_quantity")[:7]
     
     @classmethod
-    def get_shipping_fees(cls, store: Store, month=None, year=None):
+    def get_shipping_fees(cls, store: Store, month=None, year=None, string=False):
         if not year:
             year = cls.default_year
         if not month:
@@ -127,6 +127,8 @@ class Inventory:
         for order in orders:
             if order.shipping_costs:
                 total_fees += order.shipping_costs
+        if string:
+            total_fees = format_number_with_space_separator(total_fees)
         return total_fees
 
 

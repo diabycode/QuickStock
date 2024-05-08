@@ -180,7 +180,7 @@ def cancel_sale(request, pk):
         obj.status = SaleStatus.CANCELLED
 
         try:
-            obj.save()
+            obj.save(forced_save=True)
         except ValueError:
             messages.error(request, "Impossible d'annuler cette vente", extra_tags="message")
             return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))

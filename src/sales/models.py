@@ -18,9 +18,12 @@ class Sale(models.Model):
     status = models.CharField(max_length=30, choices=SaleStatus.choices, default=SaleStatus.VALIDATED, verbose_name="Statut")
     store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
 
-    def save(self, *args, **kwargs):
+    def save(self, forced_save=False, *args, **kwargs):
         if self.quantity > self.product.stock_quantity:
-            raise ValueError(f"Quantity sold can't exceed the stock quantity. {self.quantity} > {self.product.stock_quantity}")
+            if not forced_save:
+                raise ValueError(f"Quantity sold can't exceed the stock quantity. {self.quantity} > {self.product.stock_quantity}")
+            else:
+                super().save(*args, **kwargs)
         return super().save(*args, **kwargs)
     
     @property

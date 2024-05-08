@@ -26,7 +26,7 @@ td.actions {
     gap: 10px;
 }
 td.actions svg:hover path {
-    fill: var(--accent);
+    fill: var(--primary);
 }
 tr.alert {
     background-color: var(--product-stock-alert-background);
@@ -35,4 +35,7 @@ tr.alert {
 tr.warn {
     background-color: var(--product-stock-warn-background);
     border: 1px solid var(--product-stock-warn-border);
+}
+.table-link:hover {
+    color: var(--primary);
 }

@@ -1,4 +1,5 @@
 import datetime
+import decimal
 
 from django.db import models
 from django.utils.text import slugify
@@ -40,7 +41,12 @@ class Product(models.Model):
     def get_sales_count(self, month=None, year=None):
         month = datetime.datetime.now().month if not month else month
         year = datetime.datetime.now().year if not year else year
-        return self.sale_set.filter(sale_date__month=month, sale_date__year=year).count()
+        total_sale = 0
+        sales = self.sale_set.filter(sale_date__month=month, sale_date__year=year)
+        for sale in sales:
+            if sale.quantity:
+                total_sale += sale.quantity
+        return total_sale
     
     @property
     def unaccent_name(self):

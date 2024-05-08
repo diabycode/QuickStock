@@ -35,8 +35,6 @@ class SaleListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
             Sale.status.field.verbose_name,
             Sale.product.field.verbose_name,
             Sale.quantity.field.verbose_name,
-            Sale.buyer_name.field.verbose_name,
-            Sale.buyer_phone.field.verbose_name,
         ]
         
         store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))

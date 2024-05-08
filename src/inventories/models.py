@@ -104,7 +104,7 @@ class Inventory:
         best_products = []
         products = Product.objects.filter(store=store)
         for product in products:
-            p = (product.name, product.get_sales_count(month=month, year=year))
+            p = (product, product.get_sales_count(month=month, year=year))
             if p[1] and p[1] > 0:
                 best_products.append(p)
         best_products.sort(key=lambda x: x[1], reverse=True)

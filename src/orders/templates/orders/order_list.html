@@ -67,9 +67,12 @@
         <tbody>
             {% for order in order_list %}
             <tr>
-                <td>{{ order.order_date|date:"d/m/Y" }}</td>
+                <td>{{ order.order_date|date:"d-m-Y" }}</td>
                 <td class="{{ order.status_class_name }}">{{ order.status_display }}</td>
-                <td>{{ order.product }}</td>
+                <td>
+                    <a href="{% url 'products:product_details' slug=order.product.slug %}"
+                    class="table-link" title="quantité restante : {{ order.product.stock_quantity }}">{{ order.product }}</a>
+                </td>
                 <td>{{ order.quantity }}</td>
                 <td>
                     {% if order.arrived_date != None %} {{ order.arrived_date }} {% else %} - {% endif %}

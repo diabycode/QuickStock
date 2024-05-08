@@ -177,7 +177,8 @@ header > div {
     /* height: 45px; */
 }
 .current-store .current {
-    min-width: 200px;
+    /* min-width: 200px; */
+    max-width: 200px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect
 from stores.models import Store
 
 
-def stores(request):
+def current_store(request):
     if not request.user.is_authenticated:
         return {}
     

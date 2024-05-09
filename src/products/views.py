@@ -18,6 +18,10 @@ class ProductListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
     template_name = "products/product_list.html"
     context_object_name = "products"
 
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        request.session["current_tab"] = "products"
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
 

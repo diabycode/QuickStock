@@ -10,6 +10,7 @@ html {
     --accent: #409e8a;
     --gray: #636363;
     --error: #D86346;
+    --sidebar: #e7e7e7;
 
     --product-stock-alert-background: #f9dad1;
     --product-stock-alert-border: var(--error);

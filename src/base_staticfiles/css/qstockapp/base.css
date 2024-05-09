@@ -82,13 +82,10 @@ h3 {
     text-overflow: ellipsis;
 }
 .sidebar {
-    background-color: var(--black);
+    background-color: var(--sidebar);
     height:  100vh;
     padding-right: 2rem;
     position: relative;
-}
-.sidebar * {
-    color: var(--white);
 }
 .sidebar .bottom {
     position: absolute;
@@ -113,10 +110,16 @@ h3 {
     display: inline-block;
     width: 100%;
     transition: all 100ms ease;
+    transition: transform 200ms ease;
+}
+.menu li {
+    overflow: hidden;
+}
+.menu li.current a {
+    border-left: 3px solid var(--primary);
 }
 .menu a:hover {
-    border-left: 3px solid var(--primary);
-    /* background-color: var(--gray); */
+    transform: translateX(10px);
 }
 .user {
     font-weight: 600;
@@ -174,6 +177,7 @@ header > div {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
     /* height: 45px; */
 }
 .current-store .current {
@@ -197,11 +201,12 @@ header > div {
     max-width: 50px;
 }
 .current-store a {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* padding: 0 10px; */
-    cursor: pointer;
+   position: absolute;
+   left: 0;
+   top: 0;
+   width: 100%;
+   height: 100%;
+   
 }
 .current-store .edit svg path {
     fill: var(--primary);

@@ -1,3 +1,6 @@
+tbody tr {
+    background: none;
+}
 .stats {
     display: flex;
     /* gap: 2rem; */
@@ -18,17 +21,21 @@
     gap: 10px;
     align-items: center;
 }
-.products-status {
+.dashbord-content {
     display: flex;
     justify-content: space-between;
     gap: 2rem;
     align-items: flex-start;
 }
-.products-status > div {
-    background-color: var(--white);
+.dashbord-content > div {
+    flex-grow: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.bord {
     padding: 1.25rem;
     border-radius: 10px;
-    flex-grow: 2;
 }
 .out-products > p {
     margin-top: 1rem;
@@ -39,13 +46,58 @@
     /* text-decoration: underline; */
     /* font-weight: 700; */
 }
+.out-products {
+    background-color: var(--dashbord-stock-alert-bg);
+}
 .period {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     padding: 10px 0;
 }
 .period_form {
     display: flex;
     gap: 10px;
+}
+.best-products {
+    background-color: var(--dashbord-best-seller-bg);
+}
+.recent-sales {
+    background-color: var(--dashbord-recent-sales-bg);
+}
+.pin-code-test.hide {
+    display: none;
+}
+.pin-code-test {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--subwhite);
+    padding: 30px 100px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 45px #201e1e38;
+}
+.pin-code-test h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.pin-code-test input[type=password] {
+    max-width: 150px;
+    text-align: center;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+.pin-code-test input[type=password].error:focus {
+    border: 1px solid var(--error);
+}
+form {
+    margin: 0;
+}
+.pin-code-test form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin: 0;
 }

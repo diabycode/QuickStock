@@ -4,6 +4,7 @@
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
 <link rel="stylesheet" href="{% static 'css/settings/form.css' %}">
+<script src="{% static 'js/settings/change_pin.js' %}" defer></script>
 <title>Paramètres</title>
 <style>
     h2 {
@@ -14,11 +15,27 @@
 
 {% block body %}
 <h3>Modifier les paramètres</h3>
-<form method="POST">
+<form method="POST" class="settings-form">
     {% csrf_token %} 
     <div class="form-content">
-        {{ form }}
+        <div>
+            {{ form.company_name.label_tag }}
+            {{ form.company_name }}
+        </div>
+        <div>
+            {{ form.pin_code.label_tag }}
+            {% for e in form.pin_code.errors %}
+                <p class="error">{{ e }}</p>
+            {% endfor %}
+            <span>****</span> {{ form.pin_code }}
+        </div>
+        <div>
+            {% for e in form.password_confirm.errors %}
+            <p class="error">{{ e }}</p>
+            {% endfor %}
+            {{ form.password_confirm }}
+        </div>
     </div>
-    <button type="submit">Enrégistrer</button>
+    <button type="submit" class="btn primary">Enrégistrer</button>
 </form>
 {% endblock %}

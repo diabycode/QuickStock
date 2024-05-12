@@ -14,6 +14,7 @@ class StoreAccentColor(models.TextChoices):
 class StoreCategory(models.TextChoices):
     TELECOM = ("telecom", "Télécommunication")
     BREEDING = ("breeding", "Elevage")
+    ELECTRONIC = ("electronic", "Electroménager")
     OTHER = ("other", "Autre")
 
 

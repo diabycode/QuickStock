@@ -48,6 +48,11 @@ class Product(models.Model):
                 total_sale += sale.quantity
         return total_sale
     
+    def get_recent_sales(self, month=None, year=None):
+        month = datetime.datetime.now().month if not month else month
+        year = datetime.datetime.now().year if not year else year
+        return self.sale_set.filter(sale_date__month=month, sale_date__year=year).order_by("-sale_date")
+
     @property
     def unaccent_name(self):
         return unidecode(self.name)

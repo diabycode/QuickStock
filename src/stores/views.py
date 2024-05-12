@@ -37,6 +37,7 @@ class StoreListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
                 "category_name": category[1],
                 "store_list": Store.objects.filter(category=category[0])
             })
+        store_categories = list(sorted(store_categories, key=lambda c: c["category_name"]))
         context["store_categories"] = store_categories
         return context
 

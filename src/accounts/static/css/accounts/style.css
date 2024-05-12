@@ -21,8 +21,8 @@ html {
 body {
     display: flex;
     justify-content: center;
-    height: 100vh;
-    margin-top: 100px;
+    align-items: center;
+    height: 80vh;
 }
 main {
     padding: 0px 10px;
@@ -39,6 +39,7 @@ h1, h3 {
 h3 {
     font-size: 1.3rem;
     font-weight: 500;
+    letter-spacing: 1px;
     margin-bottom: 1rem;
 }
 h1 {
@@ -59,7 +60,7 @@ main > p {
 }
 input {
     width: 100%;
-    padding: .4rem;
+    padding: .8rem;
     border: 1px solid var(--textColor);
     border-radius: 5px;
     margin-bottom: .5rem;

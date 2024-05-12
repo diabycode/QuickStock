@@ -12,6 +12,7 @@ from inventories.models import Inventory
 from stores.models import Store
 from products.models import Product
 from sales.models import Sale
+from settings.models import EditableSettings
 
 
 def get_current_period(request: HttpRequest, period_list) -> tuple:
@@ -36,15 +37,34 @@ def get_current_period(request: HttpRequest, period_list) -> tuple:
 def get_period_list(model, date_field: str):
     periods = model.objects.annotate(
         month=ExtractMonth(date_field), year=ExtractYear(date_field)).values('month', 'year').distinct()
-    periods = periods.filter(year=str(datetime.datetime.now().year)).order_by("-month")
+    periods = periods.order_by("-year", "-month")
     return periods
 
 
 @login_required(login_url='/accounts/login/')
-def home(request):
+def home(request: HttpRequest):
     if request.session.get("current_store_pk") is None:
         return redirect("stores:store_list")
-    
+
+    show_stats = request.session.get("show_stats", None)
+    pin_error = False
+    if request.method == "POST":
+        request_show_stats = request.POST.get("request_show_stats")
+        if request_show_stats is "1":
+            selected_pin_code = request.POST.get("pin_code")
+            settings = EditableSettings.load()
+            if selected_pin_code == settings.pin_code:
+                show_stats = "1"
+                request.session["show_stats"] = show_stats
+            else:
+                pin_error = True
+        else:
+            show_stats = None
+            try:
+                del request.session["show_stats"]
+            except KeyError:
+                pass
+
     now_period = {
         "month": datetime.datetime.now().month, 
         "year": datetime.datetime.now().year}
@@ -62,9 +82,9 @@ def home(request):
 
     context = {
         "page_title": "Tableau de bord",
-        "total_earned": Inventory.total_earned(store=store, month=selected_month, year=selected_year),
-        "net_incomme": Inventory.net_incomme(store=store, month=selected_month, year=selected_year),
-        "shipping_fees": Inventory.get_shipping_fees(store=store, month=selected_month, year=selected_year, string=True),
+        "total_earned": None if not show_stats else Inventory.total_earned(store=store, month=selected_month, year=selected_year),
+        "net_incomme": None if not show_stats else Inventory.net_incomme(store=store, month=selected_month, year=selected_year),
+        "shipping_fees": None if not show_stats else Inventory.get_shipping_fees(store=store, month=selected_month, year=selected_year, string=True),
         "sales_count": Inventory.sales_count(store=store, month=selected_month, year=selected_year),
         "products_count": Inventory.products_count(store=store),
         "best_products": Inventory.best_products(store=store, month=selected_month, year=selected_year),
@@ -74,6 +94,9 @@ def home(request):
         "now_period": now_period,
         "current_month": int(selected_month) if selected_month is not None else selected_month,
         "current_year": int(selected_year) if selected_year is not None else selected_year,
+        "recent_sales": Inventory.get_recent_sales(store=store, month=selected_month, year=selected_year, limit=5),
+        "pin_error": pin_error,
+        "show_stats": show_stats,
     }
     
     return render(request, "quickstockapp/dashboard.html", context=context)

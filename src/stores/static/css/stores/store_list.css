@@ -48,8 +48,8 @@ h2 {
     gap: 1rem;
     justify-content: space-between;
 }
-.store:hover {
-    border-color: var(--primary);
+.store:hover .options {
+    display: flex;
 }
 .store p {
     font-size: .85rem;
@@ -73,7 +73,6 @@ h2 {
 }
 .store.edit .options {
     display: flex;
-
 }
 .store .options a {
     text-decoration: underline;

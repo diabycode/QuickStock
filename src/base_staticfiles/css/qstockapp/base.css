@@ -40,6 +40,10 @@ h3 {
     color: var(--error);
     margin-bottom: 1rem;
 }
+input.error {
+    color: var(--black);
+    border: 1px solid var(--error);
+}
 .link {
     font-weight: 600;
     text-decoration: underline;
@@ -82,7 +86,7 @@ h3 {
     text-overflow: ellipsis;
 }
 .sidebar {
-    background-color: var(--sidebar);
+    background-color: var(--white);
     height:  100vh;
     padding-right: 2rem;
     position: relative;
@@ -178,7 +182,12 @@ header > div {
     justify-content: center;
     align-items: center;
     position: relative;
+    padding: 8px;
+    gap: 5px;
     /* height: 45px; */
+}
+.current-store svg path {
+    fill: var(--primary);
 }
 .current-store .current {
     /* min-width: 200px; */
@@ -193,7 +202,6 @@ header > div {
     color: var(--primary);
     font-size: 1.1rem;
     text-align: center;
-    padding: 10px 10px;
     width: 100%;
 }
 .current-store span:last-child {
@@ -226,6 +234,12 @@ header > div {
     border-radius: 10px;
     font-size: 1.1rem;
     /* white-space: nowrap; */
+}
+.message.success {
+    color: var(--accent);
+}
+.message.error {
+    color: var(--error);
 }
 .loader {
     position: absolute;

@@ -35,6 +35,13 @@ class Inventory:
     default_year = datetime.datetime.now().year
 
     @classmethod
+    def get_recent_sales(cls, store: Store, month=None, year=None, limit: int=10):
+        month = cls.default_month if not month else month
+        year = cls.default_year if not year else year
+        return store.sale_set.filter(sale_date__month=month, sale_date__year=year)\
+                .order_by("-sale_date")[:limit]
+
+    @classmethod
     def products_count(cls, store: Store):
         return Product.objects.filter(store=store).count()
     

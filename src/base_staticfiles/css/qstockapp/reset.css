@@ -9,14 +9,18 @@ html {
     --secondary: #98CAFB;
     --accent: #409e8a;
     --gray: #636363;
+    --lightgray: #e0e0e0;
     --error: #D86346;
     --sidebar: #e7e7e7;
 
     --product-stock-alert-background: #f9dad1;
     --product-stock-alert-border: var(--error);
-
     --product-stock-warn-background: #fff2dc;
     --product-stock-warn-border: orange;
+
+    --dashbord-best-seller-bg: #e6f7da;
+    --dashbord-stock-alert-bg: #fceae5;
+    --dashbord-recent-sales-bg: #e5edfc;
 }
 
 * {

@@ -16,6 +16,7 @@ urlpatterns = [
     path('stores/', include('stores.urls')),
     path('settings/', include('settings.urls')),
     path('debts/', include('debts.urls')),
+    path('debts/', include('debts.urls')),
     path('', include('pwa.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

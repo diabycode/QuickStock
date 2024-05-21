@@ -1,0 +1,44 @@
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+<!-- head  -->
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+<title>Gestion des dettes</title>
+{% endblock %}
+
+<!-- extra styles  -->
+{% block extra_styles %} 
+
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+<h3>Modifier une dette</h3>
+<form method="POST">
+    {% csrf_token %} 
+    <div class="form-content">
+        <div>
+            {{ form.granted_date.label_tag }}
+            {% include 'qstockapp/date_input.html' %}
+            {{ form.granted_date.as_hidden }}
+            {% include 'qstockapp/date_input_binding.html' %}
+        </div>
+        <div>
+            {{ form.granted_by.label_tag }}
+            {{ form.granted_by }}
+        </div>
+        <div>
+            {{ form.initial_amount.label_tag }}
+            {{ form.initial_amount }}
+        </div>
+        <div>
+            {{ form.order.label_tag }}
+            {{ form.order }}
+        </div>
+    </div>
+    <button type="submit">Modifier</button>
+    <a class="link" href="{% url 'debts:debt_details' pk=debt.pk %}">Annuler</a>
+</form>
+{% endblock %}
+

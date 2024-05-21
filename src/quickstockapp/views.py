@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.db.models import Model
 from django.http import HttpRequest
+from django.views.defaults import ERROR_404_TEMPLATE_NAME
 
 from inventories.models import Inventory
 from stores.models import Store
@@ -39,7 +40,6 @@ def get_period_list(model, date_field: str):
         month=ExtractMonth(date_field), year=ExtractYear(date_field)).values('month', 'year').distinct()
     periods = periods.order_by("-year", "-month")
     return periods
-
 
 @login_required(login_url='/accounts/login/')
 def home(request: HttpRequest):
@@ -101,5 +101,12 @@ def home(request: HttpRequest):
     
     return render(request, "quickstockapp/dashboard.html", context=context)
 
+def handler404(request, exception=None):
+    return render(request, "quickstockapp/404.html")
 
+def handler500(request, exception=None):
+    return render(request, "quickstockapp/500.html")
+
+# def handler403(request, exception=None):
+#     return render(request, "quickstockapp/403.html")
 

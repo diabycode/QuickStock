@@ -26,5 +26,12 @@ class Store(models.Model):
     category = models.CharField(max_length=150, null=True, choices=StoreCategory.choices,
                                 default=StoreCategory.OTHER, verbose_name="Catégorie")
 
+    add_at = models.DateTimeField(auto_now_add=True, null=True)
+
     def __str__(self) -> str:
         return self.name
+    
+    @property
+    def products_count(self):
+        return self.product_set.all().count()
+

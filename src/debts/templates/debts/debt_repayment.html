@@ -1,0 +1,64 @@
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+<!-- head  -->
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+<link rel="stylesheet" href="{% static 'css/debts/form.css' %}">
+<title>Gestion des dettes</title>
+{% endblock %}
+
+<!-- extra styles  -->
+{% block extra_styles %} 
+
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+<h3>Remboursement de dette</h3>
+<div class="debt-details">
+    <p>{{ debt.granted_by }}</p>
+    <p>Dette du {{ debt.granted_date|date:"d-m-Y" }} à hauteur de {{ debt.initial_amount }}</p>
+    <p>Reste à payer : <span id="remaining_amount">{{ debt.remaining_amount }}</span> FCFA</p>
+</div>
+<form method="POST">
+    {% csrf_token %} 
+    <div class="form-content">
+        <div>
+            {{ form.paid_at.label_tag }}
+            {% include 'qstockapp/date_input.html' %}
+            {{ form.paid_at.as_hidden }}
+            {% include 'qstockapp/date_input_binding.html' %}
+        </div>
+        <div>
+            {{ form.amount.label_tag }}
+            <div class="debt_repayment_amount">
+                {{ form.amount }} 
+                <button id="pay_the_rest">Payer le reste</button>
+            </div>
+            {% for error in form.amount.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.repaid_by.label_tag }}
+            {{ form.repaid_by }}
+        </div>
+        <div>
+            {{ form.note.label_tag }}
+            {{ form.note }}
+        </div>
+    </div>
+    <button type="submit">Valider</button>
+    <a class="link" href="{% url 'debts:debt_details' pk=debt.pk %}">Annuler</a>
+</form>
+<script>
+    document.querySelector(".debt_repayment_amount button")
+        .addEventListener("click", e => {
+            e.preventDefault()
+            const remaining_amount = document.getElementById("remaining_amount").innerText.trim()
+            document.querySelector(".debt_repayment_amount input").value = remaining_amount.replace(",", ".")
+        })
+</script>
+{% endblock %}
+

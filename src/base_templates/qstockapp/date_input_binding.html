@@ -1,0 +1,10 @@
+<script>
+    const bindDateInput = document.getElementById("bind_date");
+    const dateField = document.querySelector("#bind_date+input[type=hidden]")
+
+    bindDateInput.value = dateField.value
+
+    bindDateInput.addEventListener("change", () => {
+        dateField.value = bindDateInput.value
+    })
+</script>

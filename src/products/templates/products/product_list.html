@@ -44,7 +44,7 @@
                 <td>{{ product.stock_quantity }}</td>
                 <td>{{ product.wholesale_unit_price }}</td>
                 <td>{{ product.unit_price_sale }}</td>
-                <td> {% if product.created_at %} {{ product.created_at|date:"d-m-Y" }} {% else %} - {% endif %}</td>
+                <td> {% if product.add_at %} {{ product.add_at|date:"d-m-Y" }} {% else %} - {% endif %}</td>
                 <td class="actions">
                     <a href="{% url 'products:product_details' slug=product.slug %}">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

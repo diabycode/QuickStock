@@ -121,6 +121,8 @@ input.error {
 }
 .menu li.current a {
     border-left: 3px solid var(--primary);
+    font-weight: 700;
+    color: var(--primary);
 }
 .menu a:hover {
     transform: translateX(10px);

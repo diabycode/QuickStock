@@ -1,3 +1,5 @@
+import datetime
+
 from django.test import TestCase, Client
 from django.urls import reverse
 
@@ -61,7 +63,8 @@ class OrderViewsRenderingTest(TestCase):
         product.save()
         order = Order.objects.create(
             product=product,
-            quantity=1
+            quantity=1,
+            order_date=datetime.datetime.now()
         )
         url = reverse("orders:order_update", kwargs={"pk": order.pk})
 
@@ -88,7 +91,8 @@ class OrderViewsRenderingTest(TestCase):
         product.save()
         order = Order.objects.create(
             product=product,
-            quantity=1
+            quantity=1,
+            order_date=datetime.datetime.now()
         )
         
         url = reverse("orders:order_delete", kwargs={"pk": order.pk})
@@ -122,7 +126,9 @@ class OrderViewsRenderingTest(TestCase):
         product.save()
         order = Order.objects.create(
             product=product,
-            quantity=1
+            quantity=1,
+            order_date=datetime.datetime.now()
+
         )
         url = reverse("orders:order_details", kwargs={"pk": order.pk})
 

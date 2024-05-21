@@ -28,7 +28,7 @@ class ProductListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
             Product.stock_quantity.field.verbose_name,
             Product.wholesale_unit_price.field.verbose_name + " (FCFA)",
             Product.unit_price_sale.field.verbose_name + " (FCFA)",
-            Product.created_at.field.verbose_name,
+            Product.add_at.field.verbose_name,
         ]
         try:
             store = Store.objects.get(pk=self.request.session.get("current_store_pk"))

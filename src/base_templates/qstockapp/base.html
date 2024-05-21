@@ -54,6 +54,7 @@
                         </ul>
                     </div>
                     <div class="bottom">
+                        <li><a href="{% url 'debts:debt_list' %}">Gérer mes dettes</a></li> 
                         <li><a href="{% url 'settings:setting_update' %}">Paramètres</a></li> 
                         <li>
                             <a href="{% url 'accounts:logout' %}">Déconnexion</a>
@@ -69,6 +70,9 @@
                         </h2>
                     </div>
                     <div>
+                        {% if not current_store %}
+                        <span>Selectionnez un magasin 👉</span>
+                        {% endif %}
                         <div class="current-store">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_98_2)">
@@ -79,9 +83,14 @@
                                 <rect width="24" height="24" fill="white"/>
                                 </clipPath>
                                 </defs>
-                                </svg>
-                                
-                            <span class="current">{{ current_store }}</span>
+                            </svg>
+                            <span class="current">
+                                {% if current_store %}
+                                {{ current_store }}
+                                {% else %}
+                                _______________
+                                {% endif %}
+                            </span>
                             <a href="{% url 'stores:store_list' %}" title="Changer de magazin"></a>
                         </div>
                         <span title="Profile utilisateur">

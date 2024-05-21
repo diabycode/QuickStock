@@ -19,7 +19,37 @@
 <form method="POST">
     {% csrf_token %} 
     <div class="form-content">
-        {{ form }}
+        
+        <div>
+            {{ form.sale_date.label_tag }}
+            {% include 'qstockapp/date_input.html' %}
+            {{ form.sale_date.as_hidden }}
+            {% include 'qstockapp/date_input_binding.html' %}
+        </div>
+        <div>
+            {{ form.product.label_tag }}
+            {{ form.product }}
+        </div>
+        <div>
+            {{ form.store.label_tag }}
+            {{ form.store }}
+        </div>
+        <div>
+            {{ form.quantity.label_tag }}
+            {{ form.quantity }}
+            {% for e in form.quantity.errors %}
+                <p class="error">{{ e }}</p>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.buyer_name.label_tag }}
+            {{ form.buyer_name }}
+        </div>
+        <div>
+            {{ form.buyer_phone.label_tag }}
+            {{ form.buyer_phone }}
+        </div>
+
     </div>
     <button type="submit">Enrégistrer</button>
     <a class="link" href="{% url 'sales:sale_list' %}">Annuler</a>

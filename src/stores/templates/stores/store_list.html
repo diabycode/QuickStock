@@ -28,6 +28,7 @@
                         <div class="content">
                             <p class="name">{{ store.name }}</p>
                             <p>{{ store.address }}</p>
+                            <p>{{ store.products_count }} produit(s)</p>
                             <a href="{% url 'stores:change_store' pk=store.pk %}"></a>
                         </div>
                         <div class="options">

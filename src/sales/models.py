@@ -18,6 +18,8 @@ class Sale(models.Model):
     status = models.CharField(max_length=30, choices=SaleStatus.choices, default=SaleStatus.VALIDATED, verbose_name="Statut")
     store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
 
+    add_at = models.DateTimeField(auto_now_add=True, null=True)
+
     def save(self, forced_save=False, *args, **kwargs):
         if self.quantity > self.product.stock_quantity:
             if not forced_save:

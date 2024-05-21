@@ -1,0 +1,16 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/qstockapp/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/qstockapp/base.css' %}">
+    <title>Page non trouvé</title>
+</head>
+<body>
+    <h1>Ooops!</h1>
+    <h2>Page non trouvé</h2>
+    <p>Impossible de trouver la page demandé. <a class="link primary" href="{% url 'home' %}">Aller à l'accueil</a> </p>
+</body>
+</html>

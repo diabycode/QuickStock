@@ -37,7 +37,7 @@ class OrderListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
         ]
 
         store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
-        order_list = Order.objects.filter(store=store).order_by("order_date")
+        order_list = Order.objects.filter(store=store).order_by("-add_at")
 
         # actual period
         now_period = {
@@ -85,6 +85,7 @@ class OrderUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
     model = Order
     fields = [
         'product', # locked
+        'order_date',
         'quantity', # locked
         'store', 
         'provider_name', 
@@ -137,6 +138,7 @@ class OrderCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
     model = Order
     fields = [
         'product',
+        'order_date',
         'quantity',
         'store',
         'provider_name',

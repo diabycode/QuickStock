@@ -1,0 +1,100 @@
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+<!-- head  -->
+{% block head %}
+    <title>Gestion des dettes</title>
+    <link rel="stylesheet" href="{% static 'css/quickstockapp/details.css' %}">
+    <link rel="stylesheet" href="{% static 'css/quickstockapp/table.css' %}">
+
+{% endblock %}
+
+<!-- extra styles  -->
+{% block extra_styles %} 
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+    <h3>Details sur la dette</h3>
+    <div class="properties">
+        <p>
+            Accordé le
+            <span>{{ debt.granted_date }}</span>
+        </p>
+        <p>
+            Accordé par
+            <span>{{ debt.granted_by }}</span>
+        </p>
+        <p>
+            Montant initial
+            <span>{{ debt.initial_amount }}</span>
+        </p>
+        <p>
+            Montant restant
+            <span>{{ debt.remaining_amount }}</span>
+        </p>
+        <p>
+            Commande liée
+            <span>
+                {% if debt.order %}
+                <a href="{% url 'orders:order_details' pk=debt.order.pk %}">
+                    Aller à la commande >>
+                </a>
+                {% else %}
+                Aucun
+                {% endif  %}
+            </span>
+            
+        </p>
+        <p> Remboursé
+            <span>
+                {% if debt.completly_repaid %}
+                <!-- check -->
+                <svg title="Remboursé" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="7" fill="white"/>
+                    <path d="M10.562 14.492L8.066 11.996C7.972 11.9027 7.857 11.8527 7.721 11.846C7.585 11.8393 7.464 11.8893 7.358 11.996C7.252 12.1027 7.19867 12.2207 7.198 12.35C7.19733 12.4793 7.25067 12.5973 7.358 12.704L9.996 15.342C10.1573 15.504 10.3457 15.585 10.561 15.585C10.7763 15.585 10.965 15.504 11.127 15.342L16.604 9.866C16.6973 9.772 16.7473 9.657 16.754 9.521C16.7607 9.385 16.7107 9.264 16.604 9.158C16.4973 9.052 16.3793 8.99867 16.25 8.998C16.1207 8.99733 16.0027 9.05067 15.896 9.158L10.562 14.492ZM12.003 21C10.759 21 9.589 20.764 8.493 20.292C7.39767 19.8193 6.44467 19.178 5.634 18.368C4.82333 17.558 4.18167 16.606 3.709 15.512C3.23633 14.418 3 13.2483 3 12.003C3 10.7577 3.23633 9.58767 3.709 8.493C4.181 7.39767 4.82133 6.44467 5.63 5.634C6.43867 4.82333 7.391 4.18167 8.487 3.709C9.583 3.23633 10.753 3 11.997 3C13.241 3 14.411 3.23633 15.507 3.709C16.6023 4.181 17.5553 4.82167 18.366 5.631C19.1767 6.44033 19.8183 7.39267 20.291 8.488C20.7637 9.58333 21 10.753 21 11.997C21 13.241 20.764 14.411 20.292 15.507C19.82 16.603 19.1787 17.556 18.368 18.366C17.5573 19.176 16.6053 19.8177 15.512 20.291C14.4187 20.7643 13.249 21.0007 12.003 21Z" fill="#52C63F"/>
+                </svg>
+                {% else %}
+                <!-- cross -->
+                <svg title="Non remboursé" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="7" fill="white"/>
+                    <path d="M8.4 16.308L12 12.708L15.6 16.308L16.308 15.6L12.708 12L16.308 8.4L15.6 7.692L12 11.292L8.4 7.692L7.692 8.4L11.292 12L7.692 15.6L8.4 16.308ZM12.003 21C10.759 21 9.589 20.764 8.493 20.292C7.39767 19.8193 6.44467 19.178 5.634 18.368C4.82333 17.558 4.18167 16.606 3.709 15.512C3.23633 14.418 3 13.2483 3 12.003C3 10.7577 3.23633 9.58767 3.709 8.493C4.181 7.39767 4.82133 6.44467 5.63 5.634C6.43867 4.82333 7.391 4.18167 8.487 3.709C9.583 3.23633 10.753 3 11.997 3C13.241 3 14.411 3.23633 15.507 3.709C16.6023 4.181 17.5553 4.82167 18.366 5.631C19.1767 6.44033 19.8183 7.39267 20.291 8.488C20.7637 9.58333 21 10.753 21 11.997C21 13.241 20.764 14.411 20.292 15.507C19.82 16.603 19.1787 17.556 18.368 18.366C17.5573 19.176 16.6053 19.8177 15.512 20.291C14.4187 20.7643 13.249 21.0007 12.003 21Z" fill="#E62424"/>
+                </svg>
+                {% endif %}
+            </span>
+        </p>
+    </div>
+    <div class="actions">
+        <a class="link primary" href="{% url 'debts:debt_update' pk=debt.pk %}">Modifier</a>
+        <a class="link danger" href="{% url 'debts:debt_delete' pk=debt.pk %}">Supprimer</a> 
+        {% if not debt.completly_repaid %}
+        <a class="btn primary" href="{% url 'debts:debt_repayment' debt_pk=debt.pk %}">Rembourser</a>
+        {% endif %}
+    </div>
+
+    <div class="repayments">
+        <h4>Remboursements</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Payé le</th>
+                    <th>Montant payé</th>
+                    <th>Payé en</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for repayment in repayment_list %}
+                <tr>
+                    <td>{{ repayment.paid_at|date:"d-m-Y H:i" }}</td>
+                    <td>{{ repayment.amount }}</td>
+                    <td>{{ repayment.repaid_by_str }}</td>
+                    <td>{{ repayment.note }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+

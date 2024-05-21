@@ -38,7 +38,7 @@ class SaleListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
         ]
         
         store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
-        sale_list = Sale.objects.filter(store=store).order_by("sale_date")
+        sale_list = Sale.objects.filter(store=store).order_by("-add_at")
         
         # periods
         now_period = {

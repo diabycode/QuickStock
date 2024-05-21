@@ -15,13 +15,14 @@ class Product(models.Model):
     packaging_type = models.CharField(max_length=100, null=True, verbose_name="Paquetage", blank=True)
     slug = models.SlugField(blank=True, null=True)
     store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
-    created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name="Ajouté le")
+    
+    add_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name="Ajouté le")
 
     stock_warn_limit = 10
     stock_alert_limit = 5
 
     def __str__(self) -> str:
-        return f"{self.name.capitalize()}"
+        return f"{self.name.capitalize()} ({self.stock_quantity})"
     
     def __repr__(self) -> str:
         return f"<Product: {self.name} ({self.stock_quantity})>"

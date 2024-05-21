@@ -8,13 +8,14 @@ from .views import home
 
 urlpatterns = [
     path('dashbord/', home, name='home'),
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('products/', include('products.urls')),
     path('orders/', include('orders.urls')),
     path('sales/', include('sales.urls')),
     path('stores/', include('stores.urls')),
     path('settings/', include('settings.urls')),
+    path('debts/', include('debts.urls')),
     path('', include('pwa.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

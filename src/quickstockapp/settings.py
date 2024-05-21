@@ -43,11 +43,11 @@ INSTALLED_APPS = [
     'stores',
     'products',
     'orders',
+    'debts',
     'sales',
     'settings',
     'pwa',
     'livereload',
-
 ]
 
 MIDDLEWARE = [

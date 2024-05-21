@@ -69,7 +69,7 @@
                 <td class="{{ sale.status_class_name }}">{{ sale.status_display }}</td>
                 <td>
                     <a class="table-link" title="quantité restante : {{ sale.product.stock_quantity }}"
-                     href="{% url 'products:product_details' slug=sale.product.slug %}">{{ sale.product }}</a>
+                     href="{% url 'products:product_details' slug=sale.product.slug %}">{{ sale.product.name }}</a>
                 </td>
                 <td>{{ sale.quantity }}</td>
                 <td class="actions">

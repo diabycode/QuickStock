@@ -27,7 +27,7 @@ class DebtListView(LoginRequiredMixin, ListView):
             Debt.granted_by.field.verbose_name,
             Debt.initial_amount.field.verbose_name,
             "Reste à payer",
-            Debt.order.field.verbose_name,
+            Debt.store.field.verbose_name,
         ]
         
         context["debt_column_names"] = debt_column_names
@@ -55,16 +55,8 @@ class DebtCreateView(LoginRequiredMixin, CreateView):
         "granted_date",
         "granted_by",
         "initial_amount",
-        "order",
+        "store",
     ]
-    def get_form(self, form_class: type[BaseModelForm] | None = None) -> BaseModelForm:
-        form = super().get_form(form_class)
-        store_pk = self.request.session.get("current_store_pk")
-        store = None
-        if store_pk:
-            store = get_object_or_404(Store, pk=store_pk)
-        form.fields["order"].queryset = Order.objects.filter(store=store).order_by("-add_at")
-        return form 
 
 
 class DebtUpdateView(LoginRequiredMixin, UpdateView):
@@ -74,21 +66,12 @@ class DebtUpdateView(LoginRequiredMixin, UpdateView):
         "granted_date",
         "granted_by",
         "initial_amount",
-        "order",
+        "store",
     ]
 
     def get_success_url(self) -> str:
         obj = self.get_object()
         return reverse("debts:debt_details", kwargs={"pk": obj.pk})
-
-    def get_form(self, form_class: type[BaseModelForm] | None = None) -> BaseModelForm:
-        form = super().get_form(form_class)
-        store_pk = self.request.session.get("current_store_pk")
-        store = None
-        if store_pk:
-            store = get_object_or_404(Store, pk=store_pk)
-        form.fields["order"].queryset = Order.objects.filter(store=store).order_by("-add_at")
-        return form 
 
 
 class DebtDeleteView(LoginRequiredMixin, DeleteView):

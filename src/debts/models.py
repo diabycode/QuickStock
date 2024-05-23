@@ -2,7 +2,7 @@ import decimal
 
 from django.db import models
 
-from orders.models import Order
+from stores.models import Store
 
 
 class Debt(models.Model):
@@ -10,9 +10,8 @@ class Debt(models.Model):
     granted_date = models.DateField(verbose_name="Accordé le")
     initial_amount = models.DecimalField(verbose_name="Montant initial", max_digits=10, 
                                          decimal_places=2, default=decimal.Decimal(0.0))
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name="Commande liée",
-                              blank=True, null=True)   
-
+    store = models.ForeignKey(Store, on_delete=models.SET_NULL, verbose_name="Magasin", blank=True, null=True)   
+    store_name = models.CharField(max_length=100, verbose_name="Magasin", null=True, blank=True)
     add_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self) -> str:

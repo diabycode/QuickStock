@@ -42,12 +42,12 @@
             <td>{{ debt.initial_amount }}</td>
             <td>{{ debt.remaining_amount }}</td>
             <td>
-                {% if debt.order %}
-                    <a href="{% url 'orders:order_details' pk=debt.order.pk %}" class="table-link">
-                        aller à la commande >>
-                    </a>
+                {% if debt.store %}
+                    {{ debt.store.name }}
+                {% elif debt.store_name %}
+                    {{ debt.store_name }}
                 {% else %}
-                Aucune
+                    -
                 {% endif %}
             </td>
             <td>

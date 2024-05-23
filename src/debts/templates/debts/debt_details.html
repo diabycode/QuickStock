@@ -1,5 +1,6 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
+{% load money_string %}
 
 <!-- head  -->
 {% block head %}
@@ -27,21 +28,21 @@
         </p>
         <p>
             Montant initial
-            <span>{{ debt.initial_amount }}</span>
+            <span>{{ debt.initial_amount|money_string }}</span>
         </p>
         <p>
             Montant restant
-            <span>{{ debt.remaining_amount }}</span>
+            <span>{{ debt.remaining_amount|money_string }}</span>
         </p>
         <p>
-            Commande liée
+            Magasin
             <span>
-                {% if debt.order %}
-                <a href="{% url 'orders:order_details' pk=debt.order.pk %}">
-                    Aller à la commande >>
-                </a>
+                {% if debt.store %}
+                    {{ debt.store.name }}
+                {% elif debt.store_name %}
+                    {{ debt.store_name }}
                 {% else %}
-                Aucun
+                    -
                 {% endif  %}
             </span>
             
@@ -74,6 +75,7 @@
 
     <div class="repayments">
         <h4>Remboursements</h4>
+        {% if repayment_list %}
         <table>
             <thead>
                 <tr>
@@ -87,13 +89,16 @@
                 {% for repayment in repayment_list %}
                 <tr>
                     <td>{{ repayment.paid_at|date:"d-m-Y H:i" }}</td>
-                    <td>{{ repayment.amount }}</td>
+                    <td>{{ repayment.amount|money_string }}</td>
                     <td>{{ repayment.repaid_by_str }}</td>
                     <td>{{ repayment.note }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        <p>Aucun remboursement enrégistré</p>
+        {% endif %}
     </div>
 {% endblock %}
 

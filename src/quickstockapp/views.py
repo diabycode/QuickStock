@@ -107,6 +107,4 @@ def handler404(request, exception=None):
 def handler500(request, exception=None):
     return render(request, "quickstockapp/500.html")
 
-# def handler403(request, exception=None):
-#     return render(request, "quickstockapp/403.html")
 

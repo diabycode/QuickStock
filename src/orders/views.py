@@ -1,5 +1,6 @@
 import datetime
 
+from django.forms import BaseModelForm
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -107,7 +108,15 @@ class OrderUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         return form
     
     def form_valid(self, form):
-        
+        if not form.is_valid():
+            return self.form_invalid(form)
+
+        order_date: datetime.date = form.cleaned_data.get("order_date")
+        now_date = datetime.datetime.now().date()
+        if order_date > now_date:
+            form.add_error("order_date", "Erreur de date")
+            return self.form_invalid(form=form)
+
         # Check all locked fields
         locked_fields = [
             (field_name, field) for (field_name, field) in form.fields.items() 
@@ -150,6 +159,15 @@ class OrderCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
     ]
     template_name = "orders/order_create.html"
     success_url = reverse_lazy("orders:order_list")
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        order_date: datetime.date = form.cleaned_data.get("order_date")
+        now_date = datetime.datetime.now().date()
+        if order_date > now_date:
+            form.add_error("order_date", "Erreur de date")
+            return self.form_invalid(form=form)
+        
+        return super().form_valid(form)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

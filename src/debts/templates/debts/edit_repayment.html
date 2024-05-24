@@ -28,6 +28,9 @@
             {{ form.paid_at.label_tag }}
             {% include 'qstockapp/datetime_local_input.html' %}
             {{ form.paid_at.as_hidden }}
+            {% for error in form.paid_at.errors %}
+            <p class="error">{{ error }}</p>
+            {% endfor %}
             {% include 'qstockapp/date_input_binding.html' %}
         </div>
         <div>
@@ -50,8 +53,11 @@
         </div>
     </div>
     <button type="submit">Valider</button>
-    <a class="link" href="{% url 'debts:debt_details' pk=debt.pk %}">Annuler</a>
+    <a class="link" href="{% url 'debts:debt_details' pk=debt.pk %}">Retour</a>
 </form>
+<p>
+    <a class="link danger" href="{% url 'debts:repayment_delete' debt_pk=debt.pk repayment_pk=repayment.pk %}">Annuler et supprimer</a>
+</p>
 <script>
     document.querySelector(".debt_repayment_amount button")
         .addEventListener("click", e => {

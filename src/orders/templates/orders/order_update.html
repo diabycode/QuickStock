@@ -19,7 +19,53 @@
 <form method="POST">
     {% csrf_token %} 
     <div class="form-content">
-        {{ form }}
+        <div>
+            {{ form.product.label_tag }}
+            {{ form.product }}
+        </div>
+        <div>
+            {{ form.order_date.label_tag }}
+            {% include 'qstockapp/date_input.html' %}
+            {{ form.order_date.as_hidden }}
+            {% for error in form.order_date.errors %}
+            <p class="error">{{ error }}</p>
+            {% endfor %}
+            {% include 'qstockapp/date_input_binding.html' %}            
+        </div>
+        <div>
+            {{ form.quantity.label_tag }}
+            {{ form.quantity }}
+        </div>
+        <div>
+            {{ form.store.label_tag }}
+            {{ form.store }}
+        </div>
+        <div>
+            {{ form.provider_name.label_tag }}
+            {{ form.provider_name }}
+        </div>
+        <div>
+            {{ form.provider_phone.label_tag }}
+            {{ form.provider_phone }}
+        </div>
+        <div>
+            {{ form.status.label_tag }}
+            {{ form.status }}
+        </div>
+        <div>
+            {{ form.arrived_date.label_tag }}
+            {% include 'qstockapp/date_input.html' %}
+            {{ form.arrived_date.as_hidden }}
+            {% include 'qstockapp/date_input_binding.html' %}            
+        </div>
+        <div>
+            {{ form.shipping_costs.label_tag }}
+            {{ form.shipping_costs }}
+        </div>
+        <div>
+            {{ form.description.label_tag }}
+            {{ form.description }}
+        </div>
     </div>
     <button type="submit">Modifier</button>
     <a class="link" href="{% url 'orders:order_details' pk=order.pk %}">Annuler</a>

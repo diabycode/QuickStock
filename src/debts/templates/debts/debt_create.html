@@ -23,6 +23,9 @@
             {{ form.granted_date.label_tag }}
             {% include 'qstockapp/date_input.html' %}
             {{ form.granted_date.as_hidden }}
+            {% for error in form.granted_date.errors %}
+            <p class="error">{{ error }}</p>
+            {% endfor %}
             {% include 'qstockapp/date_input_binding.html' %}
         </div>
         <div>

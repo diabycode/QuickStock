@@ -1,13 +1,16 @@
 from typing import Any
+import datetime
+import pytz
+
 from django.forms import BaseModelForm
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 
-from debts.models import Debt
+from debts.models import Debt, DebtRepayment
 from debts.forms import DebtRepaymentForm
 from orders.models import Order
 from stores.models import Store
@@ -43,7 +46,7 @@ class DebtDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
 
         debt = self.get_object()
-        context["repayment_list"] = debt.debtrepayment_set.all().order_by("-paid_at")
+        context["repayment_list"] = debt.debtrepayment_set.all().order_by("-add_at")
         return context
 
 
@@ -58,6 +61,16 @@ class DebtCreateView(LoginRequiredMixin, CreateView):
         "store",
     ]
 
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        granted_date: datetime.date = form.cleaned_data.get("granted_date")
+        now_date = datetime.datetime.now().date()
+
+        if granted_date > now_date:
+            form.add_error("granted_date", "Erreur de date")
+            return self.form_invalid(form=form)
+        
+        return super().form_valid(form)
+
 
 class DebtUpdateView(LoginRequiredMixin, UpdateView):
     model = Debt
@@ -68,6 +81,16 @@ class DebtUpdateView(LoginRequiredMixin, UpdateView):
         "initial_amount",
         "store",
     ]
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        granted_date: datetime.date = form.cleaned_data.get("granted_date")
+        now_date = datetime.datetime.now().date()
+
+        if granted_date > now_date:
+            form.add_error("granted_date", "Erreur de date")
+            return self.form_invalid(form=form)
+        
+        return super().form_valid(form)
 
     def get_success_url(self) -> str:
         obj = self.get_object()
@@ -80,7 +103,7 @@ class DebtDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("debts:debt_list")
 
 
-@login_required(login_url='/accounts/login/')
+@login_required(login_url="/accounts/login/")
 def debt_repayment(request: HttpRequest, debt_pk):
     context = {}
     debt = get_object_or_404(Debt, pk=debt_pk)
@@ -107,3 +130,46 @@ def debt_repayment(request: HttpRequest, debt_pk):
         return render(request, "debts/debt_repayment.html", context)
 
     return render(request, "debts/debt_repayment.html", context)
+
+
+@login_required(login_url="/accounts/login/")
+def edit_repayment(request: HttpRequest, debt_pk, repayment_pk):
+    context = {}
+    debt = get_object_or_404(Debt, pk=debt_pk)
+    repayment = get_object_or_404(DebtRepayment, pk=repayment_pk)
+    context["repayment"] = repayment
+    context["debt"] = debt
+
+    form = DebtRepaymentForm(instance=repayment)
+    context["form"] = form
+
+    if request.method == "POST":
+        # get data save if great and redirect to debt details
+        form = DebtRepaymentForm(request.POST, instance=repayment)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            if instance.amount > debt.remaining_amount:
+                form.add_error("amount", f"Erreur dans le montant; Le reste à payer {debt.remaining_amount} FCFA")
+                context["form"] = form
+                return render(request, "debts/edit_repayment.html", context)
+            instance.debt = debt
+            instance.save()
+            return redirect(
+                reverse("debts:debt_details", kwargs={"pk": debt.pk})
+            )
+        context["form"] = form
+        return render(request, "debts/edit_repayment.html", context)
+
+    return render(request, "debts/edit_repayment.html", context)
+
+
+@login_required(login_url="/accounts/login/")
+def repayment_delete(request: HttpRequest, debt_pk, repayment_pk):
+    if request.method == "POST":
+        repayment = get_object_or_404(DebtRepayment, pk=repayment_pk)
+        repayment.delete()
+        return redirect(reverse("debts:debt_details", kwargs={"pk": debt_pk}))
+    
+    return render(request, "debts/repayment_delete.html")
+
+

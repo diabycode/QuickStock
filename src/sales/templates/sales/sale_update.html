@@ -23,6 +23,9 @@
             {{ form.sale_date.label_tag }}
             {% include 'qstockapp/date_input.html' %}
             {{ form.sale_date.as_hidden }}
+            {% for error in form.sale_date.errors %}
+            <p class="error">{{ error }}</p>
+            {% endfor %}
             {% include 'qstockapp/date_input_binding.html' %}
         </div>
         <div>

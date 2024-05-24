@@ -1,0 +1,12 @@
+{% extends 'qstockapp/base.html' %}
+
+{% block head %}
+<title>Gestion des dettes</title>
+{% endblock %}
+
+{% block body %}
+    <p>Êtes-vous sûr de vouloir supprimer ?</p>
+    <form method="POST">
+        {% csrf_token %} <button type="submit">Je confirme</button>
+    </form>
+{% endblock %}

@@ -81,6 +81,7 @@ TEMPLATES = [
                 'stores.context_processors.current_store',
                 'settings.context_processors.company_name',
                 'quickstockapp.context_processors.current_tab',
+                'quickstockapp.context_processors.now_date',
             ],
         },
     },

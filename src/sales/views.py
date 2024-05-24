@@ -101,6 +101,13 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         if form.is_valid():
             form_data = form.cleaned_data
 
+            sale_date: datetime.date = form_data.get("sale_date")
+            now_date = datetime.datetime.now().date()
+
+            if sale_date > now_date:
+                form.add_error("sale_date", "Erreur de date")
+                return self.form_invalid(form=form)
+            
             if form_data.get("status") == SaleStatus.CANCELLED:
                 return HttpResponseBadRequest("bad request")
 
@@ -123,6 +130,8 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         form.fields["product"].queryset = Product.objects.filter(store=store)
         return form
 
+    
+
 
 class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
     model = Sale
@@ -144,6 +153,15 @@ class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         return form
     
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
+
+        if form.is_valid():
+            sale_date: datetime.date = form.cleaned_data.get("sale_date")
+            now_date = datetime.datetime.now().date()
+
+            if sale_date > now_date:
+                form.add_error("sale_date", "Erreur de date")
+                return self.form_invalid(form=form)
+
         # verif if locked fields got changes
         locked_fields = [
             (field_name, field) for (field_name, field) in form.fields.items() 

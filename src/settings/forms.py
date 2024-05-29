@@ -10,12 +10,6 @@ class SettingsModelfForm(forms.ModelForm):
 
     class Meta:
         model = EditableSettings
-        fields = ["company_name", "pin_code"]
-        widgets = {
-            "pin_code": forms.PasswordInput(
-                attrs={
-                    "placeholder": "Nouveau code pin"
-                }
-            )
-        }
+        fields = ["company_name"]
+        
 

@@ -3,7 +3,7 @@ import datetime
 
 from django.db import models
 
-from sales.models import Sale
+from sales.models import Sale, SaleStatus
 from orders.models import Order
 from stores.models import Store
 from products.models import Product
@@ -38,7 +38,7 @@ class Inventory:
     def get_recent_sales(cls, store: Store, month=None, year=None, limit: int=10):
         month = cls.default_month if not month else month
         year = cls.default_year if not year else year
-        return store.sale_set.filter(sale_date__month=month, sale_date__year=year)\
+        return store.sale_set.filter(status=SaleStatus.VALIDATED, sale_date__month=month, sale_date__year=year)\
                 .order_by("-sale_date")[:limit]
 
     @classmethod
@@ -60,9 +60,8 @@ class Inventory:
         if not month:
             month = cls.default_month
 
-        return Sale.objects.filter(store=store, 
-                                sale_date__year=year,
-                                sale_date__month=month).count()
+        return Sale.objects.filter(store=store, status=SaleStatus.VALIDATED,
+                                sale_date__year=year, sale_date__month=month).count()
     
     @classmethod
     def orders_count(cls, store: Store, month=None, year=None):
@@ -81,10 +80,11 @@ class Inventory:
         if not month:
             month = cls.default_month
         total =  decimal.Decimal(0.0)
-        sales = Sale.objects.filter(store=store, sale_date__year=year, sale_date__month=month)
+        sales = Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, sale_date__year=year, sale_date__month=month)
         for sale in sales:
             total += sale.total_amount
 
+        total -= cls.get_shipping_fees(store=store, month=month, year=year)
         total_str = format_number_with_space_separator(total)
         # print(total_str)
         return total_str
@@ -96,7 +96,7 @@ class Inventory:
         if not month:
             month = cls.default_month
         total =  decimal.Decimal(0.0)
-        sales = Sale.objects.filter(store=store, sale_date__year=year, sale_date__month=month)
+        sales = Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, sale_date__year=year, sale_date__month=month)
         for sale in sales:
             total += sale.income
         total -= cls.get_shipping_fees(store=store, month=month, year=year, string=False)
@@ -104,7 +104,7 @@ class Inventory:
         return total_str
 
     @classmethod
-    def best_products(cls, store: Store, month=None, year=None):
+    def best_seller_products(cls, store: Store, month=None, year=None):
         month = cls.default_month if not month else month
         year = cls.default_year if not year else year
 

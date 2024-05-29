@@ -30,3 +30,6 @@ h4 {
     display: flex;
     gap: 1rem;
 } 
+.section {
+    margin-bottom: 2.4rem;
+}

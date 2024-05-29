@@ -9,9 +9,10 @@ from django.http import HttpRequest
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
-from .forms import UserLoginForm, UserRegistrationForm
-from .models import UserModel
+from accounts.forms import UserLoginForm, UserRegistrationForm, UserPinCodeForm
+from accounts.models import UserModel, UserPreference
 
 
 class CustomLogoutView(View):
@@ -117,30 +118,53 @@ class AccountDetailsView(LoginRequiredMixin, View):
         return render(request, "accounts/details.html", context)
     
     def post(self, request: HttpRequest):
-        data = request.POST
-        user = request.user
-
-        current_password: str = data.get("current_password")
-        if not user.check_password(current_password):
+        if request.POST.get("request") == "change_pin_code":
+            form = UserPinCodeForm(request.POST)
+            if form.is_valid():
+                password_confirm: str = form.cleaned_data.get("password_confirm")
+                if request.user.check_password(password_confirm):
+                    form_data = form.cleaned_data
+                    user_preferance = UserPreference.objects.get(user=request.user)
+                    user_preferance.pin_code = form_data.get("pin_code")
+                    user_preferance.save()
+                    messages.success(request, "Code pin modifié avec succès", extra_tags="message")
+                    return redirect(reverse("accounts:details"))
+                messages.error(request, "Mot de passe incorrect", extra_tags="message")
+                return redirect(reverse("accounts:details"))
             context = self.get_context_data(request)
-            context["password_change_faild"] = "Mot de passe actuel incorrect"
+            context["pin_code_form"] = form
+            messages.error(request, "Echec : Erreur dans la saisie", extra_tags="message")
             return render(request, "accounts/details.html", context)
         
-        new_password: str = data.get("new_password")
-        new_password_repeat = data.get("new_password_repeat")
-        if not new_password == new_password_repeat:
-            context = self.get_context_data(request)
-            context["password_change_faild"] = "Nouveaux mot de passe différents"
-            return render(request, "accounts/details.html", context)
+        elif request.POST.get("request") == "change_password":
+            data = request.POST
+            user = request.user
 
-        user.set_password(new_password)
-        user.save()  
-        login(request=request, user=user)
-        return redirect("accounts:password_changed")
+            current_password: str = data.get("current_password")
+            if not user.check_password(current_password):
+                context = self.get_context_data(request)
+                context["password_change_faild"] = "Mot de passe actuel incorrect"
+                return render(request, "accounts/details.html", context)
+            
+            new_password: str = data.get("new_password")
+            new_password_repeat = data.get("new_password_repeat")
+            if not new_password == new_password_repeat:
+                context = self.get_context_data(request)
+                context["password_change_faild"] = "Nouveaux mot de passe différents"
+                return render(request, "accounts/details.html", context)
+
+            user.set_password(new_password)
+            user.save()  
+            login(request=request, user=user)
+            return redirect("accounts:password_changed")
+        
+        context = self.get_context_data(request=request)
+        return render(request, "accounts/details.html", context)
 
     def get_context_data(self, request: HttpRequest) -> dict:
         context = {
-            "user": request.user 
+            "user": request.user,
+            "pin_code_form": UserPinCodeForm,
         }
         return context
 
@@ -158,7 +182,7 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
-    
+
 
 @login_required(login_url="/accounts/login/")
 def password_changed(request):

@@ -2,6 +2,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
+from django.views.decorators.cache import cache_page
 from django.conf.urls.static import static
 
 from . import views
@@ -16,7 +17,11 @@ urlpatterns = [
     path('stores/', include('stores.urls')),
     path('settings/', include('settings.urls')),
     path('debts/', include('debts.urls')),
-    path('debts/', include('debts.urls')),
+    path('pin_test_view/', views.pin_test_view, name="pin_test_view"),
+    path('unlock_pin/', views.unlock_pin, name="unlock_pin"),
+    path('lock_pin/', views.lock_pin, name="lock_pin"),
+    path("display_stats/", views.display_stats, name="display_stats"),
+    path('offline-page/', views.offline, name='offline'),
     path('', include('pwa.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

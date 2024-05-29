@@ -5,6 +5,7 @@
     max-width: 400px;
 }
 input {
+    border: 1px solid var(--lightgray);
     padding: 10px;
 }
 h4 {

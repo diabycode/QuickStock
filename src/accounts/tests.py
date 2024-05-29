@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from accounts.models import UserModel
+from accounts.models import UserModel, UserPreference
 
 
 class AccountViewsRenderingTest(TestCase):
@@ -54,3 +54,15 @@ class AccountViewsRenderingTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn("/login/", response.url)
 
+
+class AccountCRUDTest(TestCase):
+
+    def setUp(self) -> None:
+        self.client = Client()
+
+    def test_create_user(self):
+        user = UserModel.objects.create_user(username="test_user")
+        self.assertEqual(UserModel.objects.filter(username=user.username).exists(), True)
+        self.assertEqual(UserPreference.objects.filter(user=user).exists(), True)
+
+    

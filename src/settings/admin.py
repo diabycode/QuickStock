@@ -5,5 +5,5 @@ from settings.models import EditableSettings
 
 @admin.register(EditableSettings)
 class SettingsModelAdmin(admin.ModelAdmin):
-    list_display = ("company_name", "pin_code")
+    list_display = ("company_name",)
 

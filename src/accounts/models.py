@@ -1,9 +1,11 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
+from django.core.exceptions import ValidationError
 
 
 class CustomUserManager(BaseUserManager):
+
     def _create_user(self, username, email=None, password=None, **extra_fields):
         if not username:
             raise ValueError("Users must have a username")
@@ -39,8 +41,8 @@ class CustomUserManager(BaseUserManager):
 class UserModel(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=80, unique=True, verbose_name="Nom d'utilisateur")
     email = models.EmailField(max_length=255, unique=True, blank=True, null=True, verbose_name="Adresse mail")
-    first_name = models.CharField(max_length=80, blank=True, verbose_name="Prénom")
-    last_name = models.CharField(max_length=80, blank=True, verbose_name="Nom")
+    first_name = models.CharField(max_length=80, null=True, verbose_name="Prénom")
+    last_name = models.CharField(max_length=80, null=True, verbose_name="Nom")
     join_date = models.DateTimeField(auto_now_add=True)
 
     is_staff = models.BooleanField(default=False)
@@ -61,3 +63,20 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
             return f"{self.first_name} {self.last_name}"
 
 
+def pin_code_verification(value: str):
+    MIN_LENGTH = 4
+    MAX_LENGTH = 6
+
+    if len(value) < MIN_LENGTH or len(value) > MAX_LENGTH:
+        raise ValidationError("Le code pin doit contenir de (4-6) caractères inclus")
+    
+    if not value.isdigit():
+        raise ValidationError("Le code pin doit contenir que des chiffres")
+
+
+class UserPreference(models.Model):
+    user = models.OneToOneField(UserModel, on_delete=models.CASCADE, verbose_name="Utilisateur")
+    pin_code = models.CharField(max_length=6, blank=True, null=True, 
+                                validators=[pin_code_verification], 
+                                verbose_name="Code pin")
+    

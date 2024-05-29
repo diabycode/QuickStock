@@ -2,7 +2,7 @@ import re
 
 from django import forms
 
-from .models import UserModel
+from .models import UserModel, UserPreference
 
 
 class UserLoginForm(forms.Form):
@@ -93,5 +93,20 @@ class UserRegistrationForm(forms.ModelForm):
         return first_name
 
 
+class UserPinCodeForm(forms.ModelForm):
+    password_confirm = forms.CharField(max_length=130, label="Mot de passe", required=True,
+                                       widget=forms.PasswordInput(attrs={
+                                           "placeholder": "Saisissez votre mot de passe pour confirmer"
+                                       }))
 
+    class Meta:
+        model = UserPreference
+        fields = ["pin_code"]
+        widgets = {
+            "pin_code": forms.PasswordInput(
+                attrs={
+                    "placeholder": "Nouveau code pin"
+                }
+            )
+        }
 

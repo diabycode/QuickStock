@@ -261,6 +261,12 @@ header > div {
 .loader.hide {
     display: none;
 }
+#online-status.online {
+    background-color: var(--primary);
+}
+#online-status.offline {
+    background-color: var(--error);
+}
 @keyframes loader {
     100% {background-position: -20px 0,20px 0}
 }

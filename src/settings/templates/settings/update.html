@@ -23,13 +23,6 @@
             {{ form.company_name }}
         </div>
         <div>
-            {{ form.pin_code.label_tag }}
-            {% for e in form.pin_code.errors %}
-                <p class="error">{{ e }}</p>
-            {% endfor %}
-            <span>****</span> {{ form.pin_code }}
-        </div>
-        <div>
             {% for e in form.password_confirm.errors %}
             <p class="error">{{ e }}</p>
             {% endfor %}

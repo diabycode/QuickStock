@@ -1,0 +1,37 @@
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/qstockapp/reset.css' %}">
+<link rel="stylesheet" href="{% static 'css/qstockapp/base.css' %}">
+<title>Pin test</title>
+<style>
+    button {
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="pin_tester">
+    <div>
+        <button class="protected-action" data-callback="test1">test 1</button>
+        <button class="protected-action" data-callback="test2">test 2</button>
+        <button class="protected-action" data-callback="test3">test 3</button>
+    </div>
+    <div class="result"></div>
+</div>
+<script type="text/javascript">
+    function test1 () {
+        document.querySelector(".result").innerHTML = "<p> Hello test 1 </p>" 
+    }
+    function test2 () {
+        document.querySelector(".result").innerHTML = "<p> Hello test 2 </p>" 
+    }
+    function test3 () {
+        document.querySelector(".result").innerHTML = "<p> Hello test 3 </p>" 
+    }
+</script>
+{% include 'qstockapp/pin_required_actions.html' %}
+{% endblock %}

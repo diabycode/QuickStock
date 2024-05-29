@@ -131,8 +131,6 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         return form
 
     
-
-
 class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
     model = Sale
     fields = [

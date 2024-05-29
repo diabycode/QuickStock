@@ -7,7 +7,8 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib import messages
 from django.views.generic import UpdateView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import redirect
 
 from settings.models import EditableSettings
 from settings.forms import SettingsModelfForm
@@ -35,13 +36,12 @@ class SettingsUpdate(LoginRequiredMixin, UpdateView):
         form = self.get_form()
         if form.is_valid():
             password = form.cleaned_data.get("password_confirm")
-            if password:
-                if self.request.user.check_password(password):
-                    messages.success(self.request, "Enregistré avec succès", extra_tags="message")
-                    return super().form_valid(form)
-                else:
-                    from django.forms.utils import ErrorList
-                    errors = form._errors.setdefault("password_confirm", ErrorList())
-                    errors.append("Mot de passe incorrect")
-                    return self.form_invalid(form=form)
-                    
+            if self.request.user.check_password(password):
+                form.save()
+                messages.success(self.request, "Enregistré avec succès", extra_tags="message")
+                return redirect(reverse("settings:setting_update"))
+            else:
+                form.add_error("password_confirm", "Mot de passe incorrect")
+                messages.error(self.request, "Mot de passe incorrect", extra_tags="message")
+                return self.form_invalid(form=form)
+                

@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/qstockapp/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/qstockapp/base.css' %}">
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        body > div {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        button {
+            max-width: 200px;
+            align-self: center;
+        }
+    </style>
+    
+    <title>Pas d'internet</title>
+</head>
+<body>
+    <div>
+        <p>😥😥</p>
+        <h2>Vous n'êtes pas connecté à internet ! </h2>
+        <button class="btn">Recharger la page</button>
+    </div>
+    <script>
+        document.querySelector("button").addEventListener("click", () => location.reload())
+    </script>
+</body>
+</html>

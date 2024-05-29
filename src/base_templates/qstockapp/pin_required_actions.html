@@ -1,0 +1,137 @@
+<!-- form styles -->
+<style>
+.close-btn {
+    color: var(--gray);
+    cursor: pointer;
+    font-size: 15px;
+}
+#pin_form.hide {
+    display: none;
+}
+#pin_form {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--subwhite);
+    padding: 30px 60px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 45px #201e1e38;
+}
+#pin_form h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+#pin_form input[type=password] {
+    max-width: 150px;
+    text-align: center;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+#pin_form input[type=password].error:focus {
+    border: 1px solid var(--error);
+}
+#pin_form form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin: 0;
+}
+#pin_form form button {
+    margin: 0;
+}
+.top {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 0;
+}
+</style>
+
+<!-- class :  pin_required_cta -->
+<script>
+const createPinForm = () => {
+    const formTemplate = document.createElement("div")
+    formTemplate.setAttribute("id", "pin_form")
+    formTemplate.innerHTML = `
+        <div class="top">  </div>
+        <h3>Entrez votre code pin</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="password" name="pin_code" required minlength="4" maxlength="4" autofocus>
+            <button type="submit" class="btn primary">Valider</button>
+            <span class='close-btn'>Fermer</span>    
+            <p>Code pin oublié ? <a href="/settings/" class="link primary">Changer le</a></p>
+        </form>`;
+    formTemplate.querySelector(".close-btn").addEventListener("click", () => formTemplate.remove())
+    return {template: formTemplate, form: formTemplate.querySelector("form")}
+}
+
+const getPinForm = () => document.getElementById("pin_form");
+
+const validation = async (event, callback) => {
+    event.preventDefault();
+    const form = event.target
+    const formdata = new FormData(form)
+    const pin_code = formdata.get("pin_code")
+    const csrfmiddlewaretoken = formdata.get("csrfmiddlewaretoken")
+    const response = await fetch("/unlock_pin/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-CSRFToken": csrfmiddlewaretoken
+        },
+        body: JSON.stringify({
+            pin_code: pin_code,
+        })
+    })
+    .then(r => r.json())
+    .then(r => {
+        const pinInput = form.querySelector("input[type=password]")
+        
+        if (r.test == "OK") {
+            if (pinInput.classList.contains("error")) {
+                pinInput.classList.remove("error")
+            };
+            setTimeout(() => {
+                getPinForm().remove()
+                callback()
+            }, 1000)
+        }
+        else if (r.test == "ERROR") {
+            pinInput.value = ""
+            if (!pinInput.classList.contains("error")) {
+                pinInput.classList.add("error")
+            }
+        };
+    })
+    .catch(e => console.log("Error when testing Pin Code"))
+}
+
+// Verif pin code and call callback
+function requirePinCode (callback) {
+    getPinForm()?.remove()
+    const form = createPinForm()
+    document.body.appendChild(form.template)
+    form.form.addEventListener("submit", (event) => validation(event, callback))
+}
+
+// protected actions listening
+function setProtectedActions (event) {
+    document.querySelectorAll('.protected-action').forEach(function(cta) {
+        cta.addEventListener('click', function(event) {
+            event.preventDefault();
+            const callbackName = cta.getAttribute('data-callback');
+            if (typeof window[callbackName] === 'function') {
+                requirePinCode(window[callbackName]);
+            } else {
+                console.error(`Callback ${callbackName} non défini.`);
+            }
+        });
+    });
+}
+
+// on DOM loaded
+document.addEventListener('DOMContentLoaded', setProtectedActions)
+</script>

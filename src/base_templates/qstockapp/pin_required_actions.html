@@ -61,7 +61,7 @@ const createPinForm = () => {
             <input type="password" name="pin_code" required minlength="4" maxlength="4" autofocus>
             <button type="submit" class="btn primary">Valider</button>
             <span class='close-btn'>Fermer</span>    
-            <p>Code pin oublié ? <a href="/settings/" class="link primary">Changer le</a></p>
+            <p>Code pin oublié ? <a href="/accounts/details/" class="link primary">Changer le</a></p>
         </form>`;
     formTemplate.querySelector(".close-btn").addEventListener("click", () => formTemplate.remove())
     return {template: formTemplate, form: formTemplate.querySelector("form")}

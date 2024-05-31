@@ -1,11 +1,7 @@
 let staticCacheName = 'djangopwa-v1';
 
 let crucialUrls = [
-    "/sales/",
-    "/sales/create/",
     "/offline-page/",
-    "/static/css/quickstockapp/form.css",
-    "/static/css/quickstockapp/filter_form.css",
 ]
 
 self.addEventListener('install', function(event) {

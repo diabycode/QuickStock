@@ -1,11 +1,13 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
+{% load money_string %}
 
 <!-- head  -->
 {% block head %}
 <title>Gestion des dettes</title>
 <link rel="stylesheet" href="{% static 'css/quickstockapp/table.css' %}">
 <link rel="stylesheet" href="{% static 'css/debts/table.css' %}">
+<script src="{% static 'js/debts/debt_type_filter.js' %}" defer></script>
 {% endblock %}
 
 <!-- extra styles  -->
@@ -17,10 +19,16 @@
 {% block body %}
 <div class="heading">
     <div>
-        <a class="btn primary" href="{% url 'debts:debt_create' %}">+ Ajouter une dette</a>
+        <a class="btn primary" href="{% url 'debts:debt_create' %}">+ Ajouter</a>
     </div>
 </div>
 {% if debt_list %}
+<div class="filter-bar">
+    <form method="GET">
+        {{ debt_type_form }}
+        <button class="btn primary" style="display: none;">OK</button>
+    </form>
+</div>
 <table>
     <thead>
         <tr>
@@ -38,9 +46,9 @@
                     {{ debt.granted_date|date:"d-m-Y" }}
                 </a>
             </td>
-            <td>{{ debt.granted_by|title }}</td>
-            <td>{{ debt.initial_amount }}</td>
-            <td>{{ debt.remaining_amount }}</td>
+            <td>{{ debt.person_concerned|title }}</td>
+            <td>{{ debt.initial_amount|money_string }}</td>
+            <td>{{ debt.remaining_amount|money_string }}</td>
             <td>
                 {% if debt.store %}
                     {{ debt.store.name }}

@@ -15,9 +15,9 @@
 
 <!-- body content -->
 {% block body %}
-<h3>Remboursement de dette</h3>
+<h3>Rembourser un impayé</h3>
 <div class="debt-details">
-    <p>{{ debt.granted_by }}</p>
+    <p>{{ debt.person_concerned }}</p>
     <p>Dette du {{ debt.granted_date|date:"d-m-Y" }} à hauteur de {{ debt.initial_amount }}</p>
     <p>Reste à payer : <span id="remaining_amount">{{ debt.remaining_amount }}</span> FCFA</p>
 </div>

@@ -45,6 +45,9 @@ def get_period_list(model, date_field: str):
     periods = periods.order_by("-year", "-month")
     return periods
 
+@login_required(login_url='/accounts/login/')
+def index(request: HttpRequest):
+    return redirect(reverse("home"))
 
 @login_required(login_url='/accounts/login/')
 def home(request: HttpRequest):

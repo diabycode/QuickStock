@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
+    path('', views.index, name='index'),
     path('dashbord/', views.home, name='home'),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
@@ -22,8 +23,8 @@ urlpatterns = [
     path('lock_pin/', views.lock_pin, name="lock_pin"),
     path("display_stats/", views.display_stats, name="display_stats"),
     path('offline-page/', views.offline, name='offline'),
-    path('', include('pwa.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('pwa/', include('pwa.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 handler404 = views.handler404

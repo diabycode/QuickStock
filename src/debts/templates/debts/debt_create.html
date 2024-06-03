@@ -15,7 +15,7 @@
 
 <!-- body content -->
 {% block body %}
-<h3>Renseignez une dette</h3>
+<h3>Renseigner un impayé</h3>
 <form method="POST">
     {% csrf_token %} 
     <div class="form-content">
@@ -29,8 +29,12 @@
             {% include 'qstockapp/date_input_binding.html' %}
         </div>
         <div>
-            {{ form.granted_by.label_tag }}
-            {{ form.granted_by }}
+            {{ form.debt_type.label_tag }}
+            {{ form.debt_type }}
+        </div>
+        <div>
+            {{ form.person_concerned.label_tag }}
+            {{ form.person_concerned }}
         </div>
         <div>
             {{ form.initial_amount.label_tag }}

@@ -1,5 +1,6 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
+{% load money_string %}
 
 <!-- head  -->
 {% block head %}
@@ -18,8 +19,13 @@
 {% block body %}
 <div class="heading">
     <div class="filter-form">
-        <form method="GET">
+        <form method="GET" class="search-form">
             <input type="text" name="q" placeholder="Chercher une commande (nom du produit)" value="{{ search_query }}">
+            <button type="submit" class="btn primary search-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 21L16.657 16.657M16.657 16.657C17.3999 15.9141 17.9892 15.0322 18.3912 14.0616C18.7933 13.0909 19.0002 12.0506 19.0002 11C19.0002 9.94942 18.7933 8.90911 18.3912 7.93848C17.9892 6.96785 17.3999 6.08591 16.657 5.34302C15.9141 4.60014 15.0322 4.01084 14.0615 3.6088C13.0909 3.20675 12.0506 2.99982 11 2.99982C9.9494 2.99982 8.90908 3.20675 7.93845 3.6088C6.96782 4.01084 6.08589 4.60014 5.343 5.34302C3.84267 6.84335 2.99979 8.87824 2.99979 11C2.99979 13.1218 3.84267 15.1567 5.343 16.657C6.84333 18.1574 8.87821 19.0002 11 19.0002C13.1218 19.0002 15.1567 18.1574 16.657 16.657Z" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
             <select name="current_period" id="period">
                 {% for period in periods %}
                     {% if period.month == current_month and period.year == current_year %}
@@ -43,7 +49,6 @@
                     
                 {% endfor %}
             </select>
-            <button type="submit" style="display: none;"></button>
         </form>
         {% if isfilters %}
         <a href="{% url 'orders:order_list' %}">x Annuler tous les filtres</a>
@@ -78,7 +83,7 @@
                     {% if order.arrived_date != None %} {{ order.arrived_date }} {% else %} - {% endif %}
                 </td>
                 <td>{{ order.provider_name }}</td>
-                <td>{{ order.shipping_costs }}</td>
+                <td>{{ order.shipping_costs|money_string }}</td>
                 <td class="actions">
                     <a href="{% url 'orders:order_details' pk=order.pk %}">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

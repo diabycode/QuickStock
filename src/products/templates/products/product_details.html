@@ -1,5 +1,6 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %} 
+{% load money_string %} 
 
 <!-- head  -->
 {% block head %}
@@ -25,11 +26,11 @@
         <p>Paquetage <span>{% if product.packaging_type %} {{ product.packaging_type }} {% else %} - {% endif %}</span></p>
         <p>
             Prix unitaire gros (FCFA)
-            <span>{{ product.wholesale_unit_price }}</span>
+            <span>{{ product.wholesale_unit_price|money_string }}</span>
         </p>
         <p>
             Prix unitaire vente (FCFA)
-            <span>{{ product.unit_price_sale }}</span>
+            <span>{{ product.unit_price_sale|money_string }}</span>
         </p>
     </div>
 

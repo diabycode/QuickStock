@@ -16,7 +16,10 @@
 
 <!-- body content -->
 {% block body %}
-    <h3>Details sur la dette</h3>
+    <h3>Informations sur l'impayé</h3>
+    <p style="margin-bottom: 1rem;">
+        Impayé <b>{{ debt.type }}</b>
+    </p>
     <div class="properties">
         <p>
             Accordé le
@@ -24,7 +27,7 @@
         </p>
         <p>
             Accordé par
-            <span>{{ debt.granted_by }}</span>
+            <span>{{ debt.person_concerned }}</span>
         </p>
         <p>
             Montant initial

@@ -1,8 +1,8 @@
 
 from settings.models import EditableSettings
 
-def company_name(request):
+def app_settings(request):
     return {
-        "company_name": EditableSettings.load().company_name
+        "app_settings": EditableSettings.load(),
     }
 

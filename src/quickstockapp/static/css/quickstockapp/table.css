@@ -42,3 +42,8 @@ tr.warn {
 .table-link:hover {
     color: var(--primary);
 }
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}

@@ -28,7 +28,7 @@ class DebtViewsRenderingTest(TestCase):
     
     def test_debt_details_view(self):
         debt = Debt.objects.create(
-            granted_by = "Almamy Code",
+            person_concerned = "Almamy Code",
             granted_date = datetime.datetime.now(),
             initial_amount = 12000.00,
         )
@@ -53,7 +53,7 @@ class DebtViewsRenderingTest(TestCase):
     
     def test_debt_update_view(self):
         debt = Debt.objects.create(
-            granted_by = "Almamy Code",
+            person_concerned = "Almamy Code",
             granted_date = datetime.datetime.now(),
             initial_amount = 12000.00,
         )
@@ -68,7 +68,7 @@ class DebtViewsRenderingTest(TestCase):
 
     def test_debt_repayment_view(self):
         debt = Debt.objects.create(
-            granted_by = "Almamy Code",
+            person_concerned = "Almamy Code",
             granted_date = datetime.datetime.now(),
             initial_amount = 12000.00,
         )
@@ -83,7 +83,7 @@ class DebtViewsRenderingTest(TestCase):
     
     def test_debt_delete_view(self):
         debt = Debt.objects.create(
-            granted_by = "Almamy Code",
+            person_concerned = "Almamy Code",
             granted_date = datetime.datetime.now(),
             initial_amount = 12000.00,
         )

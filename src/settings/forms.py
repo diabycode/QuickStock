@@ -10,6 +10,9 @@ class SettingsModelfForm(forms.ModelForm):
 
     class Meta:
         model = EditableSettings
-        fields = ["company_name"]
+        fields = ["company_name", "company_logo"]
+        widgets = {
+            "company_logo": forms.ClearableFileInput()
+        }
         
 

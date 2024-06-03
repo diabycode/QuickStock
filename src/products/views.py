@@ -51,7 +51,7 @@ class ProductListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
 
         context["product_column_names"] = product_column_names
         context["product_list"] = products_list
-        context["page_title"] = "Produits"
+        context["page_title"] = "Produits & Stock"
         context["isfilters"] = isfilters
         if search_query:
             context["search_query"] = search_query 
@@ -90,6 +90,7 @@ class ProductDetailsView(LoginRequiredMixin, NotCurrentStoreMixin, DetailView):
         context["sale_column_names"] = sale_column_names
         context["now_period"] = now_period
         context["periods"] = periods
+        context["page_title"] = "Produits & Stock"
         context["current_month"] = int(selected_month) if selected_month is not None else selected_month
         context["current_year"] = int(selected_year) if selected_year is not None else selected_year
 
@@ -107,6 +108,7 @@ class ProductUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         'unit_price_sale',
         'packaging_type']
     template_name = "products/product_update.html"
+    extra_context = {"page_title": "Produits & Stock"}
     
     def get_success_url(self) -> str:
         return reverse("products:product_details", kwargs={"slug": self.kwargs.get("slug")})
@@ -124,6 +126,7 @@ class ProductCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         'packaging_type']
     template_name = "products/product_create.html"
     success_url = reverse_lazy("products:product_list")
+    extra_context = {"page_title": "Produits & Stock"}
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -141,6 +144,7 @@ class ProductDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
     context_object_name = "product"
     template_name = "products/product_delete.html"
     success_url = reverse_lazy("products:product_list")
+    extra_context = {"page_title": "Produits & Stock"}
 
 
 

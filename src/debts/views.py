@@ -10,10 +10,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 
-from debts.models import Debt, DebtRepayment
-from debts.forms import DebtRepaymentForm
+from debts.models import Debt, DebtRepayment, DebtType
+from debts.forms import DebtRepaymentForm, DebtTypeForm
 from orders.models import Order
 from stores.models import Store
+
+
+PAGE_TITLE = "Gestion des impayés"
 
 
 class DebtListView(LoginRequiredMixin, ListView):
@@ -21,19 +24,28 @@ class DebtListView(LoginRequiredMixin, ListView):
     template_name = "debts/debt_list.html"
     context_object_name = "debt_list"
     queryset = Debt.objects.all().order_by("-add_at")
+    extra_context = {"page_title": PAGE_TITLE}
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.debt_type = request.GET.get("debt_type", None)
+        if not self.debt_type:
+            self.debt_type = DebtType.OUTGOING
+        self.queryset = self.queryset.filter(debt_type=self.debt_type)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         debt_column_names = [
             Debt.granted_date.field.verbose_name,
-            Debt.granted_by.field.verbose_name,
+            Debt.person_concerned.field.verbose_name,
             Debt.initial_amount.field.verbose_name,
             "Reste à payer",
             Debt.store.field.verbose_name,
         ]
         
         context["debt_column_names"] = debt_column_names
+        context["debt_type_form"] = DebtTypeForm(initial={"debt_type": self.debt_type})
         return context
 
 
@@ -41,6 +53,7 @@ class DebtDetailView(LoginRequiredMixin, DetailView):
     model = Debt
     template_name = "debts/debt_details.html"
     context_object_name = "debt"
+    extra_context = {"page_title": PAGE_TITLE}
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -54,10 +67,12 @@ class DebtCreateView(LoginRequiredMixin, CreateView):
     model = Debt
     template_name = "debts/debt_create.html"
     success_url = reverse_lazy("debts:debt_list")
+    extra_context = {"page_title": PAGE_TITLE}
     fields = [
         "granted_date",
-        "granted_by",
+        "person_concerned",
         "initial_amount",
+        "debt_type",
         "store",
     ]
 
@@ -75,10 +90,12 @@ class DebtCreateView(LoginRequiredMixin, CreateView):
 class DebtUpdateView(LoginRequiredMixin, UpdateView):
     model = Debt
     template_name = "debts/debt_update.html"
+    extra_context = {"page_title": PAGE_TITLE}
     fields = [
         "granted_date",
-        "granted_by",
+        "person_concerned",
         "initial_amount",
+        "debt_type",
         "store",
     ]
 
@@ -101,11 +118,14 @@ class DebtDeleteView(LoginRequiredMixin, DeleteView):
     model = Debt
     template_name = "debts/debt_delete.html"
     success_url = reverse_lazy("debts:debt_list")
+    extra_context = {"page_title": PAGE_TITLE}
 
 
 @login_required(login_url="/accounts/login/")
 def debt_repayment(request: HttpRequest, debt_pk):
     context = {}
+    context["page_title"] = PAGE_TITLE
+
     debt = get_object_or_404(Debt, pk=debt_pk)
     context["debt"] = debt
 
@@ -135,6 +155,8 @@ def debt_repayment(request: HttpRequest, debt_pk):
 @login_required(login_url="/accounts/login/")
 def edit_repayment(request: HttpRequest, debt_pk, repayment_pk):
     context = {}
+    context["page_title"] = PAGE_TITLE
+
     debt = get_object_or_404(Debt, pk=debt_pk)
     repayment = get_object_or_404(DebtRepayment, pk=repayment_pk)
     context["repayment"] = repayment
@@ -165,11 +187,12 @@ def edit_repayment(request: HttpRequest, debt_pk, repayment_pk):
 
 @login_required(login_url="/accounts/login/")
 def repayment_delete(request: HttpRequest, debt_pk, repayment_pk):
+    context = {"page_title": PAGE_TITLE}
     if request.method == "POST":
         repayment = get_object_or_404(DebtRepayment, pk=repayment_pk)
         repayment.delete()
         return redirect(reverse("debts:debt_details", kwargs={"pk": debt_pk}))
     
-    return render(request, "debts/repayment_delete.html")
+    return render(request, "debts/repayment_delete.html", context=context)
 
 

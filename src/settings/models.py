@@ -22,3 +22,5 @@ class Singleton(models.Model):
 
 class EditableSettings(Singleton):
     company_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Nom de l'entreprise")
+    company_logo = models.ImageField(upload_to="settings/", verbose_name="Logo entreprise",
+                                     blank=True, null=True)

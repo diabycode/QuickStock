@@ -80,6 +80,7 @@ class OrderDetailsView(LoginRequiredMixin, NotCurrentStoreMixin, DetailView):
     model = Order
     template_name = "orders/order_details.html"
     context_object_name = "order"
+    extra_context = {"page_title": "Commandes"}
 
 
 class OrderUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
@@ -97,7 +98,7 @@ class OrderUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         'description',
     ]
     template_name = "orders/order_update.html"
-
+    extra_context = {"page_title": "Commandes"}
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         obj = self.get_object()
@@ -159,6 +160,7 @@ class OrderCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
     ]
     template_name = "orders/order_create.html"
     success_url = reverse_lazy("orders:order_list")
+    extra_context = {"page_title": "Commandes"}
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         order_date: datetime.date = form.cleaned_data.get("order_date")
@@ -187,6 +189,7 @@ class OrderDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
     context_object_name = "order"
     template_name = "orders/order_delete.html"
     success_url = reverse_lazy("orders:order_list")
+    extra_context = {"page_title": "Commandes"}
 
     def post(self, request, *args, **kwargs):
         obj = self.get_object()

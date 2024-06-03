@@ -79,7 +79,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'stores.context_processors.current_store',
-                'settings.context_processors.company_name',
+                'settings.context_processors.app_settings',
                 'quickstockapp.context_processors.current_tab',
                 'quickstockapp.context_processors.now_date',
             ],
@@ -154,6 +154,7 @@ STATICFILES_DIRS = [
 
 # PWA_SERVICE_WORKER_PATH = BASE_DIR / "quickstockapp/static/js/quickstockapp" / "serviceworker.js"
 PWA_SERVICE_WORKER_PATH = finders.find("js/quickstockapp/serviceworker.js")
+PWA_ROOT = "/pwa/"
 PWA_APP_NAME = 'QuickStock'
 PWA_APP_DESCRIPTION = "QuickStock PWA"
 # PWA_APP_THEME_COLOR = '#000000'

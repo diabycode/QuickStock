@@ -1,5 +1,6 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %} 
+{% load money_string %} 
 
 <!-- head  -->
 {% block head %}
@@ -42,7 +43,7 @@
     </p>
     <p>
         Frais de livraison (FCFA)
-        <span> {{ order.shipping_costs }} </span>
+        <span> {{ order.shipping_costs|money_string }} </span>
     </p>
     <p>
         Description

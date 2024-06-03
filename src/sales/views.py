@@ -80,6 +80,7 @@ class SaleDetailsView(LoginRequiredMixin, NotCurrentStoreMixin, DetailView):
     model = Sale
     template_name = "sales/sale_details.html"
     context_object_name = "sale"
+    extra_context = {"page_title": "Ventes"}
 
 
 class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
@@ -95,6 +96,7 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
     ]
     template_name = "sales/sale_create.html"
     success_url = reverse_lazy("sales:sale_list")
+    extra_context = {"page_title": "Ventes"}
 
     def form_valid(self, form):
         form = self.get_form()
@@ -142,7 +144,8 @@ class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         'buyer_phone',
     ]
     template_name = "sales/sale_update.html"
-
+    extra_context = {"page_title": "Ventes"}
+    
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         form.fields["product"].disabled = True
@@ -179,12 +182,14 @@ class SaleDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
     context_object_name = "sale"
     template_name = "sales/sale_delete.html"
     success_url = reverse_lazy("sales:sale_list")
+    extra_context = {"page_title": "Ventes"}
 
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.status != "2":
             return HttpResponseBadRequest("Bad request")
         return super().post(request=request, *args, **kwargs)
+
 
 @login_required(login_url='/accounts/login/')
 def cancel_sale(request, pk):

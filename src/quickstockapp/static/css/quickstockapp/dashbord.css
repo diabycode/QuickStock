@@ -78,6 +78,20 @@ tbody tr {
     border-radius: 10px;
     box-shadow: 1px 1px 45px #201e1e38;
 }
+.stats-display-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+}
+.stats-display-btn path {
+    fill: var(--gray);
+}
+.stats-display-btn span:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .pin-code-test h3 {
     text-align: center;
     margin-bottom: 1rem;

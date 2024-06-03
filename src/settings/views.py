@@ -23,11 +23,8 @@ class SettingsUpdate(LoginRequiredMixin, UpdateView):
     def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)
         context["page_title"] = "Paramètres"
+        context["settings_object"] = self.get_object()
         return context
-    
-    def get_form(self, form_class=None) -> BaseModelForm:
-        form = super().get_form(form_class)
-        return form 
 
     def get_object(self, *args, **kwargs) -> Model:
         return EditableSettings.load()
@@ -43,5 +40,8 @@ class SettingsUpdate(LoginRequiredMixin, UpdateView):
             else:
                 form.add_error("password_confirm", "Mot de passe incorrect")
                 messages.error(self.request, "Mot de passe incorrect", extra_tags="message")
-                return self.form_invalid(form=form)
-                
+        return self.form_invalid(form=form)
+    
+    
+
+

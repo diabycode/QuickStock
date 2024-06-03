@@ -3,7 +3,7 @@ import pytz
 
 from django import forms
 
-from debts.models import DebtRepayment
+from debts.models import DebtRepayment, Debt
 
 
 class DebtRepaymentForm(forms.ModelForm):
@@ -26,4 +26,9 @@ class DebtRepaymentForm(forms.ModelForm):
         return paid_at
      
 
+class DebtTypeForm(forms.ModelForm):
+    
+    class Meta:
+        model = Debt
+        fields = ["debt_type"]
 

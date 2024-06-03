@@ -84,7 +84,6 @@ class Inventory:
         for sale in sales:
             total += sale.total_amount
 
-        total -= cls.get_shipping_fees(store=store, month=month, year=year)
         total_str = format_number_with_space_separator(total)
         # print(total_str)
         return total_str

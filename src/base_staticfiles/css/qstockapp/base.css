@@ -201,6 +201,9 @@ header > div {
     outline: none;
     font-weight: 700;
 }
+input[type=checkbox] {
+    max-width: 50px;
+}
 .status.validated {
     color: var(--accent);
 }

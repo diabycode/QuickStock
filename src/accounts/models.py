@@ -1,8 +1,23 @@
+from typing import Iterable
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager, Group
 from django.core.exceptions import ValidationError
 
+
+class CustomGroup(Group):
+    description = models.TextField(verbose_name="Description", blank=True)
+
+    def __str__(self) -> str:
+        return self.name
+    
+    class Meta:
+        verbose_name = "Groupe"
+        verbose_name_plural = "Groupes"
+
+    @classmethod
+    def get_verbose_name(cls):
+        return cls._meta.verbose_name
+    
 
 class CustomUserManager(BaseUserManager):
 
@@ -43,16 +58,28 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True, blank=True, null=True, verbose_name="Adresse mail")
     first_name = models.CharField(max_length=80, null=True, verbose_name="Prénom")
     last_name = models.CharField(max_length=80, null=True, verbose_name="Nom")
-    join_date = models.DateTimeField(auto_now_add=True)
+    join_date = models.DateTimeField(auto_now_add=True, verbose_name="Ajouté le")
+    groups = models.ManyToManyField(CustomGroup, verbose_name="Groupes", blank=True)
 
-    is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=True, verbose_name="Membre d'équipe")
+    is_active = models.BooleanField(default=True, verbose_name="Actif")
+    is_superuser = models.BooleanField(default=False, verbose_name="Administrateur")
     
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
 
     objects: CustomUserManager = CustomUserManager()
+
+    class Meta:
+        verbose_name = "Utilisateur"
+        verbose_name_plural = "Utilisateurs"
+        default_permissions = []
+        permissions = [
+            ("can_add", "Ajouter - Utilisateur"),
+            ("can_change", "Modifier - Utilisateur"),
+            ("can_delete", "Supprimer - Utilisateur"),
+            ("can_view", "Voir - Utilisateur"),
+        ]
 
     def __str__(self):
         return self.username
@@ -62,6 +89,9 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
         if self.last_name and self.first_name:
             return f"{self.first_name} {self.last_name}"
 
+    @classmethod
+    def get_verbose_name(cls):
+        return cls._meta.verbose_name
 
 def pin_code_verification(value: str):
     MIN_LENGTH = 4

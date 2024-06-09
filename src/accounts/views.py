@@ -1,18 +1,30 @@
 from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
-from django.shortcuts import render, redirect
+from django.forms import BaseModelForm
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, ListView, DetailView, CreateView, DeleteView
 from django.views.generic import View
 from django.contrib.auth import login
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.models import LogEntry
 from django.contrib import messages
+from django.contrib.auth.models import Permission, Group
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.admin.models import ADDITION, DELETION, CHANGE
 
-from accounts.forms import UserLoginForm, UserRegistrationForm, UserPinCodeForm
-from accounts.models import UserModel, UserPreference
+from accounts.forms import UserLoginForm, UserRegistrationForm, UserPinCodeForm, UserCreateForm, UserPasswordChangeForm
+from accounts.models import UserModel, UserPreference, CustomGroup
+from accounts.utils import log_user_action
+
+
+def permission_str(self: Permission):
+    return self.name
+
+Permission.__str__ = permission_str
 
 
 class CustomLogoutView(View):
@@ -60,7 +72,6 @@ class CustomLoginView(View):
                     # login user
                     from django.contrib.auth import login
                     login(request, user)
-
                     redirect_url = request.GET.get("next", self.success_redirect_url) 
                     return redirect(redirect_url)
                 
@@ -184,6 +195,257 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
         return self.request.user
 
 
+class UserListView(LoginRequiredMixin, ListView):
+    model = UserModel
+    template_name = "accounts/user_list.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = UserModel.objects.all().order_by("-join_date").exclude(
+            username=self.request.user.username)
+        context["user_list"] = queryset
+
+        account_column_names = [
+            UserModel.username.field.verbose_name,
+            UserModel.last_name.field.verbose_name,
+            UserModel.first_name.field.verbose_name,
+            UserModel.join_date.field.verbose_name,
+            "Mot de passe"
+        ]
+        context["user_column_names"] = account_column_names
+        context["page_title"] = "Gestion des utilisateurs"
+        return context
+
+
+class UserCreateView(LoginRequiredMixin, CreateView):
+    model = UserModel
+    template_name = "accounts/user_create.html"
+    form_class = UserCreateForm
+    success_url = reverse_lazy("accounts:user_list")
+
+    def get_form(self, form_class: type[BaseModelForm] | None=None) -> BaseModelForm:
+        form = super().get_form(form_class)
+
+        content_types = ContentType.objects.filter(app_label__in=[
+            "products",
+            "orders",
+            "sales",
+            "stores",
+            "debts",
+            "settings",
+        ])
+        permissions = Permission.objects.all()
+        filtered_permissions = Permission.objects.none()
+        for content_type in content_types:
+            filtered_permissions = (  
+                filtered_permissions | permissions.filter(
+                    content_type__app_label=content_type.app_label, 
+                    content_type__model=content_type.model
+                )
+            )
+        filtered_permissions.distinct()
+        form.fields["user_permissions"].queryset = filtered_permissions
+        return form
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        form_valid_response = super().form_valid(form)
+        new_user: UserModel = form.instance
+        new_user.set_password(form.cleaned_data.get("password"))
+        new_user.save()
+        log_user_action(
+            user=self.request.user,
+            obj=new_user,
+            action_flag=ADDITION,
+            change_message="Utilisateur ajouté"
+        )
+        return form_valid_response
+
+
+class UserUpdateView(LoginRequiredMixin, UpdateView):
+    model = UserModel
+    form_class = UserCreateForm
+    template_name = "accounts/user_update.html"
+    extra_context = {
+        "page_title": "Gestion des utilisateurs",
+    }
+    context_object_name = "user_object"
+
+    def get_success_url(self) -> str:
+        return reverse("accounts:user_list")
+    
+    def get_form(self, form_class: type[BaseModelForm] | None=None) -> BaseModelForm:
+        form = super().get_form(form_class)
+
+        content_types = ContentType.objects.filter(app_label__in=[
+            "products",
+            "orders",
+            "sales",
+            "stores",
+            "debts",
+            "settings",
+        ])
+        permissions = Permission.objects.all()
+        filtered_permissions = Permission.objects.none()
+        for content_type in content_types:
+            filtered_permissions = (  
+                filtered_permissions | permissions.filter(
+                    content_type__app_label=content_type.app_label, 
+                    content_type__model=content_type.model
+                )
+            )
+        filtered_permissions.distinct()
+        form.fields["user_permissions"].queryset = filtered_permissions
+        return form
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        form_valid = super().form_valid(form)
+        user: UserModel = form.instance
+        user.set_password(form.cleaned_data.get("password"))
+        user.save()
+        log_user_action(
+            user=self.request.user,
+            obj=user,
+            action_flag=CHANGE,
+            change_message="Utilisateur modifié"
+        )
+        return form_valid
+
+
+class UserDetailsView(LoginRequiredMixin, DetailView):
+    model = UserModel
+    context_object_name = "user_object"
+    template_name = "accounts/user_details.html"
+
+
+class UserDeleteView(LoginRequiredMixin, DeleteView):
+    model = UserModel
+    template_name = "accounts/user_delete.html"
+    context_object_name = "user_object"
+    success_url = reverse_lazy("accounts:user_list")
+
+    def form_valid(self, form):
+        log_user_action(
+            user=self.request.user,
+            obj=self.get_object(),
+            action_flag=DELETION,
+            change_message="Utlisateur supprimé"
+        )
+        return super(DeleteView, self).form_valid(form)
+
+
 @login_required(login_url="/accounts/login/")
 def password_changed(request):
     return render(request, "accounts/password_changed.html")
+
+
+@login_required(login_url="/accounts/login/")
+def change_user_password(request: HttpRequest, pk):
+    context = {}
+    user = get_object_or_404(UserModel, pk=pk)
+    form = UserPasswordChangeForm()
+
+    if request.method == "POST":
+        form = UserPasswordChangeForm(request.POST)
+        if form.is_valid():
+            user.set_password(form.cleaned_data.get("password"))
+            user.save()
+            messages.success(request, "Mot de passe mise à jour", extra_tags="message")
+            return redirect(reverse("accounts:user_list"))
+    context["user"] = user
+    context["form"] = form
+    return render(request, "accounts/change_user_password.html", context)
+
+
+class GroupListView(LoginRequiredMixin, ListView):
+    model = CustomGroup
+    template_name = "accounts/group_list.html"
+    context_object_name = "group_list"
+    extra_context = {"page_title": "Groupes & Accès"}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        group_column_names = [
+            CustomGroup.name.field.verbose_name,
+            CustomGroup.description.field.verbose_name,
+        ]
+        context["group_column_names"] = group_column_names
+        return context
+
+
+class GroupCreateView(LoginRequiredMixin, CreateView):
+    model = CustomGroup
+    fields= [
+        "name",
+        "permissions",
+        "description"
+    ]
+    template_name = "accounts/group_create.html"
+    success_url = reverse_lazy("accounts:group_list")
+    extra_context = {"page_title": "Groupes & Accès"}
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        form_valid_response = super().form_valid(form)
+        log_user_action(
+            user=self.request.user,
+            obj=form.instance,
+            action_flag=ADDITION,
+            change_message="Groupe ajouté"
+        )
+        return form_valid_response
+
+
+class GroupUpdateView(LoginRequiredMixin, UpdateView):
+    model = CustomGroup
+    fields= [
+        "name",
+        "permissions",
+        "description"
+    ]
+    template_name = "accounts/group_update.html"
+    success_url = reverse_lazy("accounts:group_list")
+    extra_context = {"page_title": "Groupes & Accès"}
+    context_object_name = "group"
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        form_valid_response = super().form_valid(form)
+        log_user_action(
+            user=self.request.user,
+            obj=self.get_object(),
+            action_flag=CHANGE,
+            change_message="Groupe modifié"
+        )
+        return form_valid_response
+
+
+class GroupDeleteView(LoginRequiredMixin, DeleteView):
+    model = CustomGroup
+    template_name = "accounts/group_delete.html"
+    context_object_name = "group"
+    success_url = reverse_lazy("accounts:group_list")
+
+    def form_valid(self, form):
+        log_user_action(
+            user=self.request.user,
+            obj=self.get_object(),
+            action_flag=DELETION,
+            change_message="Groupe supprimé"
+        )
+        return super(DeleteView, self).form_valid(form)
+
+class UserActionLogList(LoginRequiredMixin, ListView):
+    model = LogEntry
+    template_name = "accounts/user_action_logs.html"
+    context_object_name = "user_action_logs"
+    queryset = LogEntry.objects.all().order_by("-action_time")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        log_column_names = [
+            "Date & Heure",
+            "Auteur",
+            "Type de contenu",
+            "Contenu",
+            "Action",
+        ]
+        context["log_column_names"] = log_column_names
+        return context 

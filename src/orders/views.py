@@ -10,12 +10,14 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from unidecode import unidecode
+from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 
 from .models import Order, OrderStatus
 from stores.models import Store
 from stores.mixins import NotCurrentStoreMixin
 from products.models import Product
 from quickstockapp.views import get_current_period, get_period_list
+from accounts.utils import log_user_action
 
 
 class OrderListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
@@ -138,7 +140,15 @@ class OrderUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
                 from products.signals import update_quantity_on_order_shipped
                 from orders.signals import order_shipped_signal
                 order_shipped_signal.send(update_quantity_on_order_shipped, instance=obj)
-        return super().form_valid(form)
+
+        form_valid_response = super().form_valid(form)
+        log_user_action(
+            user=self.request.user,
+            obj=form.instance,
+            action_flag=CHANGE,
+            change_message="Commande modifié"
+        ) 
+        return form_valid_response
 
     def get_success_url(self) -> str:
         return reverse("orders:order_details", kwargs={"pk": self.kwargs.get("pk")})
@@ -169,7 +179,14 @@ class OrderCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
             form.add_error("order_date", "Erreur de date")
             return self.form_invalid(form=form)
         
-        return super().form_valid(form)
+        form_valid_response = super().form_valid(form)
+        log_user_action(
+            user=self.request.user,
+            obj=form.instance,
+            action_flag=ADDITION,
+            change_message="Commande ajouté"
+        ) 
+        return form_valid_response
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -195,6 +212,12 @@ class OrderDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
         obj = self.get_object()
         if obj.status != "2":
             return HttpResponseBadRequest("Bad request")
+        log_user_action(
+            user=self.request.user,
+            obj=self.get_object(),
+            action_flag=DELETION,
+            change_message="Commande supprimé"
+        ) 
         return super().post(request=request, *args, **kwargs)
 
 
@@ -217,6 +240,13 @@ def cancel_order(request, pk):
             obj.save()
             messages.error(request, "Impossible d'annuler cette commande", extra_tags="message")
             return redirect(reverse("orders:order_details", kwargs={"pk": obj.pk}))
+        
+        log_user_action(
+            user=request.user,
+            obj=obj,
+            action_flag=CHANGE,
+            change_message="Commande annulé"
+        ) 
         return redirect(reverse("orders:order_details", kwargs={"pk": obj.pk}))
     return HttpResponseBadRequest("Bad request")
 

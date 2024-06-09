@@ -17,8 +17,25 @@ class Sale(models.Model):
     buyer_phone = models.CharField(max_length=100, null=True, blank=True, verbose_name="Téléphone de l'acheteur")
     status = models.CharField(max_length=30, choices=SaleStatus.choices, default=SaleStatus.VALIDATED, verbose_name="Statut")
     store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
-
     add_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self) -> str:
+        return f"Vente : {self.sale_date.strftime('%d-%m-%Y')}"
+
+    class Meta:
+        verbose_name = "Vente"
+        verbose_name_plural = "Ventes"
+        default_permissions = []
+        permissions = [
+            ("can_add", "Ajouter - Vente"),
+            ("can_change", "Modifier - Vente"),
+            ("can_delete", "Supprimer - Vente"),
+            ("can_view", "Voir - Vente"),
+        ]
+
+    @classmethod
+    def get_verbose_name(cls):
+        return cls._meta.verbose_name
 
     def save(self, forced_save=False, *args, **kwargs):
         if self.quantity > self.product.stock_quantity:

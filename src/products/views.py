@@ -1,10 +1,12 @@
 import datetime
 
+from django.forms import BaseModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import UpdateView, CreateView, DetailView, ListView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
+from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from unidecode import unidecode
 
 from .models import Product
@@ -12,6 +14,7 @@ from stores.models import Store
 from stores.mixins import NotCurrentStoreMixin
 from sales.models import Sale
 from quickstockapp.views import get_period_list, get_current_period
+from accounts.utils import log_user_action
 
 
 class ProductListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
@@ -112,6 +115,16 @@ class ProductUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
     
     def get_success_url(self) -> str:
         return reverse("products:product_details", kwargs={"slug": self.kwargs.get("slug")})
+    
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        form_valid_response = super().form_valid(form)
+        log_user_action(
+            user=self.request.user,
+            obj=form.instance,
+            action_flag=CHANGE,
+            change_message="Produit modifié"
+        )
+        return form_valid_response
 
 
 class ProductCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
@@ -138,6 +151,16 @@ class ProductCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         # print(dir(form.fields["store"]))
         return form 
 
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        form_valid_response = super().form_valid(form)
+        log_user_action(
+            user=self.request.user,
+            obj=form.instance,
+            action_flag=ADDITION,
+            change_message="Produit ajouté"
+        )
+        return form_valid_response
+
 
 class ProductDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
     model = Product
@@ -146,6 +169,14 @@ class ProductDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
     success_url = reverse_lazy("products:product_list")
     extra_context = {"page_title": "Produits & Stock"}
 
+    def post(self, request: HttpRequest, *args: str, **kwargs) -> HttpResponse:
+        log_user_action(
+            user=self.request.user,
+            obj=self.get_object(),
+            action_flag=DELETION,
+            change_message="Produit supprimé"
+        )
+        return super().post(request, *args, **kwargs)
 
 
 

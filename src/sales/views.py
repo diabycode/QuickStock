@@ -12,6 +12,7 @@ from django.http import HttpRequest, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from unidecode import unidecode
 
 from .models import Sale, SaleStatus
@@ -19,6 +20,7 @@ from stores.models import Store
 from stores.mixins import NotCurrentStoreMixin
 from products.models import Product
 from quickstockapp.views import get_period_list, get_current_period
+from accounts.utils import log_user_action
 
 
 class SaleListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
@@ -118,7 +120,14 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
                 quantity_errors.append("Le stock produit est insufisant")
                 return self.form_invalid(form=form)
 
-        return super().form_valid(form) 
+        form_valid_response = super().form_valid(form) 
+        log_user_action(
+            user=self.request.user,
+            obj=form.instance,
+            action_flag=ADDITION,
+            change_message="Vente ajouté"
+        )
+        return form_valid_response
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -171,7 +180,16 @@ class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         for field_name, field in locked_fields:
             if field_name in form.changed_data:
                 return HttpResponseBadRequest("Erreur: Le champ '{}' ne doit être changé.".format(field.label))
-        return super().form_valid(form)
+
+        obj: Sale = form.instance
+        obj.save(forced_save=True)
+        log_user_action(
+            user=self.request.user,
+            action_flag=CHANGE,
+            obj=form.instance,
+            change_message="Vente modifié"
+        )
+        return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
 
     def get_success_url(self) -> str:
         return reverse("sales:sale_details", kwargs={"pk": self.kwargs.get("pk")})
@@ -188,6 +206,13 @@ class SaleDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
         obj = self.get_object()
         if obj.status != "2":
             return HttpResponseBadRequest("Bad request")
+        
+        log_user_action(
+            user=self.request.user,
+            action_flag=DELETION,
+            obj=self.get_object(),
+            change_message="Vente supprimé"
+        )
         return super().post(request=request, *args, **kwargs)
 
 
@@ -215,6 +240,13 @@ def cancel_sale(request, pk):
                 obj.save()
                 messages.error(request, "Impossible d'annuler cette vente", extra_tags="message")
                 return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
+        
+        log_user_action(
+            user=request.user,
+            obj=obj,
+            action_flag=CHANGE,
+            change_message="Vente annulé"
+        )
         return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
     return HttpResponseBadRequest("Bad request")
 

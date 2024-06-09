@@ -24,3 +24,18 @@ class EditableSettings(Singleton):
     company_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Nom de l'entreprise")
     company_logo = models.ImageField(upload_to="settings/", verbose_name="Logo entreprise",
                                      blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Paramètre"
+        verbose_name_plural = "Paramètres"
+        default_permissions = []
+        permissions = [
+            ("can_add", "Ajouter - Paramètre"),
+            ("can_change", "Modifier - Paramètre"),
+            ("can_delete", "Supprimer - Paramètre"),
+            ("can_view", "Voir - Paramètre"),
+        ]
+    
+    @classmethod
+    def get_verbose_name(cls):
+        return cls._meta.verbose_name

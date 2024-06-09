@@ -1,0 +1,43 @@
+{% extends 'qstockapp/base_admin.html' %}
+{% load static %}
+
+{% block head %}
+<title>Administration</title>
+<link rel="stylesheet" href="{% static 'css/quickstockapp/table.css' %}">
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+<div class="heading">
+    <div>
+        <a class="btn" href="{% url 'accounts:group_create' %}">+ Ajouter</a>
+    </div>
+</div>
+{% if group_list %}
+<table>
+    <thead>
+        <tr>
+            {% for column in group_column_names %}
+            <th>{{ column }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for group in group_list %}
+        <tr>
+            <td>
+                <a class="table-link" href="{% url 'accounts:group_update' pk=group.pk %}">
+                    {{ group.name }}
+                </a>
+            </td>
+            <td>
+                {{ group.description }}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Accun groupe à afficher</p>
+{% endif %}
+{% endblock %}

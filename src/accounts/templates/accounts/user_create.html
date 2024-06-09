@@ -1,0 +1,68 @@
+{% extends 'qstockapp/base_admin.html' %}
+{% load static %}
+
+{% block head %}
+<title>Administration</title>
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+<h3>Ajoutez un utilisateur</h3>
+<form method="POST">
+    {% csrf_token %} 
+    <div class="form-content vertical">
+        <div>
+            {% for e in form.username.errors %} <p class="error">{{ e }}</p> {% endfor %}
+            {{ form.username.label_tag }}
+            {{ form.username }}
+        </div>
+        <div>
+            {% for e in form.last_name.errors %} <p class="error">{{ e }}</p> {% endfor %}
+            {{ form.last_name.label_tag }}
+            {{ form.last_name }}
+        </div>
+        <div>
+            {% for e in form.first_name.errors %} <p class="error">{{ e }}</p> {% endfor %}
+            {{ form.first_name.label_tag }}
+            {{ form.first_name }}
+        </div>
+        <div>
+            {% for e in form.email.errors %} <p class="error">{{ e }}</p> {% endfor %}
+            {{ form.email.label_tag }}
+            {{ form.email }}
+        </div>
+        <div style="display: flex;">
+            {{ form.is_superuser.label_tag }}
+            {{ form.is_superuser }}
+        </div>
+        <div style="display: flex;">
+            {{ form.is_active.label_tag }}
+            {{ form.is_active }}
+        </div>
+        <div>
+            {% for e in form.groups.errors %} <p class="error">{{ e }}</p> {% endfor %}
+            {{ form.groups.label_tag }}
+            <div class="helptext">
+                {{ form.groups.help_text }}
+            </div>
+            {{ form.groups }}
+        </div>
+        <div>
+            {% for e in form.user_permissions.errors %} <p class="error">{{ e }}</p> {% endfor %}
+            {{ form.user_permissions.label_tag }}
+            <div class="helptext">
+                {{ form.user_permissions.help_text }}
+            </div>
+            {{ form.user_permissions }}
+        </div>
+        <div>
+            {% for e in form.password.errors %} <p class="error">{{ e }}</p> {% endfor %}
+            {{ form.password.label_tag }}
+            {{ form.password }}
+        </div>
+    </div>
+    <button type="submit">Enrégistrer</button>
+    <a class="link" href="{% url 'accounts:user_list' %}">Annuler</a>
+</form>
+{% endblock %}

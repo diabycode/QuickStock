@@ -1,0 +1,27 @@
+{% extends 'qstockapp/base_admin.html' %}
+{% load static %}
+
+{% block head %}
+<title>Profile utilisateur</title>
+<link rel="stylesheet" href="{% static 'css/quickstockapp/details.css' %}">
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+<link rel="stylesheet" href="{% static 'css/accounts/form.css' %}">
+{% endblock %}
+
+
+{% block body %}
+<div class="section informations">
+    <h3>Informations utilisateur</h3>
+    <div class="properties">
+        <p>Nom d'utilisateur <span>{{ user_object.username }}</span></p>
+        <p>email <span>{% if user_object.email %} {{ user_object.email }} {% else %} _ {% endif %}</span></p>
+        <p>Nom <span>{% if user_object.last_name %} {{ user_object.last_name }} {% else %} _ {% endif %}</span></p>
+        <p>Prénom <span>{% if user_object.first_name %} {{ user_object.first_name }} {% else %} _ {% endif %}</span></p>
+        <p>Connexion recente <span>{% if user_object.last_login %} {{ user_object.last_login|date:"d-m-Y H:i" }} {% else %}-{% endif %}</span></p>
+    </div>
+    <p>
+        <a href="{% url 'accounts:user_update' pk=user.pk %}" class="link primary">Modifier mes informations</a>
+    </p>
+</div>
+
+{% endblock %}

@@ -28,6 +28,21 @@ class Store(models.Model):
 
     add_at = models.DateTimeField(auto_now_add=True, null=True)
 
+    class Meta:
+        verbose_name = "Magasin"
+        verbose_name_plural = "Magasins"
+        default_permissions = []
+        permissions = [
+            ("can_add", "Ajouter - Magasin"),
+            ("can_change", "Modifier - Magasin"),
+            ("can_delete", "Supprimer - Magasin"),
+            ("can_view", "Voir - Magasin"),
+        ]
+
+    @classmethod
+    def get_verbose_name(cls):
+        return cls._meta.verbose_name
+    
     def __str__(self) -> str:
         return self.name
     

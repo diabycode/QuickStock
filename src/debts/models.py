@@ -27,7 +27,7 @@ class Debt(models.Model):
     add_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self) -> str:
-        return f"{self.granted_date.strftime('%d-%m-%Y')} __{self.person_concerned}"
+        return f"{self.person_concerned} : {self.granted_date.strftime('%d-%m-%Y')}"
     
     @property
     def remaining_amount(self):
@@ -45,6 +45,22 @@ class Debt(models.Model):
     def type(self) -> str:
         return "Entrant" if self.debt_type == "incoming" else "Sortant"
 
+    @classmethod
+    def get_verbose_name(cls):
+        return cls._meta.verbose_name
+
+    class Meta:
+        verbose_name = "Impayé"
+        verbose_name_plural = "Impayés"
+        default_permissions = []
+        permissions = [
+            ("can_add", "Ajouter - Impayé"),
+            ("can_change", "Modifier - Impayé"),
+            ("can_delete", "Supprimer - Impayé"),
+            ("can_view", "Voir - Impayé"),
+        ]
+
+
 class DebtRepayment(models.Model):
     debt = models.ForeignKey(Debt, on_delete=models.CASCADE, verbose_name="Dette remboursé")
     paid_at = models.DateTimeField(verbose_name="Date")
@@ -56,6 +72,24 @@ class DebtRepayment(models.Model):
 
     add_at = models.DateTimeField(auto_now_add=True, null=True)
 
+    def __str__(self) -> str:
+        return f"{self.debt.person_concerned} : {self.paid_at.strftime('%d-%m-%Y')}" 
+    
+    @classmethod
+    def get_verbose_name(cls):
+        return cls._meta.verbose_name
+
+    class Meta:
+        verbose_name = "Remboursement d'Impayé"
+        verbose_name_plural = "Remboursements d'Impayé"
+        default_permissions = []
+        permissions = [
+            ("can_add", "Ajouter - Reboursement d'Impayé"),
+            ("can_change", "Modifier - Reboursement d'Impayé"),
+            ("can_delete", "Supprimer - Reboursement d'Impayé"),
+            ("can_view", "Voir - Reboursement d'Impayé"),
+        ]
+            
     @property
     def repaid_by_str(self):
         if self.repaid_by == "money":
@@ -66,3 +100,4 @@ class DebtRepayment(models.Model):
             return "Service"
         return None
     
+   

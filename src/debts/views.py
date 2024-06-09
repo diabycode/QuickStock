@@ -9,11 +9,13 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView, D
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 
 from debts.models import Debt, DebtRepayment, DebtType
 from debts.forms import DebtRepaymentForm, DebtTypeForm
 from orders.models import Order
 from stores.models import Store
+from accounts.utils import log_user_action
 
 
 PAGE_TITLE = "Gestion des impayés"
@@ -84,7 +86,14 @@ class DebtCreateView(LoginRequiredMixin, CreateView):
             form.add_error("granted_date", "Erreur de date")
             return self.form_invalid(form=form)
         
-        return super().form_valid(form)
+        form_valid_response = super().form_valid(form)
+        log_user_action(
+            user=self.request.user,
+            obj=form.instance,
+            action_flag=ADDITION,
+            change_message="Dette ajouté"
+        )
+        return form_valid_response
 
 
 class DebtUpdateView(LoginRequiredMixin, UpdateView):
@@ -107,7 +116,14 @@ class DebtUpdateView(LoginRequiredMixin, UpdateView):
             form.add_error("granted_date", "Erreur de date")
             return self.form_invalid(form=form)
         
-        return super().form_valid(form)
+        form_valid_response = super().form_valid(form)
+        log_user_action(
+            user=self.request.user,
+            obj=form.instance,
+            action_flag=CHANGE,
+            change_message="Dette modifié"
+        )
+        return form_valid_response
 
     def get_success_url(self) -> str:
         obj = self.get_object()
@@ -120,6 +136,14 @@ class DebtDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("debts:debt_list")
     extra_context = {"page_title": PAGE_TITLE}
 
+    def form_valid(self, form):
+        log_user_action(
+            user=self.request.user,
+            obj=self.get_object(),
+            action_flag=DELETION,
+            change_message="Dette supprimé"
+        )
+        return super(DeleteView, self).form_valid(form)
 
 @login_required(login_url="/accounts/login/")
 def debt_repayment(request: HttpRequest, debt_pk):
@@ -143,6 +167,13 @@ def debt_repayment(request: HttpRequest, debt_pk):
                 return render(request, "debts/debt_repayment.html", context)
             instance.debt = debt
             instance.save()
+
+            log_user_action(
+                user=request.user,
+                obj=instance,
+                action_flag=ADDITION,
+                change_message="Remboursement de dette ajouté"
+            )
             return redirect(
                 reverse("debts:debt_details", kwargs={"pk": debt.pk})
             )
@@ -176,6 +207,13 @@ def edit_repayment(request: HttpRequest, debt_pk, repayment_pk):
                 return render(request, "debts/edit_repayment.html", context)
             instance.debt = debt
             instance.save()
+            
+            log_user_action(
+                user=request.user,
+                obj=repayment,
+                action_flag=CHANGE,
+                change_message="Remboursement de dette modifié"
+            )
             return redirect(
                 reverse("debts:debt_details", kwargs={"pk": debt.pk})
             )
@@ -190,6 +228,12 @@ def repayment_delete(request: HttpRequest, debt_pk, repayment_pk):
     context = {"page_title": PAGE_TITLE}
     if request.method == "POST":
         repayment = get_object_or_404(DebtRepayment, pk=repayment_pk)
+        log_user_action(
+            user=request.user,
+            obj=repayment,
+            action_flag=DELETION,
+            change_message="Remboursement de dette supprimé"
+        )
         repayment.delete()
         return redirect(reverse("debts:debt_details", kwargs={"pk": debt_pk}))
     

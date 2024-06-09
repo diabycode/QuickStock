@@ -27,8 +27,23 @@ class Order(models.Model):
 
     add_at = models.DateTimeField(auto_now_add=True, null=True)
 
+    class Meta:
+        verbose_name = "Commande"
+        verbose_name_plural = "Commandes"
+        default_permissions = []
+        permissions = [
+            ("can_add", "Ajouter - Commande"),
+            ("can_change", "Modifier - Commande"),
+            ("can_delete", "Supprimer - Commande"),
+            ("can_view", "Voir - Commande"),
+        ]
+    
+    @classmethod
+    def get_verbose_name(cls):
+        return cls._meta.verbose_name
+
     def __str__(self) -> str:
-        return f"{self.order_date.strftime('%d-%m-%Y')} __{self.product.name}"
+        return f"{self.product.name} : {self.order_date.strftime('%d-%m-%Y')}"
     
     @property
     def status_display(self):

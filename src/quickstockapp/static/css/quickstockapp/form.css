@@ -12,6 +12,17 @@ form {
     /* min-width: 600px; */
     margin-bottom: 2rem;
 }
+.form-content.vertical {
+    display: flex;
+    gap: 1.5rem;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.helptext {
+    font-size: .8rem;
+    padding: 10px 0;
+    color: var(--gray);
+}
 label {
     display: block;
 }
@@ -44,3 +55,4 @@ button {
 .errorlist * {
     color: var(--error);
 }
+

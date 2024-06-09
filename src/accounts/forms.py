@@ -110,3 +110,38 @@ class UserPinCodeForm(forms.ModelForm):
             )
         }
 
+
+class UserCreateForm(UserRegistrationForm):
+
+    def __init__(self, *args, **kwargs):
+        super(forms.ModelForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = UserModel
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "is_superuser",
+            "is_active",
+            "groups",      
+            "user_permissions",
+        ]
+
+
+class UserPasswordChangeForm(UserRegistrationForm):
+
+    def __init__(self, *args, **kwargs):
+        super(forms.ModelForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = UserModel
+        fields = ["password"]
+        widgets = {
+            "password": forms.PasswordInput(
+                attrs={
+                    "placeholder": "Entrez un mot de passe sécurisé"
+                }
+            )
+        }

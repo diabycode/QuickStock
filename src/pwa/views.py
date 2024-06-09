@@ -6,6 +6,7 @@ from . import app_settings
 
 def service_worker(request):
     response = HttpResponse(open(app_settings.PWA_SERVICE_WORKER_PATH).read(), content_type='application/javascript')
+    response["Service-Worker-Allowed"] = "/"
     return response
 
 

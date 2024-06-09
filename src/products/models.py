@@ -21,8 +21,23 @@ class Product(models.Model):
     stock_warn_limit = 10
     stock_alert_limit = 5
 
+    class Meta:
+        verbose_name = "Produit"
+        verbose_name_plural = "Produits"
+        default_permissions = []
+        permissions = [
+            ("can_add", "Ajouter - Produit"),
+            ("can_change", "Modifier - Produit"),
+            ("can_delete", "Supprimer - Produit"),
+            ("can_view", "Voir - Produit"),
+        ]
+
+    @classmethod
+    def get_verbose_name(cls):
+        return cls._meta.verbose_name
+    
     def __str__(self) -> str:
-        return f"{self.name.capitalize()} ({self.stock_quantity})"
+        return f"{self.name.capitalize()} (Qte: {self.stock_quantity})"
     
     def __repr__(self) -> str:
         return f"<Product: {self.name} ({self.stock_quantity})>"

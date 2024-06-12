@@ -17,7 +17,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import ADDITION, DELETION, CHANGE
 
 from accounts.forms import UserLoginForm, UserRegistrationForm, UserPinCodeForm, UserCreateForm, UserPasswordChangeForm
-from accounts.models import UserModel, UserPreference, CustomGroup
+from accounts.models import UserModel, UserPreference
 from accounts.utils import log_user_action
 from accounts.mixins import MyPermissionRequiredMixin
 from accounts.decorators import permission_required
@@ -355,7 +355,7 @@ def change_user_password(request: HttpRequest, pk):
 
 
 class GroupListView(LoginRequiredMixin, MyPermissionRequiredMixin, ListView):
-    model = CustomGroup
+    model = Group
     template_name = "accounts/group_list.html"
     context_object_name = "group_list"
     extra_context = {"page_title": "Groupes & Accès"}
@@ -364,15 +364,14 @@ class GroupListView(LoginRequiredMixin, MyPermissionRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         group_column_names = [
-            CustomGroup.name.field.verbose_name,
-            CustomGroup.description.field.verbose_name,
+            Group.name.field.verbose_name,
         ]
         context["group_column_names"] = group_column_names
         return context
 
 
 class GroupCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, CreateView):
-    model = CustomGroup
+    model = Group
     fields= [
         "name",
         "permissions",
@@ -409,7 +408,7 @@ class GroupCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, CreateView)
 
 
 class GroupUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, UpdateView):
-    model = CustomGroup
+    model = Group
     fields= [
         "name",
         "permissions",
@@ -447,7 +446,7 @@ class GroupUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, UpdateView)
 
 
 class GroupDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, DeleteView):
-    model = CustomGroup
+    model = Group
     template_name = "accounts/group_delete.html"
     context_object_name = "group"
     success_url = reverse_lazy("accounts:group_list")

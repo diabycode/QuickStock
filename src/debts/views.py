@@ -16,17 +16,20 @@ from debts.forms import DebtRepaymentForm, DebtTypeForm
 from orders.models import Order
 from stores.models import Store
 from accounts.utils import log_user_action
+from accounts.mixins import MyPermissionRequiredMixin
+from accounts.decorators import permission_required
 
 
 PAGE_TITLE = "Gestion des impayés"
 
 
-class DebtListView(LoginRequiredMixin, ListView):
+class DebtListView(LoginRequiredMixin, MyPermissionRequiredMixin, ListView):
     model = Debt
     template_name = "debts/debt_list.html"
     context_object_name = "debt_list"
     queryset = Debt.objects.all().order_by("-add_at")
     extra_context = {"page_title": PAGE_TITLE}
+    permission_required = "debts.can_view_debt"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.debt_type = request.GET.get("debt_type", None)
@@ -51,11 +54,12 @@ class DebtListView(LoginRequiredMixin, ListView):
         return context
 
 
-class DebtDetailView(LoginRequiredMixin, DetailView):
+class DebtDetailView(LoginRequiredMixin, MyPermissionRequiredMixin, DetailView):
     model = Debt
     template_name = "debts/debt_details.html"
     context_object_name = "debt"
     extra_context = {"page_title": PAGE_TITLE}
+    permission_required = "debts.can_view_debt"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -65,7 +69,7 @@ class DebtDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class DebtCreateView(LoginRequiredMixin, CreateView):
+class DebtCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, CreateView):
     model = Debt
     template_name = "debts/debt_create.html"
     success_url = reverse_lazy("debts:debt_list")
@@ -77,6 +81,7 @@ class DebtCreateView(LoginRequiredMixin, CreateView):
         "debt_type",
         "store",
     ]
+    permission_required = "debts.can_add_debt"
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         granted_date: datetime.date = form.cleaned_data.get("granted_date")
@@ -96,7 +101,7 @@ class DebtCreateView(LoginRequiredMixin, CreateView):
         return form_valid_response
 
 
-class DebtUpdateView(LoginRequiredMixin, UpdateView):
+class DebtUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, UpdateView):
     model = Debt
     template_name = "debts/debt_update.html"
     extra_context = {"page_title": PAGE_TITLE}
@@ -107,6 +112,7 @@ class DebtUpdateView(LoginRequiredMixin, UpdateView):
         "debt_type",
         "store",
     ]
+    permission_required = "debts.can_change_debt"
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         granted_date: datetime.date = form.cleaned_data.get("granted_date")
@@ -130,11 +136,12 @@ class DebtUpdateView(LoginRequiredMixin, UpdateView):
         return reverse("debts:debt_details", kwargs={"pk": obj.pk})
 
 
-class DebtDeleteView(LoginRequiredMixin, DeleteView):
+class DebtDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, DeleteView):
     model = Debt
     template_name = "debts/debt_delete.html"
     success_url = reverse_lazy("debts:debt_list")
     extra_context = {"page_title": PAGE_TITLE}
+    permission_required = "debts.can_delete_debt"
 
     def form_valid(self, form):
         log_user_action(
@@ -146,6 +153,7 @@ class DebtDeleteView(LoginRequiredMixin, DeleteView):
         return super(DeleteView, self).form_valid(form)
 
 @login_required(login_url="/accounts/login/")
+@permission_required("debts.can_add_repayment")
 def debt_repayment(request: HttpRequest, debt_pk):
     context = {}
     context["page_title"] = PAGE_TITLE
@@ -184,6 +192,7 @@ def debt_repayment(request: HttpRequest, debt_pk):
 
 
 @login_required(login_url="/accounts/login/")
+@permission_required("debts.can_change_repayment")
 def edit_repayment(request: HttpRequest, debt_pk, repayment_pk):
     context = {}
     context["page_title"] = PAGE_TITLE
@@ -224,6 +233,7 @@ def edit_repayment(request: HttpRequest, debt_pk, repayment_pk):
 
 
 @login_required(login_url="/accounts/login/")
+@permission_required("debts.can_delete_repayment")
 def repayment_delete(request: HttpRequest, debt_pk, repayment_pk):
     context = {"page_title": PAGE_TITLE}
     if request.method == "POST":

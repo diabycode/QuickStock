@@ -4,7 +4,7 @@ from django.forms import BaseModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import UpdateView, CreateView, DetailView, ListView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from unidecode import unidecode
@@ -15,13 +15,15 @@ from stores.mixins import NotCurrentStoreMixin
 from sales.models import Sale
 from quickstockapp.views import get_period_list, get_current_period
 from accounts.utils import log_user_action
+from accounts.mixins import MyPermissionRequiredMixin
 
 
-class ProductListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
+class ProductListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, ListView):
 
     model = Product
     template_name = "products/product_list.html"
     context_object_name = "products"
+    permission_required = "products.can_view_product"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -61,11 +63,12 @@ class ProductListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
         return context
 
 
-class ProductDetailsView(LoginRequiredMixin, NotCurrentStoreMixin, DetailView):
+class ProductDetailsView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, DetailView):
 
     model = Product
     template_name = "products/product_details.html"
     context_object_name = "product"
+    permission_required = "products.can_view_product"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -100,7 +103,7 @@ class ProductDetailsView(LoginRequiredMixin, NotCurrentStoreMixin, DetailView):
         return context
 
 
-class ProductUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, UpdateView):
 
     model = Product
     fields = [
@@ -112,6 +115,7 @@ class ProductUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         'packaging_type']
     template_name = "products/product_update.html"
     extra_context = {"page_title": "Produits & Stock"}
+    permission_required = "products.can_change_product"
     
     def get_success_url(self) -> str:
         return reverse("products:product_details", kwargs={"slug": self.kwargs.get("slug")})
@@ -127,7 +131,7 @@ class ProductUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         return form_valid_response
 
 
-class ProductCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, CreateView):
 
     model = Product
     fields = [
@@ -140,6 +144,7 @@ class ProductCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
     template_name = "products/product_create.html"
     success_url = reverse_lazy("products:product_list")
     extra_context = {"page_title": "Produits & Stock"}
+    permission_required = "products.can_add_product"
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -162,12 +167,13 @@ class ProductCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         return form_valid_response
 
 
-class ProductDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
+class ProductDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, DeleteView):
     model = Product
     context_object_name = "product"
     template_name = "products/product_delete.html"
     success_url = reverse_lazy("products:product_list")
     extra_context = {"page_title": "Produits & Stock"}
+    permission_required = "products.can_delete_product"
 
     def post(self, request: HttpRequest, *args: str, **kwargs) -> HttpResponse:
         log_user_action(

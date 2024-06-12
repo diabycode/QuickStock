@@ -18,13 +18,16 @@ from stores.mixins import NotCurrentStoreMixin
 from products.models import Product
 from quickstockapp.views import get_current_period, get_period_list
 from accounts.utils import log_user_action
+from accounts.mixins import MyPermissionRequiredMixin
+from accounts.decorators import permission_required
 
 
-class OrderListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
+class OrderListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, ListView):
 
     model = Order
     context_object_name = "orders"
     template_name = "orders/order_list.html"
+    permission_required = "orders.can_view_order"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -77,15 +80,16 @@ class OrderListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
         return context
 
 
-class OrderDetailsView(LoginRequiredMixin, NotCurrentStoreMixin, DetailView):
+class OrderDetailsView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, DetailView):
 
     model = Order
     template_name = "orders/order_details.html"
     context_object_name = "order"
     extra_context = {"page_title": "Commandes"}
+    permission_required = "orders.can_view_order"
 
 
-class OrderUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
+class OrderUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, UpdateView):
     model = Order
     fields = [
         'product', # locked
@@ -101,6 +105,8 @@ class OrderUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
     ]
     template_name = "orders/order_update.html"
     extra_context = {"page_title": "Commandes"}
+    permission_required = "orders.can_change_order"
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         obj = self.get_object()
@@ -154,7 +160,7 @@ class OrderUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         return reverse("orders:order_details", kwargs={"pk": self.kwargs.get("pk")})
 
 
-class OrderCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
+class OrderCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, CreateView):
     model = Order
     fields = [
         'product',
@@ -171,6 +177,7 @@ class OrderCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
     template_name = "orders/order_create.html"
     success_url = reverse_lazy("orders:order_list")
     extra_context = {"page_title": "Commandes"}
+    permission_required = "orders.can_add_order"
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         order_date: datetime.date = form.cleaned_data.get("order_date")
@@ -201,12 +208,13 @@ class OrderCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         return form
 
 
-class OrderDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
+class OrderDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, DeleteView):
     model = Order
     context_object_name = "order"
     template_name = "orders/order_delete.html"
     success_url = reverse_lazy("orders:order_list")
     extra_context = {"page_title": "Commandes"}
+    permission_required = "orders.can_delete_order"
 
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -222,6 +230,7 @@ class OrderDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
 
 
 @login_required(login_url='/accounts/login/')
+@permission_required("orders.can_change_order")
 def cancel_order(request, pk):
     if request.method == "POST":
         obj = get_object_or_404(Order, pk=pk)

@@ -21,13 +21,16 @@ from stores.mixins import NotCurrentStoreMixin
 from products.models import Product
 from quickstockapp.views import get_period_list, get_current_period
 from accounts.utils import log_user_action
+from accounts.mixins import MyPermissionRequiredMixin
+from accounts.decorators import permission_required
 
 
-class SaleListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
+class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, ListView):
 
     model = Sale
     template_name = "sales/sale_list.html"
     context_object_name = "sales"
+    permission_required = "sales.can_view_sale"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -78,14 +81,15 @@ class SaleListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
         return context
 
 
-class SaleDetailsView(LoginRequiredMixin, NotCurrentStoreMixin, DetailView):
+class SaleDetailsView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, DetailView):
     model = Sale
     template_name = "sales/sale_details.html"
     context_object_name = "sale"
     extra_context = {"page_title": "Ventes"}
+    permission_required = "sales.can_view_sale"
 
 
-class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
+class SaleCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, CreateView):
 
     model = Sale
     fields = [
@@ -99,6 +103,7 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
     template_name = "sales/sale_create.html"
     success_url = reverse_lazy("sales:sale_list")
     extra_context = {"page_title": "Ventes"}
+    permission_required = "sales.can_add_sale"
 
     def form_valid(self, form):
         form = self.get_form()
@@ -142,7 +147,7 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         return form
 
     
-class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
+class SaleUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, UpdateView):
     model = Sale
     fields = [
         'sale_date',
@@ -154,6 +159,7 @@ class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
     ]
     template_name = "sales/sale_update.html"
     extra_context = {"page_title": "Ventes"}
+    permission_required = "sales.can_change_sale"
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
@@ -195,12 +201,13 @@ class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         return reverse("sales:sale_details", kwargs={"pk": self.kwargs.get("pk")})
 
 
-class SaleDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
+class SaleDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, DeleteView):
     model = Sale
     context_object_name = "sale"
     template_name = "sales/sale_delete.html"
     success_url = reverse_lazy("sales:sale_list")
     extra_context = {"page_title": "Ventes"}
+    permission_required = "sales.can_delete_sale"
 
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -217,6 +224,7 @@ class SaleDeleteView(LoginRequiredMixin, NotCurrentStoreMixin, DeleteView):
 
 
 @login_required(login_url='/accounts/login/')
+@permission_required("sales.can_change_sale")
 def cancel_sale(request, pk):
     if request.method == "POST":
         obj = get_object_or_404(Sale, pk=pk)

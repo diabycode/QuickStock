@@ -7,12 +7,15 @@ from django.contrib.auth.decorators import login_required
 
 from stores.mixins import NotCurrentStoreMixin
 from stores.models import Store, StoreCategory
+from accounts.mixins import MyPermissionRequiredMixin
+from accounts.decorators import permission_required
 
 
-class StoreListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
+class StoreListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, ListView):
     model = Store
     context_object_name = "store_list"
     template_name = "store/store_list.html"
+    permission_required = "stores.can_view_store"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -42,7 +45,7 @@ class StoreListView(LoginRequiredMixin, NotCurrentStoreMixin, ListView):
         return context
 
 
-class StoreCreateView(LoginRequiredMixin, CreateView):
+class StoreCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, CreateView):
     model = Store
     template_name = "stores/store_create.html"
     fields = [
@@ -52,9 +55,10 @@ class StoreCreateView(LoginRequiredMixin, CreateView):
         "accent_color_code",
     ]
     success_url = reverse_lazy("stores:store_list")
+    permission_required = "stores.can_add_store"
     
 
-class StoreUpdateView(LoginRequiredMixin, UpdateView):
+class StoreUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, UpdateView):
     model = Store
     template_name = "stores/store_update.html"
     fields = [
@@ -64,15 +68,18 @@ class StoreUpdateView(LoginRequiredMixin, UpdateView):
         "accent_color_code"
     ]
     success_url = reverse_lazy("stores:store_list")
+    permission_required = "stores.can_change_store"
 
 
-class StoreDeleteView(LoginRequiredMixin, DeleteView):
+class StoreDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, DeleteView):
     model = Store
     template_name = "stores/store_delete.html"
     success_url = reverse_lazy("stores:store_list")
+    permission_required = "stores.can_delete_store"
 
 
 @login_required(login_url="/accounts/login/")
+@permission_required("stores.can_change_store")
 def change_store(request, pk):
     # current_store = get_object_or_404(Store, pk=request.session.get("current_store_pk"))
     # print("current :", current_store)

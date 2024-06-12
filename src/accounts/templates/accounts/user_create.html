@@ -6,6 +6,17 @@
 <link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
 {% endblock %}
 
+<!-- extra styles  -->
+{% block extra_styles %} 
+select#id_user_permissions {
+    min-height: 120px;
+    resize: vertical;
+}
+input, select, textarea {
+    border: 1px solid #e1e1e1;
+}
+{% endblock %}
+
 <!-- body content -->
 {% block body %}
 <h3>Ajoutez un utilisateur</h3>

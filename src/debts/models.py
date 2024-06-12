@@ -54,10 +54,10 @@ class Debt(models.Model):
         verbose_name_plural = "Impayés"
         default_permissions = []
         permissions = [
-            ("can_add", "Ajouter - Impayé"),
-            ("can_change", "Modifier - Impayé"),
-            ("can_delete", "Supprimer - Impayé"),
-            ("can_view", "Voir - Impayé"),
+            ("can_add_debt", "Ajouter - Impayé"),
+            ("can_change_debt", "Modifier - Impayé"),
+            ("can_delete_debt", "Supprimer - Impayé"),
+            ("can_view_debt", "Voir - Impayé"),
         ]
 
 
@@ -84,10 +84,10 @@ class DebtRepayment(models.Model):
         verbose_name_plural = "Remboursements d'Impayé"
         default_permissions = []
         permissions = [
-            ("can_add", "Ajouter - Reboursement d'Impayé"),
-            ("can_change", "Modifier - Reboursement d'Impayé"),
-            ("can_delete", "Supprimer - Reboursement d'Impayé"),
-            ("can_view", "Voir - Reboursement d'Impayé"),
+            ("can_add_repayment", "Ajouter - Reboursement d'Impayé"),
+            ("can_change_repayment", "Modifier - Reboursement d'Impayé"),
+            ("can_delete_repayment", "Supprimer - Reboursement d'Impayé"),
+            ("can_view_repayment", "Voir - Reboursement d'Impayé"),
         ]
             
     @property

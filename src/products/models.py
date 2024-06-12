@@ -26,10 +26,10 @@ class Product(models.Model):
         verbose_name_plural = "Produits"
         default_permissions = []
         permissions = [
-            ("can_add", "Ajouter - Produit"),
-            ("can_change", "Modifier - Produit"),
-            ("can_delete", "Supprimer - Produit"),
-            ("can_view", "Voir - Produit"),
+            ("can_add_product", "Ajouter - Produit"),
+            ("can_change_product", "Modifier - Produit"),
+            ("can_delete_product", "Supprimer - Produit"),
+            ("can_view_product", "Voir - Produit"),
         ]
 
     @classmethod

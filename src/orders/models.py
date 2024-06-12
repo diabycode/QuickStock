@@ -32,10 +32,10 @@ class Order(models.Model):
         verbose_name_plural = "Commandes"
         default_permissions = []
         permissions = [
-            ("can_add", "Ajouter - Commande"),
-            ("can_change", "Modifier - Commande"),
-            ("can_delete", "Supprimer - Commande"),
-            ("can_view", "Voir - Commande"),
+            ("can_add_order", "Ajouter - Commande"),
+            ("can_change_order", "Modifier - Commande"),
+            ("can_delete_order", "Supprimer - Commande"),
+            ("can_view_order", "Voir - Commande"),
         ]
     
     @classmethod

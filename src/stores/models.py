@@ -33,10 +33,10 @@ class Store(models.Model):
         verbose_name_plural = "Magasins"
         default_permissions = []
         permissions = [
-            ("can_add", "Ajouter - Magasin"),
-            ("can_change", "Modifier - Magasin"),
-            ("can_delete", "Supprimer - Magasin"),
-            ("can_view", "Voir - Magasin"),
+            ("can_add_store", "Ajouter - Magasin"),
+            ("can_change_store", "Modifier - Magasin"),
+            ("can_delete_store", "Supprimer - Magasin"),
+            ("can_view_store", "Voir - Magasin"),
         ]
 
     @classmethod

@@ -30,10 +30,10 @@ class EditableSettings(Singleton):
         verbose_name_plural = "Paramètres"
         default_permissions = []
         permissions = [
-            ("can_add", "Ajouter - Paramètre"),
-            ("can_change", "Modifier - Paramètre"),
-            ("can_delete", "Supprimer - Paramètre"),
-            ("can_view", "Voir - Paramètre"),
+            ("can_add_setting", "Ajouter - Paramètre"),
+            ("can_change_setting", "Modifier - Paramètre"),
+            ("can_delete_setting", "Supprimer - Paramètre"),
+            ("can_view_setting", "Voir - Paramètre"),
         ]
     
     @classmethod

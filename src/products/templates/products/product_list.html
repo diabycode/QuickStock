@@ -1,6 +1,7 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
 {% load money_string %}
+{% load template_permission %}
 
 <!-- head  -->
 {% block head %}
@@ -29,7 +30,9 @@
             {% endif %}
         </div>
         <div>
+            {% if request.user|has_permission:"products.can_add_product" %}
             <a class="btn primary" href="{% url 'products:product_create' %}">+ Ajouter un produit</a>
+            {% endif %}
         </div>
     </div>
     
@@ -50,6 +53,7 @@
                 <td>{{ product.wholesale_unit_price|money_string }}</td>
                 <td>{{ product.unit_price_sale|money_string }}</td>
                 <td> {% if product.add_at %} {{ product.add_at|date:"d-m-Y" }} {% else %} - {% endif %}</td>
+                {% if request.user|has_permission:"products.can_view_product" %}
                 <td class="actions">
                     <a href="{% url 'products:product_details' slug=product.slug %}">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,6 +62,7 @@
                         </svg>
                     </a>
                 </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>

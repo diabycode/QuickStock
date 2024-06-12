@@ -1,5 +1,6 @@
 {% extends 'qstockapp/base_admin.html' %}
 {% load static %}
+{% load template_permission %}
 
 {% block head %}
 <title>Profile utilisateur</title>
@@ -20,7 +21,9 @@
         <p>Connexion recente <span>{% if user_object.last_login %} {{ user_object.last_login|date:"d-m-Y H:i" }} {% else %}-{% endif %}</span></p>
     </div>
     <p>
-        <a href="{% url 'accounts:user_update' pk=user.pk %}" class="link primary">Modifier mes informations</a>
+        {% if request.user|has_permission:"accounts.can_change_user" %}
+        <a href="{% url 'accounts:user_update' pk=user_object.pk %}" class="link primary">Modifier</a>
+        {% endif %}
     </p>
 </div>
 

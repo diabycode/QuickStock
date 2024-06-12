@@ -1,5 +1,6 @@
 {% extends 'qstockapp/base_admin.html' %}
 {% load static %}
+{% load template_permission %}
 
 {% block head %}
 <title>Administration</title>
@@ -10,7 +11,9 @@
 {% block body %}
 <div class="heading">
     <div>
+        {% if request.user|has_permission:"auth.add_group" %}
         <a class="btn" href="{% url 'accounts:group_create' %}">+ Ajouter</a>
+        {% endif %}
     </div>
 </div>
 {% if group_list %}
@@ -26,9 +29,13 @@
         {% for group in group_list %}
         <tr>
             <td>
+                {% if request.user|has_permission:"auth.change_group" %}
                 <a class="table-link" href="{% url 'accounts:group_update' pk=group.pk %}">
                     {{ group.name }}
                 </a>
+                {% else %}
+                    {{ group.name }}
+                {% endif %}
             </td>
             <td>
                 {{ group.description }}

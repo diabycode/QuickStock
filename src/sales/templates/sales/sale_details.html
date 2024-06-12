@@ -1,5 +1,6 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
+{% load template_permission %}
 
 <!-- head  -->
 {% block head %}
@@ -34,14 +35,20 @@
     </div>
     
     {% if sale.status == '2' %}
-    <a class="link danger" href="{% url 'sales:sale_delete' pk=sale.pk %}">Supprimer</a>
+        {% if request.user|has_permission:"sales.can_delete_sale" %}
+        <a class="link danger" href="{% url 'sales:sale_delete' pk=sale.pk %}">Supprimer</a>
+        {% endif %}
     {% else %}
-    <form style="margin-bottom: 32px;" action="{% url 'sales:sale_cancel' pk=sale.pk %}" method="POST">
-        {% csrf_token %}
-        <button class="btn danger cancel_action" type="submit">Annuler la vente</button>
-    </form>
+        {% if request.user|has_permission:"sales.can_change_sale" %}
+        <form style="margin-bottom: 32px;" action="{% url 'sales:sale_cancel' pk=sale.pk %}" method="POST">
+            {% csrf_token %}
+            <button class="btn danger cancel_action" type="submit">Annuler la vente</button>
+        </form>
+        {% endif %}
     {% endif %}
+    {% if request.user|has_permission:"sales.can_change_sale" %}
     <a class="link primary" href="{% url 'sales:sale_update' pk=sale.pk %}">Modifier</a>
+    {% endif %}
     <a class="link" href="{% url 'sales:sale_list' %}">Retour à la liste ventes</a>
     
     <script>

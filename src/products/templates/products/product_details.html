@@ -1,6 +1,7 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %} 
 {% load money_string %} 
+{% load template_permission %}
 
 <!-- head  -->
 {% block head %}
@@ -35,8 +36,12 @@
     </div>
 
     <div class="actions">
+        {% if request.user|has_permission:"products.can_change_product" %}
         <a class="link primary" href="{% url 'products:product_update' slug=product.slug%}">modifier</a>
+        {% endif %}
+        {% if request.user|has_permission:"products.can_delete_product" %}
         <a class="link danger" href="{% url 'products:product_delete' slug=product.slug %}">Supprimer</a>
+        {% endif %}
         <a class="link" href="{% url 'products:product_list' %}">Retour à liste produits</a>
     </div>
 
@@ -84,9 +89,13 @@
                 {% for sale in recent_sales %}
                 <tr>
                     <td>
+                        {% if request.user|has_permission:"sales.can_view_sale" %}
                         <a class="table-link" href="{% url 'sales:sale_details' pk=sale.pk %}">
                             {{ sale.sale_date|date:"d-m-Y" }}
                         </a>
+                        {% else %}
+                        {{ sale.sale_date|date:"d-m-Y" }}
+                        {% endif %}
                     </td>
                     <td class="{{ sale.status_class_name }}">{{ sale.status_display }}</td>
                     <td>{{ sale.quantity }}</td>

@@ -1,6 +1,7 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
 {% load money_string %}
+{% load template_permission %}
 
 <!-- head  -->
 {% block head %}
@@ -55,7 +56,9 @@
         {% endif %}
     </div>
     <div>
+        {% if request.user|has_permission:"orders.can_add_order" %}
         <a class="btn primary" href="{% url 'orders:order_create' %}">+ Ajouter une commande</a>
+        {% endif %}
     </div>
 </div>
 
@@ -75,8 +78,14 @@
                 <td>{{ order.order_date|date:"d-m-Y" }}</td>
                 <td class="{{ order.status_class_name }}">{{ order.status_display }}</td>
                 <td>
+                    {% if request.user|has_permission:"products.can_view_product" %}
                     <a href="{% url 'products:product_details' slug=order.product.slug %}"
-                    class="table-link" title="quantité restante : {{ order.product.stock_quantity }}">{{ order.product.name }}</a>
+                        class="table-link" title="quantité restante : {{ order.product.stock_quantity }}">
+                        {{ order.product.name }}
+                    </a>
+                    {% else %}
+                        {{ order.product.name }}
+                    {% endif %}
                 </td>
                 <td>{{ order.quantity }}</td>
                 <td>
@@ -84,6 +93,7 @@
                 </td>
                 <td>{{ order.provider_name }}</td>
                 <td>{{ order.shipping_costs|money_string }}</td>
+                {% if request.user|has_permission:"orders.can_view_order" %}
                 <td class="actions">
                     <a href="{% url 'orders:order_details' pk=order.pk %}">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -92,6 +102,7 @@
                         </svg>
                     </a>
                 </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>

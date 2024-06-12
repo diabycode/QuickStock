@@ -1,6 +1,7 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
 {% load money_string %}
+{% load template_permission %}
 
 <!-- head  -->
 {% block head %}
@@ -19,7 +20,9 @@
 {% block body %}
 <div class="heading">
     <div>
+        {% if request.user|has_permission:"debts.can_add_debt" %}
         <a class="btn primary" href="{% url 'debts:debt_create' %}">+ Ajouter</a>
+        {% endif %}
     </div>
 </div>
 {% if debt_list %}
@@ -42,9 +45,13 @@
         {% for debt in debt_list %}
         <tr>
             <td>
+                {% if request.user|has_permission:"debts.can_view_debt" %}
                 <a class="table-link" href="{% url 'debts:debt_details' pk=debt.pk %}">
                     {{ debt.granted_date|date:"d-m-Y" }}
                 </a>
+                {% else %}
+                    {{ debt.granted_date|date:"d-m-Y" }}
+                {% endif %}
             </td>
             <td>{{ debt.person_concerned|title }}</td>
             <td>{{ debt.initial_amount|money_string }}</td>

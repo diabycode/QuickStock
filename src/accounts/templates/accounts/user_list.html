@@ -1,5 +1,6 @@
 {% extends 'qstockapp/base_admin.html' %}
 {% load static %}
+{% load template_permission %}
 
 {% block head %}
 <title>Administration</title>
@@ -10,7 +11,9 @@
 {% block body %}
 <div class="heading">
     <div>
+        {% if request.user|has_permission:"accounts.can_add_user" %}
         <a class="btn" href="{% url 'accounts:user_create' %}">+ Ajouter</a>
+        {% endif %}
     </div>
 </div>
 {% if user_list %}
@@ -33,8 +36,10 @@
             <td>{% if user.last_name %}{{ user.last_name }} {% else %} - {% endif %}</td>
             <td>{% if user.first_name %}{{ user.first_name }} {% else %} - {% endif %}</td>
             <td>{{ user.join_date|date:"d-m-Y H:i" }}</td>
+            {% if request.user|has_permission:"accounts.can_change_user" %}
             <td>******<a href="{% url 'accounts:change_user_password' pk=user.pk %}"
                 class="link primary">Changer</a></td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

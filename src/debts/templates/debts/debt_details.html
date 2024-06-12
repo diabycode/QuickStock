@@ -1,6 +1,7 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
 {% load money_string %}
+{% load template_permission %}
 
 <!-- head  -->
 {% block head %}
@@ -69,13 +70,19 @@
         </p>
     </div>
     <div class="actions">
+        {% if request.user|has_permission:"debts.can_change_debt" %}
         <a class="link primary" href="{% url 'debts:debt_update' pk=debt.pk %}">Modifier</a>
+        {% endif %}
+        {% if request.user|has_permission:"debts.can_delete_debt" %}
         <a class="link danger" href="{% url 'debts:debt_delete' pk=debt.pk %}">Supprimer</a> 
+        {% endif %}
         {% if not debt.completly_repaid %}
-        <a class="btn primary" href="{% url 'debts:debt_repayment' debt_pk=debt.pk %}">Rembourser</a>
+            {% if request.user|has_permission:"debts.can_add_repayment" %}
+            <a class="btn primary" href="{% url 'debts:debt_repayment' debt_pk=debt.pk %}">Rembourser</a>
+            {% endif %}
         {% endif %}
     </div>
-
+    {% if request.user|has_permission:"debts.can_view_repayment" %}
     <div class="repayments">
         <h4>Remboursements</h4>
         {% if repayment_list %}
@@ -95,6 +102,7 @@
                     <td>{{ repayment.amount|money_string }}</td>
                     <td>{{ repayment.repaid_by_str }}</td>
                     <td>{{ repayment.note }}</td>
+                    {% if request.user|has_permission:"debts.can_change_repayment" %}
                     <td>
                         <a href="{% url 'debts:edit_repayment' debt_pk=debt.pk repayment_pk=repayment.pk %}">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -102,6 +110,7 @@
                             </svg>
                         </a>
                     </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
@@ -110,6 +119,7 @@
         <p>Aucun remboursement enrégistré</p>
         {% endif %}
     </div>
+    {% endif %}
 {% endblock %}
 
 

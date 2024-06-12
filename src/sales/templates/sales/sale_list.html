@@ -1,5 +1,6 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
+{% load template_permission %}
 
 <!-- head  -->
 {% block head %}
@@ -54,7 +55,9 @@
             {% endif %}
         </div>
         <div>
+            {% if request.user|has_permission:"sales.can_add_sale" %}
             <a class="btn primary" href="{% url 'sales:sale_create' %}">+ Ajouter une vente</a>
+            {% endif %}
         </div>
     </div>
     {% if sale_list %}
@@ -72,10 +75,17 @@
                 <td>{{ sale.sale_date|date:"d-m-Y" }}</td>
                 <td class="{{ sale.status_class_name }}">{{ sale.status_display }}</td>
                 <td>
+                    {% if request.user|has_permission:"products.can_view_product" %}
                     <a class="table-link" title="quantité restante : {{ sale.product.stock_quantity }}"
-                     href="{% url 'products:product_details' slug=sale.product.slug %}">{{ sale.product.name }}</a>
+                     href="{% url 'products:product_details' slug=sale.product.slug %}">
+                     {{ sale.product.name }}
+                     </a>
+                     {% else %}
+                     {{ sale.product.name }}
+                     {% endif %}
                 </td>
                 <td>{{ sale.quantity }}</td>
+                {% if request.user|has_permission:"sales.can_view_sale" %}
                 <td class="actions">
                     <a href="{% url 'sales:sale_details' pk=sale.pk %}">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -84,6 +94,7 @@
                         </svg>
                     </a>
                 </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>

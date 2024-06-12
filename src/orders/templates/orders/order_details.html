@@ -1,6 +1,7 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %} 
 {% load money_string %} 
+{% load template_permission %}
 
 <!-- head  -->
 {% block head %}
@@ -53,14 +54,20 @@
     </p>
 </div>
 {% if order.status == '2' %}
-<a class="link danger" href="{% url 'orders:order_delete' pk=order.pk %}">Supprimer</a>
+    {% if request.user|has_permission:"orders.can_delete_order" %}
+    <a class="link danger" href="{% url 'orders:order_delete' pk=order.pk %}">Supprimer</a>
+    {% endif %}
 {% else %}
-<form style="margin-bottom: 32px;" action="{% url 'orders:order_cancel' pk=order.pk %}" method="POST">
-    {% csrf_token %}
-    <button class="btn danger cancel_action" type="submit">Annuler cette commande</button>
-</form>
+    {% if request.user|has_permission:"orders.can_change_order" %}
+    <form style="margin-bottom: 32px;" action="{% url 'orders:order_cancel' pk=order.pk %}" method="POST">
+        {% csrf_token %}
+        <button class="btn danger cancel_action" type="submit">Annuler cette commande</button>
+    </form>
+    {% endif %}
 {% endif %}
+{% if request.user|has_permission:"orders.can_change_order" %}
 <a class="link primary" href="{% url 'orders:order_update' pk=order.pk %}">Modifier</a>
+{% endif %}
 <a class="link" href="{% url 'orders:order_list' %}">Retour à la liste commandes</a>
 
 <script>

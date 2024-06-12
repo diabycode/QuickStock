@@ -27,10 +27,10 @@ class Sale(models.Model):
         verbose_name_plural = "Ventes"
         default_permissions = []
         permissions = [
-            ("can_add", "Ajouter - Vente"),
-            ("can_change", "Modifier - Vente"),
-            ("can_delete", "Supprimer - Vente"),
-            ("can_view", "Voir - Vente"),
+            ("can_add_sale", "Ajouter - Vente"),
+            ("can_change_sale", "Modifier - Vente"),
+            ("can_delete_sale", "Supprimer - Vente"),
+            ("can_view_sale", "Voir - Vente"),
         ]
 
     @classmethod

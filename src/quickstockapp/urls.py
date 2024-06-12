@@ -23,6 +23,7 @@ urlpatterns = [
     path('lock_pin/', views.lock_pin, name="lock_pin"),
     path("display_stats/", views.display_stats, name="display_stats"),
     path('offline-page/', views.offline, name='offline'),
+    path('permission_denied/', views.permission_denied, name="permission_denied"),
     path('pwa/', include('pwa.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

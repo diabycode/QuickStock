@@ -139,3 +139,13 @@ def lock_pin(request: HttpRequest):
         del request.session["pin_verified"]
         return JsonResponse({"success": True})
     return HttpResponseBadRequest("Bad Request")
+
+
+def permission_denied(request: HttpRequest):
+    return render(request, "quickstockapp/permission_denied.html", {})
+
+
+
+
+
+

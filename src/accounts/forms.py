@@ -4,7 +4,6 @@ from django import forms
 
 from .models import UserModel, UserPreference
 
-
 class UserLoginForm(forms.Form):
 
     username = forms.CharField()
@@ -128,6 +127,7 @@ class UserCreateForm(UserRegistrationForm):
             "groups",      
             "user_permissions",
         ]
+        exclude = ['password']
 
 
 class UserPasswordChangeForm(UserRegistrationForm):

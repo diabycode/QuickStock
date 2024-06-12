@@ -19,20 +19,24 @@ from django.contrib.admin.models import ADDITION, DELETION, CHANGE
 from accounts.forms import UserLoginForm, UserRegistrationForm, UserPinCodeForm, UserCreateForm, UserPasswordChangeForm
 from accounts.models import UserModel, UserPreference, CustomGroup
 from accounts.utils import log_user_action
-
-
-def permission_str(self: Permission):
-    return self.name
-
-Permission.__str__ = permission_str
+from accounts.mixins import MyPermissionRequiredMixin
+from accounts.decorators import permission_required
+from accounts.utils import get_all_permissions
+from accounts.widgets import PermissionSelectWidget
 
 
 class CustomLogoutView(View):
     login_url = reverse_lazy('accounts:login')
 
-    def get(self, request):
+    def get(self, request: HttpRequest):
         if request.user.is_authenticated:
             from django.contrib.auth import logout
+            log_user_action(
+                user=request.user,
+                obj=request.user,
+                action_flag=CHANGE,
+                change_message="Déconnexion"
+            )
             logout(request)
         return redirect(self.login_url)
 
@@ -72,6 +76,12 @@ class CustomLoginView(View):
                     # login user
                     from django.contrib.auth import login
                     login(request, user)
+                    log_user_action(
+                        user=user,
+                        obj=user,
+                        action_flag=CHANGE,
+                        change_message="Connexion au système"
+                    )
                     redirect_url = request.GET.get("next", self.success_redirect_url) 
                     return redirect(redirect_url)
                 
@@ -195,9 +205,12 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
         return self.request.user
 
 
-class UserListView(LoginRequiredMixin, ListView):
+# users views
+
+class UserListView(LoginRequiredMixin, MyPermissionRequiredMixin, ListView):
     model = UserModel
     template_name = "accounts/user_list.html"
+    permission_required = "accounts.can_view_user"
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -217,41 +230,32 @@ class UserListView(LoginRequiredMixin, ListView):
         return context
 
 
-class UserCreateView(LoginRequiredMixin, CreateView):
+class UserCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, CreateView):
     model = UserModel
     template_name = "accounts/user_create.html"
     form_class = UserCreateForm
     success_url = reverse_lazy("accounts:user_list")
+    permission_required = "accounts.can_add_user"
 
     def get_form(self, form_class: type[BaseModelForm] | None=None) -> BaseModelForm:
         form = super().get_form(form_class)
-
-        content_types = ContentType.objects.filter(app_label__in=[
-            "products",
-            "orders",
-            "sales",
-            "stores",
-            "debts",
-            "settings",
-        ])
-        permissions = Permission.objects.all()
-        filtered_permissions = Permission.objects.none()
-        for content_type in content_types:
-            filtered_permissions = (  
-                filtered_permissions | permissions.filter(
-                    content_type__app_label=content_type.app_label, 
-                    content_type__model=content_type.model
-                )
-            )
-        filtered_permissions.distinct()
-        form.fields["user_permissions"].queryset = filtered_permissions
+        permissions = get_all_permissions(edit_default=True, excludes=[
+            "userpreference",
+            "contenttype",
+            "permission",
+            "logentry",
+            "session",
+            "editablesettings",
+        ] )
+        form.fields["user_permissions"].widget = PermissionSelectWidget()
+        form.fields["user_permissions"].queryset = permissions
         return form
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         form_valid_response = super().form_valid(form)
         new_user: UserModel = form.instance
-        new_user.set_password(form.cleaned_data.get("password"))
-        new_user.save()
+        # new_user.set_password(form.cleaned_data.get("password"))
+        # new_user.save()
         log_user_action(
             user=self.request.user,
             obj=new_user,
@@ -261,7 +265,7 @@ class UserCreateView(LoginRequiredMixin, CreateView):
         return form_valid_response
 
 
-class UserUpdateView(LoginRequiredMixin, UpdateView):
+class UserUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, UpdateView):
     model = UserModel
     form_class = UserCreateForm
     template_name = "accounts/user_update.html"
@@ -269,39 +273,30 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         "page_title": "Gestion des utilisateurs",
     }
     context_object_name = "user_object"
+    permission_required = "accounts.can_change_user"
 
     def get_success_url(self) -> str:
         return reverse("accounts:user_list")
     
     def get_form(self, form_class: type[BaseModelForm] | None=None) -> BaseModelForm:
         form = super().get_form(form_class)
-
-        content_types = ContentType.objects.filter(app_label__in=[
-            "products",
-            "orders",
-            "sales",
-            "stores",
-            "debts",
-            "settings",
+        permissions = get_all_permissions(edit_default=True, excludes=[
+            "userpreference",
+            "contenttype",
+            "permission",
+            "logentry",
+            "session",
+            "editablesettings",
         ])
-        permissions = Permission.objects.all()
-        filtered_permissions = Permission.objects.none()
-        for content_type in content_types:
-            filtered_permissions = (  
-                filtered_permissions | permissions.filter(
-                    content_type__app_label=content_type.app_label, 
-                    content_type__model=content_type.model
-                )
-            )
-        filtered_permissions.distinct()
-        form.fields["user_permissions"].queryset = filtered_permissions
+        form.fields["user_permissions"].widget = PermissionSelectWidget()
+        form.fields["user_permissions"].queryset = permissions
         return form
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         form_valid = super().form_valid(form)
         user: UserModel = form.instance
-        user.set_password(form.cleaned_data.get("password"))
-        user.save()
+        # user.set_password(form.cleaned_data.get("password"))
+        # user.save()
         log_user_action(
             user=self.request.user,
             obj=user,
@@ -311,17 +306,19 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         return form_valid
 
 
-class UserDetailsView(LoginRequiredMixin, DetailView):
+class UserDetailsView(LoginRequiredMixin, MyPermissionRequiredMixin, DetailView):
     model = UserModel
     context_object_name = "user_object"
     template_name = "accounts/user_details.html"
+    permission_required = "accounts.can_view_user"
 
 
-class UserDeleteView(LoginRequiredMixin, DeleteView):
+class UserDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, DeleteView):
     model = UserModel
     template_name = "accounts/user_delete.html"
     context_object_name = "user_object"
     success_url = reverse_lazy("accounts:user_list")
+    permission_required = "accounts.can_delete_user"
 
     def form_valid(self, form):
         log_user_action(
@@ -339,6 +336,7 @@ def password_changed(request):
 
 
 @login_required(login_url="/accounts/login/")
+@permission_required("accounts.can_change_user")
 def change_user_password(request: HttpRequest, pk):
     context = {}
     user = get_object_or_404(UserModel, pk=pk)
@@ -356,11 +354,12 @@ def change_user_password(request: HttpRequest, pk):
     return render(request, "accounts/change_user_password.html", context)
 
 
-class GroupListView(LoginRequiredMixin, ListView):
+class GroupListView(LoginRequiredMixin, MyPermissionRequiredMixin, ListView):
     model = CustomGroup
     template_name = "accounts/group_list.html"
     context_object_name = "group_list"
     extra_context = {"page_title": "Groupes & Accès"}
+    permission_required = "auth.view_group"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -372,7 +371,7 @@ class GroupListView(LoginRequiredMixin, ListView):
         return context
 
 
-class GroupCreateView(LoginRequiredMixin, CreateView):
+class GroupCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, CreateView):
     model = CustomGroup
     fields= [
         "name",
@@ -382,6 +381,21 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
     template_name = "accounts/group_create.html"
     success_url = reverse_lazy("accounts:group_list")
     extra_context = {"page_title": "Groupes & Accès"}
+    permission_required = "auth.add_group"
+
+    def get_form(self, form_class: type[BaseModelForm] | None=None) -> BaseModelForm:
+        form = super().get_form(form_class)
+        permissions = get_all_permissions(edit_default=True, excludes=[
+            "userpreference",
+            "contenttype",
+            "permission",
+            "logentry",
+            "session",
+            "editablesettings",
+        ])
+        form.fields["permissions"].widget = PermissionSelectWidget()
+        form.fields["permissions"].queryset = permissions
+        return form
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         form_valid_response = super().form_valid(form)
@@ -394,7 +408,7 @@ class GroupCreateView(LoginRequiredMixin, CreateView):
         return form_valid_response
 
 
-class GroupUpdateView(LoginRequiredMixin, UpdateView):
+class GroupUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, UpdateView):
     model = CustomGroup
     fields= [
         "name",
@@ -405,6 +419,21 @@ class GroupUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("accounts:group_list")
     extra_context = {"page_title": "Groupes & Accès"}
     context_object_name = "group"
+    permission_required = "auth.change_group"
+
+    def get_form(self, form_class: type[BaseModelForm] | None=None) -> BaseModelForm:
+        form = super().get_form(form_class)
+        permissions = get_all_permissions(edit_default=True, excludes=[
+            "userpreference",
+            "contenttype",
+            "permission",
+            "logentry",
+            "session",
+            "editablesettings",
+        ])
+        form.fields["permissions"].widget = PermissionSelectWidget()
+        form.fields["permissions"].queryset = permissions
+        return form
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         form_valid_response = super().form_valid(form)
@@ -417,11 +446,12 @@ class GroupUpdateView(LoginRequiredMixin, UpdateView):
         return form_valid_response
 
 
-class GroupDeleteView(LoginRequiredMixin, DeleteView):
+class GroupDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, DeleteView):
     model = CustomGroup
     template_name = "accounts/group_delete.html"
     context_object_name = "group"
     success_url = reverse_lazy("accounts:group_list")
+    permission_required = "auth.delete_group"
 
     def form_valid(self, form):
         log_user_action(
@@ -432,11 +462,13 @@ class GroupDeleteView(LoginRequiredMixin, DeleteView):
         )
         return super(DeleteView, self).form_valid(form)
 
-class UserActionLogList(LoginRequiredMixin, ListView):
+
+class UserActionLogList(LoginRequiredMixin, MyPermissionRequiredMixin, ListView):
     model = LogEntry
     template_name = "accounts/user_action_logs.html"
     context_object_name = "user_action_logs"
     queryset = LogEntry.objects.all().order_by("-action_time")
+    permission_required = "admin.view_logentry"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

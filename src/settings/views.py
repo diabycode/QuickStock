@@ -12,13 +12,15 @@ from django.shortcuts import redirect
 
 from settings.models import EditableSettings
 from settings.forms import SettingsModelfForm
+from accounts.mixins import MyPermissionRequiredMixin
 
 
-class SettingsUpdate(LoginRequiredMixin, UpdateView):
+class SettingsUpdate(LoginRequiredMixin, MyPermissionRequiredMixin, UpdateView):
     model = EditableSettings
     form_class = SettingsModelfForm
     template_name = "settings/update.html"
     success_url = reverse_lazy("settings:setting_update")
+    permission_required = "settings.can_change_setting"
     
     def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)

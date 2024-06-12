@@ -1,22 +1,21 @@
-from typing import Iterable
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager, Group
 from django.core.exceptions import ValidationError
 
 
-class CustomGroup(Group):
-    description = models.TextField(verbose_name="Description", blank=True)
+# class CustomGroup(Group):
+#     description = models.TextField(verbose_name="Description", blank=True)
 
-    def __str__(self) -> str:
-        return self.name
+#     def __str__(self) -> str:
+#         return self.name
     
-    class Meta:
-        verbose_name = "Groupe"
-        verbose_name_plural = "Groupes"
+#     class Meta:
+#         verbose_name = "Groupe"
+#         verbose_name_plural = "Groupes"
 
-    @classmethod
-    def get_verbose_name(cls):
-        return cls._meta.verbose_name
+#     @classmethod
+#     def get_verbose_name(cls):
+#         return cls._meta.verbose_name
     
 
 class CustomUserManager(BaseUserManager):
@@ -59,7 +58,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=80, null=True, verbose_name="Prénom")
     last_name = models.CharField(max_length=80, null=True, verbose_name="Nom")
     join_date = models.DateTimeField(auto_now_add=True, verbose_name="Ajouté le")
-    groups = models.ManyToManyField(CustomGroup, verbose_name="Groupes", blank=True)
+    # groups = models.ManyToManyField(CustomGroup, verbose_name="Groupes", blank=True)
 
     is_staff = models.BooleanField(default=True, verbose_name="Membre d'équipe")
     is_active = models.BooleanField(default=True, verbose_name="Actif")
@@ -75,10 +74,10 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Utilisateurs"
         default_permissions = []
         permissions = [
-            ("can_add", "Ajouter - Utilisateur"),
-            ("can_change", "Modifier - Utilisateur"),
-            ("can_delete", "Supprimer - Utilisateur"),
-            ("can_view", "Voir - Utilisateur"),
+            ("can_add_user", "Ajouter - Utilisateur"),
+            ("can_change_user", "Modifier - Utilisateur"),
+            ("can_delete_user", "Supprimer - Utilisateur"),
+            ("can_view_user", "Voir - Utilisateur"),
         ]
 
     def __str__(self):
@@ -92,6 +91,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     @classmethod
     def get_verbose_name(cls):
         return cls._meta.verbose_name
+
 
 def pin_code_verification(value: str):
     MIN_LENGTH = 4

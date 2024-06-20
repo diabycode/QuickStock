@@ -9,10 +9,23 @@ class SaleStatus(models.TextChoices):
     CANCELLED = ("2", "Annulé")
 
 
+class SaleProduct(models.Model):
+    sale = models.ForeignKey("Sale", on_delete=models.CASCADE, verbose_name="Vente")
+    product = models.ForeignKey("products.Product", on_delete=models.CASCADE, verbose_name="Produit")
+    quantity = models.IntegerField(default=1, verbose_name="Quantité vendu")
+
+    def __str__(self) -> str:
+        return f"{self.product.name} - {self.quantity}"
+
+    class Meta:
+        verbose_name = "Produit de la vente"
+        verbose_name_plural = "Produits de la vente"
+        unique_together = ('sale', 'product')
+
+
 class Sale(models.Model):
     sale_date = models.DateField(verbose_name="Date de vente")
-    product = models.ForeignKey("products.Product", on_delete=models.CASCADE, verbose_name="Produit vendu")
-    quantity = models.IntegerField(default=1, verbose_name="Quantité vendu")
+    products = models.ManyToManyField("products.Product", through="SaleProduct", verbose_name="Produits vendus")
     buyer_name = models.CharField(max_length=100, null=True, blank=True, verbose_name="Nom de l'acheteur")
     buyer_phone = models.CharField(max_length=100, null=True, blank=True, verbose_name="Téléphone de l'acheteur")
     status = models.CharField(max_length=30, choices=SaleStatus.choices, default=SaleStatus.VALIDATED, verbose_name="Statut")
@@ -38,11 +51,11 @@ class Sale(models.Model):
         return cls._meta.verbose_name
 
     def save(self, forced_save=False, *args, **kwargs):
-        if self.quantity > self.product.stock_quantity:
-            if not forced_save:
-                raise ValueError(f"Quantity sold can't exceed the stock quantity. {self.quantity} > {self.product.stock_quantity}")
-            else:
-                super().save(*args, **kwargs)
+        sale_products = self.saleproduct_set.all()
+        for sale in sale_products:
+            if sale.quantity > sale.product.stock_quantity:
+                if not forced_save:
+                    raise ValueError(f"Quantity sold can't exceed the stock quantity. {self.quantity} > {self.product.stock_quantity}")
         return super().save(*args, **kwargs)
     
     @property

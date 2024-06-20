@@ -38,8 +38,6 @@ class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStor
         sale_column_names = [
             Sale.sale_date.field.verbose_name,
             Sale.status.field.verbose_name,
-            Sale.product.field.verbose_name,
-            Sale.quantity.field.verbose_name,
         ]
         
         store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
@@ -94,9 +92,8 @@ class SaleCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
     model = Sale
     fields = [
         'sale_date',
-        'product',
+        'products',
         'store',
-        'quantity',
         'buyer_name',
         'buyer_phone',
     ]
@@ -110,9 +107,9 @@ class SaleCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
         if form.is_valid():
             form_data = form.cleaned_data
 
+            # check date error
             sale_date: datetime.date = form_data.get("sale_date")
             now_date = datetime.datetime.now().date()
-
             if sale_date > now_date:
                 form.add_error("sale_date", "Erreur de date")
                 return self.form_invalid(form=form)
@@ -120,12 +117,14 @@ class SaleCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
             if form_data.get("status") == SaleStatus.CANCELLED:
                 return HttpResponseBadRequest("bad request")
 
-            if form_data.get("quantity") > form_data.get("product").stock_quantity:
-                quantity_errors = form._errors.setdefault("quantity", ErrorList())
-                quantity_errors.append("Le stock produit est insufisant")
-                return self.form_invalid(form=form)
-
         form_valid_response = super().form_valid(form) 
+
+        new_sale = form.instance
+        solds = new_sale.saleproduct_set.all()
+        for sold in solds:
+            sold.product.stock_quantity -= sold.quantity
+            sold.product.save()
+        
         log_user_action(
             user=self.request.user,
             obj=form.instance,
@@ -143,7 +142,8 @@ class SaleCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
             form.fields["store"].initial = get_object_or_404(Store, pk=current_store)
 
         store = get_object_or_404(Store, pk=current_store)
-        form.fields["product"].queryset = Product.objects.filter(store=store)
+        form.fields["products"].queryset = Product.objects.filter(store=store)
+        form.fields["products"].help_text = "Ajoutez des porduits et selectionnez leur quantité."
         return form
 
     
@@ -227,35 +227,40 @@ class SaleDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
 @permission_required("sales.can_change_sale")
 def cancel_sale(request, pk):
     if request.method == "POST":
-        obj = get_object_or_404(Sale, pk=pk)
+        obj: Sale = get_object_or_404(Sale, pk=pk)
         old_status = obj.status
         obj.status = SaleStatus.CANCELLED
 
-        try:
-            obj.save(forced_save=True)
-        except ValueError:
-            messages.error(request, "Impossible d'annuler cette vente", extra_tags="message")
-            return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
+        # try:
+        #     obj.save(forced_save=True)
+        # except ValueError:
+        #     messages.error(request, "Impossible d'annuler cette vente", extra_tags="message")
+        #     return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
         
-        if old_status != SaleStatus.CANCELLED:
-            try:
-                # sale cancel signal
-                from products.signals import update_quantity_on_sale_cancellation
-                from sales.signals import sale_cancelled_signal
-                sale_cancelled_signal.send(update_quantity_on_sale_cancellation, instance=obj)
-            except:
-                obj.status = old_status
-                obj.save()
-                messages.error(request, "Impossible d'annuler cette vente", extra_tags="message")
-                return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
+        # if old_status != SaleStatus.CANCELLED:
+        #     try:
+        #         # sale cancel signal
+        #         from products.signals import update_quantity_on_sale_cancellation
+        #         from sales.signals import sale_cancelled_signal
+        #         sale_cancelled_signal.send(update_quantity_on_sale_cancellation, instance=obj)
+        #     except:
+        #         obj.status = old_status
+        #         obj.save()
+        #         messages.error(request, "Impossible d'annuler cette vente", extra_tags="message")
+        #         return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
         
-        log_user_action(
-            user=request.user,
-            obj=obj,
-            action_flag=CHANGE,
-            change_message="Vente annulé"
-        )
-        return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
+        # solds = obj.saleproduct_set.all()
+        # for sold in solds:
+        #     sold.product.stock_quantity += sold.quantity
+        #     sold.product.save()
+            
+        # log_user_action(
+        #     user=request.user,
+        #     obj=obj,
+        #     action_flag=CHANGE,
+        #     change_message="Vente annulé"
+        # )
+        # return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
     return HttpResponseBadRequest("Bad request")
 
 

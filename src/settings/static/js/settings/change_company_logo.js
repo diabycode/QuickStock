@@ -1,6 +1,7 @@
 const imgField = document.getElementById("id_company_logo")
 const preview = document.getElementById("logo_preview");
 function previewImage(event) {
+    preview.style.display = "";
     let reader = new FileReader();
     reader.onload = function() {
         preview.src = reader.result;

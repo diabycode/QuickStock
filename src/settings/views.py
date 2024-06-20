@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.views.generic import UpdateView
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
+from django.http import HttpRequest, HttpResponseBadRequest
 
 from settings.models import EditableSettings
 from settings.forms import SettingsModelfForm
@@ -43,5 +44,11 @@ class SettingsUpdate(LoginRequiredMixin, UpdateView):
         return self.form_invalid(form=form)
     
     
-
+def delete_compagny_logo(request: HttpRequest):
+    if not request.method == "GET":
+        return HttpResponseBadRequest()
+    
+    settings = EditableSettings.load()
+    settings.company_logo.delete(save=True)
+    return redirect(reverse("settings:setting_update"))
 

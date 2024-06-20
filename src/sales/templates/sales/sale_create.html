@@ -5,6 +5,7 @@
 {% block head %}
 <title>Gestion des ventes</title>
 <link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+<link rel="stylesheet" href="{% static 'css/sales/form.css' %}">
 
 {% endblock %}
 
@@ -18,7 +19,7 @@
 <h3>Ajoutez une vente</h3>
 <form method="POST">
     {% csrf_token %} 
-    <div class="form-content">
+    <div class="form-content vertical">
         
         <div>
             {{ form.sale_date.label_tag }}
@@ -30,19 +31,8 @@
             {% include 'qstockapp/date_input_binding.html' %}
         </div>
         <div>
-            {{ form.product.label_tag }}
-            {{ form.product }}
-        </div>
-        <div>
             {{ form.store.label_tag }}
             {{ form.store }}
-        </div>
-        <div>
-            {{ form.quantity.label_tag }}
-            {{ form.quantity }}
-            {% for e in form.quantity.errors %}
-                <p class="error">{{ e }}</p>
-            {% endfor %}
         </div>
         <div>
             {{ form.buyer_name.label_tag }}
@@ -52,6 +42,19 @@
             {{ form.buyer_phone.label_tag }}
             {{ form.buyer_phone }}
         </div>
+        <div>
+            <div>
+                {{ form.products.label_tag }}
+                <p class="helptext">{{ form.products.help_text }}</p>
+                {{ form.products }}
+                <a href="#" id="add_btn" class="link primary">➕Ajouter</a>
+            </div>
+            <div id="selected_products">
+                <p>Aucun produit sélectionné</p>
+            </div>
+            <script src="{% static 'js/sales/product_select_field_perform.js' %}"></script>
+        </div>
+
 
     </div>
     <button type="submit">Enrégistrer</button>

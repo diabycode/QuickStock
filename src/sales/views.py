@@ -118,7 +118,10 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
                 quantity_errors.append("Le stock produit est insufisant")
                 return self.form_invalid(form=form)
 
-        return super().form_valid(form) 
+        super().form_valid(form)
+        self.sale_instance = form.instance
+        success_url = reverse("sales:sale_details", kwargs={"pk": self.sale_instance.pk})
+        return  redirect(success_url)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -131,6 +134,9 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         store = get_object_or_404(Store, pk=current_store)
         form.fields["product"].queryset = Product.objects.filter(store=store)
         return form
+
+    # def get_success_url(self) -> str:
+    #     return reverse("sales:sale_details", kwargs={"pk": self.sale_instance.pk})
 
     
 class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):

@@ -1,5 +1,6 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
+{% load money_string %}
 
 <!-- head  -->
 {% block head %}
@@ -17,10 +18,7 @@
     <div class="properties">
         <p>Date de la vente <span>{{ sale.sale_date }}</span></p>
         <p>Statut <span class="{{ sale.status_class_name }}">{{ sale.status_display }}</span></p>
-        <p>
-            Produit vendu <span>{{ sale.product }}</span>
-        </p>
-        <p>Quantité vendu <span>{{ sale.quantity }}</span></p> 
+        
         <p>Nom de l'acheteur 
             <span>
                 {% if sale.buyer_name != None %}{{ sale.buyer_name }} {% else %} - {% endif %}
@@ -31,6 +29,14 @@
                 {% if sale.buyer_phone != None %}{{ sale.buyer_phone }} {% else %} - {% endif %}
             </span>
         </p> 
+    </div>
+    <div class="sale-details" style="display: flex; padding: 1rem; border-radius: 10px; gap: 2rem; justify-content: flex-start; margin-bottom: 2rem; background-color: var(--lightgray);">
+        <p>
+            Produit vendu <span>{{ sale.product.name }}</span>
+        </p>
+        <p>Prix unitaire (FCFA) <span>{{ sale.product.unit_price_sale|money_string }}</span></p> 
+        <p>Quantité vendu <span>{{ sale.quantity }}</span></p> 
+        <p>Total (FCFA) <span>{{ sale.total_amount|money_string }}</span></p>
     </div>
     
     {% if sale.status == '2' %}

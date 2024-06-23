@@ -65,6 +65,10 @@
             {{ form.description.label_tag }}
             {{ form.description }}
         </div>
+        <div style="display: flex; gap: .3rem;">
+            <input type="checkbox" name="add_to_stock" id="add_to_stock" checked>
+            <label for="add_to_stock">Ajouter sur le stock</label>
+        </div>
     </div>
     <button type="submit">Enrégistrer</button>
     <a class="link" href="{% url 'orders:order_list' %}">Annuler</a>

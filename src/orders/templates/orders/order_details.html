@@ -59,26 +59,13 @@
     {% endif %}
 {% else %}
     {% if request.user|has_permission:"orders.can_change_order" %}
-    <form style="margin-bottom: 32px;" action="{% url 'orders:order_cancel' pk=order.pk %}" method="POST">
-        {% csrf_token %}
-        <button class="btn danger cancel_action" type="submit">Annuler cette commande</button>
-    </form>
+    <a href="{% url 'orders:order_cancel' pk=order.pk %}" class="btn danger">Annuler cette commande</a>
     {% endif %}
 {% endif %}
 {% if request.user|has_permission:"orders.can_change_order" %}
 <a class="link primary" href="{% url 'orders:order_update' pk=order.pk %}">Modifier</a>
 {% endif %}
 <a class="link" href="{% url 'orders:order_list' %}">Retour à la liste commandes</a>
-
-<script>
-    document.querySelector(".cancel_action").addEventListener("click", (e) => {
-       e.preventDefault();
-       if (confirm("Etes vous sur d'annuler cette commande ?")) {
-           const form = e.target.closest("form");
-           form.submit();
-       }
-   });
-</script>
 
 {% endblock %}
 

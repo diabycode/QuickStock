@@ -74,6 +74,8 @@
             <tr>
                 <td>{{ sale.sale_date|date:"d-m-Y" }}</td>
                 <td class="{{ sale.status_class_name }}">{{ sale.status_display }}</td>
+                <td>{{ sale.store }}</td>
+                <td>{% if sale.seller %}{{ sale.seller }} {% else %} - {% endif %}</td>
                 {% if request.user|has_permission:"sales.can_view_sale" %}
                 <td class="actions">
                     <a href="{% url 'sales:sale_details' pk=sale.pk %}">

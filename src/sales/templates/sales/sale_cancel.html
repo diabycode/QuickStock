@@ -1,0 +1,30 @@
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+{% block head %}
+<title>Gestion des ventes</title>
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+{% endblock %}
+
+{% block body %}
+    <p>Êtes-vous sûr de vouloir annuler cette vente  ?</p>
+
+    <div class="sale-details"  style="padding: 2rem 0;">
+        {% for saleproduct in sale.saleproduct_set.all %}
+        <p>
+            <b>{{ saleproduct.product.name }}</b> ({{ saleproduct.quantity }})
+        </p>
+        {% endfor %}
+
+    </div>
+    <form method="POST">
+        {% csrf_token %} 
+        <div class="form-content vertical">
+            <div style="display: flex; gap: .3rem;">
+                <input type="checkbox" name="restore_stock" id="restore_stock" checked>
+                <label for="restore_stock">Restorer le stock</label>
+            </div>
+        </div>
+        <button type="submit" class="btn danger">Je confirme</button>
+    </form>
+{% endblock %}

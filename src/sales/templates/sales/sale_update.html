@@ -17,8 +17,9 @@
 <h3>Modifier une vente</h3>
 <form method="POST">
     {% csrf_token %} 
-    <div class="form-content">
-        
+
+    <a href="{% url 'sales:sale_product_update' sale_pk=sale.pk %}" class="link primary" style="margin-bottom: 2rem;">Modifier les quantités vendues</a>
+    <div class="form-content vertical">
         <div>
             {{ form.sale_date.label_tag }}
             {% include 'qstockapp/date_input.html' %}
@@ -29,19 +30,8 @@
             {% include 'qstockapp/date_input_binding.html' %}
         </div>
         <div>
-            {{ form.product.label_tag }}
-            {{ form.product }}
-        </div>
-        <div>
             {{ form.store.label_tag }}
             {{ form.store }}
-        </div>
-        <div>
-            {{ form.quantity.label_tag }}
-            {{ form.quantity }}
-            {% for e in form.quantity.errors %}
-                <p class="error">{{ e }}</p>
-            {% endfor %}
         </div>
         <div>
             {{ form.buyer_name.label_tag }}
@@ -50,6 +40,17 @@
         <div>
             {{ form.buyer_phone.label_tag }}
             {{ form.buyer_phone }}
+        </div>
+        <div>
+            <div>
+                {{ form.products.label_tag }}
+                <p class="helptext">{{ form.products.help_text }}</p>
+                {{ form.products }}
+            </div>
+        </div>
+        <div>
+            {{ form.seller.label_tag }}
+            {{ form.seller }}
         </div>
     </div>
     <button type="submit">Modifier</button>

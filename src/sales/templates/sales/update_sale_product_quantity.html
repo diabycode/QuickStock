@@ -1,0 +1,43 @@
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+<!-- head  -->
+{% block head %}
+<title>Gestion des ventes</title>
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
+<link rel="stylesheet" href="{% static 'css/sales/form.css' %}">
+
+{% endblock %}
+
+<!-- extra styles  -->
+{% block extra_styles %} 
+
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+<h3>Vente effectuée : quelles quantités sont vendues ?</h3>
+<form method="POST">
+    {% csrf_token %} 
+    <div class="form-content vertical">
+    {% for saleproduct in saleproducts %}
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gray); padding-bottom: 5px;">
+            <label for="id_{{ saleproduct.pk }}"><b>{{ saleproduct.product.name }}</b> (Qté restante : {{ saleproduct.product.stock_quantity }})</label> 
+            <span style="max-width: 100px;">
+                <input type='number' {% if saleproduct.is_locked %} disabled title="Cette quantité ne peut être changée" {% endif %}
+                    id="id_{{ saleproduct.pk }}" name='quantity-{{ saleproduct.pk }}' min='1' step='1' 
+                    max="{{ saleproduct.product.stock_quantity }}" value='{{ saleproduct.quantity }}' />
+                
+            </span>
+        </div>
+    {% endfor %}
+    <div style="display: flex; gap: .3rem; margin-top: 2rem;">
+        <input type="checkbox" name="deduct_from_stock" id="deduct_from_stock" checked>
+        <label for="deduct_from_stock">Soustraire du stock</label>
+    </div>
+    </div>
+    <button type="submit">Enrégistrer</button>
+    <a class="link" href="{% url 'sales:sale_list' %}">Annuler</a>
+</form>
+{% endblock %}
+

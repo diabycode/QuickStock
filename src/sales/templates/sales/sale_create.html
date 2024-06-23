@@ -47,15 +47,12 @@
                 {{ form.products.label_tag }}
                 <p class="helptext">{{ form.products.help_text }}</p>
                 {{ form.products }}
-                <a href="#" id="add_btn" class="link primary">➕Ajouter</a>
             </div>
-            <div id="selected_products">
-                <p>Aucun produit sélectionné</p>
-            </div>
-            <script src="{% static 'js/sales/product_select_field_perform.js' %}"></script>
         </div>
-
-
+        <div>
+            {{ form.seller.label_tag }}
+            {{ form.seller }}
+        </div>
     </div>
     <button type="submit">Enrégistrer</button>
     <a class="link" href="{% url 'sales:sale_list' %}">Annuler</a>

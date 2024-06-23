@@ -1,11 +1,13 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
+{% load money_string %}
 {% load template_permission %}
 
 <!-- head  -->
 {% block head %}
     <title>Gestion des ventes</title>
     <link rel="stylesheet" href="{% static 'css/quickstockapp/details.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sales/details.css' %}">
 {% endblock %}
 
 <!-- extra styles  -->
@@ -18,10 +20,6 @@
     <div class="properties">
         <p>Date de la vente <span>{{ sale.sale_date }}</span></p>
         <p>Statut <span class="{{ sale.status_class_name }}">{{ sale.status_display }}</span></p>
-        <p>
-            Produit vendu <span>{{ sale.product }}</span>
-        </p>
-        <p>Quantité vendu <span>{{ sale.quantity }}</span></p> 
         <p>Nom de l'acheteur 
             <span>
                 {% if sale.buyer_name != None %}{{ sale.buyer_name }} {% else %} - {% endif %}
@@ -33,6 +31,39 @@
             </span>
         </p> 
     </div>
+    <div class="sale-details-table">
+        <h3>Dans cette vente</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Désignation produit</th>
+                    <th>Quantité vendu</th>
+                    <th>Prix unitaire</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for saleproduct in sale.saleproduct_set.all %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'products:product_details' slug=saleproduct.product.slug %}" class="table-link">
+                                {{ saleproduct.product.name }}
+                            </a>
+                        </td>
+                        <td>{{ saleproduct.quantity }}</td>
+                        <td>{{ saleproduct.product.unit_price_sale|money_string }}</td>
+                        <td>{{ saleproduct.total|money_string }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td>Total général</td>
+                    <td></td>
+                    <td></td>
+                    <td><b>{{ sale.total_amount|money_string }}</b></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     
     {% if sale.status == '2' %}
         {% if request.user|has_permission:"sales.can_delete_sale" %}
@@ -40,27 +71,14 @@
         {% endif %}
     {% else %}
         {% if request.user|has_permission:"sales.can_change_sale" %}
-        <form style="margin-bottom: 32px;" action="{% url 'sales:sale_cancel' pk=sale.pk %}" method="POST">
-            {% csrf_token %}
-            <button class="btn danger cancel_action" type="submit">Annuler la vente</button>
-        </form>
+        <a href="{% url 'sales:sale_cancel' pk=sale.pk %}" class="btn danger">Annuler cette vente</a>
         {% endif %}
     {% endif %}
     {% if request.user|has_permission:"sales.can_change_sale" %}
     <a class="link primary" href="{% url 'sales:sale_update' pk=sale.pk %}">Modifier</a>
     {% endif %}
     <a class="link" href="{% url 'sales:sale_list' %}">Retour à la liste ventes</a>
-    
-    <script>
-         document.querySelector(".cancel_action").addEventListener("click", (e) => {
-            e.preventDefault();
-            if (confirm("Etes vous sur d'annuler cette vente ?")) {
-                const form = e.target.closest("form");
-                form.submit();
-            }
-        });
 
-    </script>
 {% endblock %}
 
 

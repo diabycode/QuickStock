@@ -117,17 +117,20 @@ class SaleCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
                 form.add_error("sale_date", "Erreur de date")
                 return self.form_invalid(form=form)
             
+            # status error
             if form_data.get("status") == SaleStatus.CANCELLED:
-                return HttpResponseBadRequest("bad request")
+                form.add_error("status", "Impossible d'ajouter une vente annulée")
+                return self.form_invalid(form=form)
+            
+            # product quantity error
+            products = form_data.get("products")
+            for product in products:
+                if product.stock_quantity <= 0:
+                    form.add_error("products", "Vous essayez de vendre un produit à stock insufisant")
+                    return self.form_invalid(form=form)
 
         form_valid_response = super().form_valid(form) 
 
-        new_sale = form.instance
-        solds = new_sale.saleproduct_set.all()
-        for sold in solds:
-            sold.product.stock_quantity -= sold.quantity
-            sold.product.save()
-        
         log_user_action(
             user=self.request.user,
             obj=form.instance,

@@ -47,6 +47,9 @@
                 {{ form.products.label_tag }}
                 <p class="helptext">{{ form.products.help_text }}</p>
                 {{ form.products }}
+                {% for error in form.products.errors %}
+                <p class="error">{{ error }}</p>
+                {% endfor %}
             </div>
         </div>
         <div>

@@ -38,6 +38,9 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
     border-color: var(--accent);
 }
+input[type=checkbox] {
+    max-width: 20px;
+}
 textarea {
     max-height: 100px;
     resize: none;

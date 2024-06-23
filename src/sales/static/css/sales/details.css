@@ -7,3 +7,16 @@
 .sale-details-table {
     margin-bottom: 2rem;
 }
+.sale-details-table > div {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-end;
+}
+p.total {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+p.total > span {
+    display: inline;
+}

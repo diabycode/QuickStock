@@ -255,6 +255,7 @@ def cancel_sale(request, pk):
     context["sale"] = obj
     return render(request, "sales/sale_cancel.html", context)
 
+
 def update_sale_product_quantity(request: HttpRequest, sale_pk):
     sale = get_object_or_404(Sale, pk=sale_pk)
     saleproducts = sale.saleproduct_set.all()
@@ -270,7 +271,7 @@ def update_sale_product_quantity(request: HttpRequest, sale_pk):
         if form_data.get("deduct_from_stock") == "on":
             from sales.signals import deduct_sale_from_stock
             deduct_sale_from_stock.send(Sale, instance=sale)
-        return redirect(reverse("sales:sale_list"))
+        return redirect(reverse("sales:sale_details", kwargs={"pk": sale.pk}))
 
     context = {
         "saleproducts": saleproducts

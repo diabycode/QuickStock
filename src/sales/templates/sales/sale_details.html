@@ -17,7 +17,7 @@
 <!-- body content -->
 {% block body %}
     <h3>Details vente</h3>
-    <div class="properties">
+    <div class="properties" style="grid-template-rows: repeat(2, 1fr)">
         <p>Date de la vente <span>{{ sale.sale_date }}</span></p>
         <p>Statut <span class="{{ sale.status_class_name }}">{{ sale.status_display }}</span></p>
         <p>Nom de l'acheteur 
@@ -32,37 +32,42 @@
         </p> 
     </div>
     <div class="sale-details-table">
-        <h3>Dans cette vente</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Désignation produit</th>
-                    <th>Quantité vendu</th>
-                    <th>Prix unitaire</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for saleproduct in sale.saleproduct_set.all %}
+        <div>
+            <table style="background-color: var(--lightgray); padding: 1rem; border-radius: 10px;">
+                <thead>
                     <tr>
-                        <td>
-                            <a href="{% url 'products:product_details' slug=saleproduct.product.slug %}" class="table-link">
-                                {{ saleproduct.product.name }}
-                            </a>
-                        </td>
-                        <td>{{ saleproduct.quantity }}</td>
-                        <td>{{ saleproduct.product.unit_price_sale|money_string }}</td>
-                        <td>{{ saleproduct.total|money_string }}</td>
+                        <th>Désignation produit</th>
+                        <th>Quantité vendu</th>
+                        <th>Prix unitaire</th>
+                        <th>Total</th>
                     </tr>
-                {% endfor %}
-                <tr>
-                    <td>Total général</td>
-                    <td></td>
-                    <td></td>
-                    <td><b>{{ sale.total_amount|money_string }}</b></td>
-                </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for saleproduct in sale.saleproduct_set.all %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'products:product_details' slug=saleproduct.product.slug %}" class="table-link">
+                                    {{ saleproduct.product.name }}
+                                </a>
+                            </td>
+                            <td>{{ saleproduct.quantity }}</td>
+                            <td>{{ saleproduct.product.unit_price_sale|money_string }}</td>
+                            <td>{{ saleproduct.total|money_string }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td>Total général</td>
+                        <td></td>
+                        <td></td>
+                        <td><b>{{ sale.total_amount|money_string }}</b></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <h4>Total payé</h4>
+                <p class="total">{{ sale.total_amount|money_string }} <span>FCFA</span></p>
+            </div>
+        </div>
     </div>
     
     {% if sale.status == '2' %}

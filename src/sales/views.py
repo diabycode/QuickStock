@@ -38,6 +38,8 @@ class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStor
         sale_column_names = [
             Sale.sale_date.field.verbose_name,
             Sale.status.field.verbose_name,
+            Sale.store.field.verbose_name,
+            Sale.seller.field.verbose_name,
         ]
         
         store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
@@ -96,9 +98,10 @@ class SaleCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
         'store',
         'buyer_name',
         'buyer_phone',
+        'seller',
     ]
     template_name = "sales/sale_create.html"
-    success_url = reverse_lazy("sales:sale_list")
+    # success_url = reverse_lazy("sales:sale_list")
     extra_context = {"page_title": "Ventes"}
     permission_required = "sales.can_add_sale"
 
@@ -143,29 +146,38 @@ class SaleCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
 
         store = get_object_or_404(Store, pk=current_store)
         form.fields["products"].queryset = Product.objects.filter(store=store)
-        form.fields["products"].help_text = "Ajoutez des porduits et selectionnez leur quantité."
+        form.fields["products"].help_text = "Ajoutez des porduits et selectionnez leur quantité juste après."
+        form.fields["seller"].initial = self.request.user
+        form.fields["seller"].disabled = True
+        form.fields["store"].disabled = True
         return form
 
-    
+    def get_success_url(self) -> str:
+        instance = self.get_form().instance
+        success_url = reverse("sales:sale_product_update", kwargs={"sale_pk": instance.pk})
+        return success_url
+
+
 class SaleUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, UpdateView):
     model = Sale
     fields = [
         'sale_date',
-        'product', # locked
-        'store', 
-        'quantity', # locked
+        'products',
+        'store',
         'buyer_name',
         'buyer_phone',
+        'seller',
     ]
     template_name = "sales/sale_update.html"
     extra_context = {"page_title": "Ventes"}
     permission_required = "sales.can_change_sale"
+    context_object_name = "sale"
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
-        form.fields["product"].disabled = True
-        form.fields["quantity"].disabled = True
-        # form.fields["status"].disabled = True
+        form.fields["seller"].disabled = True
+        form.fields["products"].disabled = True
+        form.fields["store"].disabled = True
         return form
     
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
@@ -226,41 +238,38 @@ class SaleDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
 @login_required(login_url='/accounts/login/')
 @permission_required("sales.can_change_sale")
 def cancel_sale(request, pk):
+    context = {}
+    obj: Sale = get_object_or_404(Sale, pk=pk)
+
     if request.method == "POST":
-        obj: Sale = get_object_or_404(Sale, pk=pk)
-        old_status = obj.status
         obj.status = SaleStatus.CANCELLED
+        obj.save()
 
-        # try:
-        #     obj.save(forced_save=True)
-        # except ValueError:
-        #     messages.error(request, "Impossible d'annuler cette vente", extra_tags="message")
-        #     return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
-        
-        # if old_status != SaleStatus.CANCELLED:
-        #     try:
-        #         # sale cancel signal
-        #         from products.signals import update_quantity_on_sale_cancellation
-        #         from sales.signals import sale_cancelled_signal
-        #         sale_cancelled_signal.send(update_quantity_on_sale_cancellation, instance=obj)
-        #     except:
-        #         obj.status = old_status
-        #         obj.save()
-        #         messages.error(request, "Impossible d'annuler cette vente", extra_tags="message")
-        #         return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
-        
-        # solds = obj.saleproduct_set.all()
-        # for sold in solds:
-        #     sold.product.stock_quantity += sold.quantity
-        #     sold.product.save()
-            
-        # log_user_action(
-        #     user=request.user,
-        #     obj=obj,
-        #     action_flag=CHANGE,
-        #     change_message="Vente annulé"
-        # )
-        # return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
-    return HttpResponseBadRequest("Bad request")
+        if request.POST.get("restore_stock") == "on":
+            from sales.signals import restore_stock
+            restore_stock.send(sender=Sale, instance=obj)
+        return redirect(reverse("sales:sale_details", kwargs={"pk": obj.pk}))
+    context["sale"] = obj
+    return render(request, "sales/sale_cancel.html", context)
 
+def update_sale_product_quantity(request: HttpRequest, sale_pk):
+    sale = get_object_or_404(Sale, pk=sale_pk)
+    saleproducts = sale.saleproduct_set.all()
 
+    if request.method == "POST":
+        form_data = request.POST
+        for saleproduct in saleproducts:
+            if form_data.get(f"quantity-{saleproduct.pk}"):
+                saleproduct.quantity = form_data.get(f"quantity-{saleproduct.pk}")
+                saleproduct.save()
+
+        # print(form_data)
+        if form_data.get("deduct_from_stock") == "on":
+            from sales.signals import deduct_sale_from_stock
+            deduct_sale_from_stock.send(Sale, instance=sale)
+        return redirect(reverse("sales:sale_list"))
+
+    context = {
+        "saleproducts": saleproducts
+    }
+    return render(request, "sales/update_sale_product_quantity.html", context)

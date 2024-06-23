@@ -18,13 +18,13 @@ class Order(models.Model):
     order_date = models.DateField(verbose_name="Date de commande", default=timezone.now)
     arrived_date = models.DateField(null=True, blank=True, verbose_name="Date de livraison")    
     description = models.TextField(null=True, blank=True, verbose_name="Description")
-    is_shipped = models.BooleanField(default=False, blank=True, verbose_name="Livré")
+    # is_shipped = models.BooleanField(default=False, blank=True, verbose_name="Livré")
     shipping_costs = models.DecimalField(null=True, max_digits=10, decimal_places=2, verbose_name="Frais de livraison")
     product = models.ForeignKey("products.Product", on_delete=models.CASCADE, null=True, verbose_name="Produit")
     quantity = models.PositiveIntegerField(default=0, null=True, verbose_name="Quantité")
     status = models.CharField(max_length=30, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS, verbose_name="Livraison")
     store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
-
+    added_to_stock = models.BooleanField(default=False)
     add_at = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
@@ -58,3 +58,7 @@ class Order(models.Model):
                 return "status cancelled"
             case OrderStatus.IN_PROGRESS:
                 return "status"
+            
+    @property
+    def is_shipped(self):
+        return self.status == OrderStatus.SHIPPED

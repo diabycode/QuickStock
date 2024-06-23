@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from unidecode import unidecode
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
+from django.http import HttpRequest
 
 from .models import Order, OrderStatus
 from stores.models import Store
@@ -114,6 +115,7 @@ class OrderUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentS
             form.fields["status"].disabled = True
         form.fields["product"].disabled = True
         form.fields["quantity"].disabled = True
+        form.fields["store"].disabled = True
         return form
     
     def form_valid(self, form):
@@ -136,18 +138,11 @@ class OrderUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentS
                 # Return a bad request
                 return HttpResponseBadRequest("Erreur: Le champ '{}' ne doit être changé.".format(field.label))
         
-        obj = self.get_object()
-        old_status = obj.status
-        form_status_value = form.cleaned_data.get("status")
-        
-        if old_status == OrderStatus.IN_PROGRESS and form_status_value != old_status:
-            if form_status_value == OrderStatus.SHIPPED:
-                # order cancellation signal
-                from products.signals import update_quantity_on_order_shipped
-                from orders.signals import order_shipped_signal
-                order_shipped_signal.send(update_quantity_on_order_shipped, instance=obj)
-
         form_valid_response = super().form_valid(form)
+        if self.request.POST.get("add_to_stock") == "on":
+            from orders.signals import order_shipped_signal
+            order_shipped_signal.send(sender=Order, instance=form.instance)
+
         log_user_action(
             user=self.request.user,
             obj=form.instance,
@@ -187,6 +182,11 @@ class OrderCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentS
             return self.form_invalid(form=form)
         
         form_valid_response = super().form_valid(form)
+
+        if self.request.POST.get("add_to_stock") == "on":
+            from orders.signals import order_shipped_signal
+            order_shipped_signal.send(sender=Order, instance=form.instance)
+
         log_user_action(
             user=self.request.user,
             obj=form.instance,
@@ -202,9 +202,9 @@ class OrderCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentS
         from stores.models import Store
         if current_store:
             form.fields["store"].initial = get_object_or_404(Store, pk=current_store)
-        
         store = get_object_or_404(Store, pk=current_store)
         form.fields["product"].queryset = Product.objects.filter(store=store)
+        form.fields["store"].disabled = True
         return form
 
 
@@ -231,25 +231,25 @@ class OrderDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentS
 
 @login_required(login_url='/accounts/login/')
 @permission_required("orders.can_change_order")
-def cancel_order(request, pk):
+def cancel_order(request: HttpRequest, pk):
+    context = {}
+    obj = get_object_or_404(Order, pk=pk)
+    old_status = obj.status
+
     if request.method == "POST":
-        obj = get_object_or_404(Order, pk=pk)
-        old_status = obj.status
         obj.status = OrderStatus.CANCELLED
         obj.save()
 
-        try:
-            if old_status != OrderStatus.CANCELLED and old_status != OrderStatus.IN_PROGRESS:
-                # order cancellation signal
-                from products.signals import update_quantity_on_order_cancelled
-                from orders.signals import order_cancelled_signal
-                order_cancelled_signal.send(update_quantity_on_order_cancelled, instance=obj)
-        except:
-            obj.status = old_status
-            obj.save()
-            messages.error(request, "Impossible d'annuler cette commande", extra_tags="message")
-            return redirect(reverse("orders:order_details", kwargs={"pk": obj.pk}))
-        
+        if request.POST.get("withdraw_from_stock") == "on":
+            from orders.signals import order_cancelled_signal
+            try:
+                order_cancelled_signal.send(Order, instance=obj)
+            except ValueError:
+                obj.status = old_status
+                obj.save()
+                messages.error(request, "Impossible d'annuler cette commande", extra_tags="message")
+                return redirect(reverse("orders:order_details", kwargs={"pk": obj.pk}))
+
         log_user_action(
             user=request.user,
             obj=obj,
@@ -257,7 +257,8 @@ def cancel_order(request, pk):
             change_message="Commande annulé"
         ) 
         return redirect(reverse("orders:order_details", kwargs={"pk": obj.pk}))
-    return HttpResponseBadRequest("Bad request")
+    context["order"] = obj
+    return render(request, "orders/order_cancel.html", context)
 
 
 

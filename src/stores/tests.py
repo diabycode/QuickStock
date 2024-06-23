@@ -11,6 +11,7 @@ class StoreViewsRenderingTest(TestCase):
     def setUp(self) -> None:
         self.client = Client()
         self.user = UserModel.objects.create_user(username="Test user", password="12345")
+        self.super_user = UserModel.objects.create_superuser(username="superuser", password="12345", email="almamy@gmail.com")
 
     def test_stores_list_view(self):
         url = reverse("stores:store_list")
@@ -20,6 +21,11 @@ class StoreViewsRenderingTest(TestCase):
         self.assertIn("/login/", response.url)
 
         self.client.login(username=self.user.username, password="12345")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/permission_denied/", response.url)
+
+        self.client.login(username=self.super_user.username, password="12345")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertIn("/create/", response.url)
@@ -42,6 +48,10 @@ class StoreViewsRenderingTest(TestCase):
 
         self.client.login(username=self.user.username, password="12345")
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/permission_denied/", response.url)
+        self.client.login(username=self.super_user.username, password="12345")
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_stores_update_view(self):
@@ -54,6 +64,9 @@ class StoreViewsRenderingTest(TestCase):
 
         self.client.login(username=self.user.username, password="12345")
         response = self.client.get(url)
+        self.assertIn("/permission_denied/", response.url)
+        self.client.login(username=self.super_user.username, password="12345")
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_stores_delete_view(self):
@@ -65,6 +78,9 @@ class StoreViewsRenderingTest(TestCase):
         self.assertIn("/login/", response.url)
 
         self.client.login(username=self.user.username, password="12345")
+        response = self.client.get(url)
+        self.assertIn("/permission_denied/", response.url)
+        self.client.login(username=self.super_user.username, password="12345")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 

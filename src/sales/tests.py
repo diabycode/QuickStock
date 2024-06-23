@@ -16,9 +16,9 @@ class SaleViewsRenderingTest(TestCase):
     def setUp(self) -> None:
         self.client = Client()
         self.user = UserModel.objects.create_user(username="Test user", password="12345")
+        self.superuser = UserModel.objects.create_superuser(username="superuser", email="almamy@gmail.com", password="12345")
     
     def test_sales_list_view(self):
-        
         url = reverse("sales:sale_list")
 
         # login required
@@ -29,6 +29,10 @@ class SaleViewsRenderingTest(TestCase):
         # logged in
         self.client.login(username=self.user.username, password="12345")
 
+        response = self.client.get(url)
+        self.assertIn("/permission_denied/", response.url)
+        
+        self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
         if response.status_code == 302:
             self.assertIn("/stores/", response.url)
@@ -50,6 +54,10 @@ class SaleViewsRenderingTest(TestCase):
         self.client.login(username=self.user.username, password="12345")
 
         response = self.client.get(url)
+        self.assertIn("/permission_denied/", response.url)
+        
+        self.client.login(username=self.superuser.username, password="12345")
+        response = self.client.get(url)
         if response.status_code == 302:
             self.assertIn("/stores/", response.url)
         
@@ -64,7 +72,6 @@ class SaleViewsRenderingTest(TestCase):
         product.save()
         sale = Sale.objects.create(
             sale_date=str(datetime.datetime.now().date()),
-            product=product
         )
         url = reverse("sales:sale_update", kwargs={"pk": sale.pk})
 
@@ -76,6 +83,10 @@ class SaleViewsRenderingTest(TestCase):
         # logged in
         self.client.login(username=self.user.username, password="12345")
 
+        response = self.client.get(url)
+        self.assertIn("/permission_denied/", response.url)
+        
+        self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
         if response.status_code == 302:
             self.assertIn("/stores/", response.url)
@@ -91,7 +102,6 @@ class SaleViewsRenderingTest(TestCase):
         product.save()
         sale = Sale.objects.create(
             sale_date=str(datetime.datetime.now().date()),
-            product=product
         )
         url = reverse("sales:sale_update", kwargs={"pk": sale.pk})
 
@@ -103,6 +113,10 @@ class SaleViewsRenderingTest(TestCase):
         # logged in
         self.client.login(username=self.user.username, password="12345")
 
+        response = self.client.get(url)
+        self.assertIn("/permission_denied/", response.url)
+        
+        self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
         if response.status_code == 302:
             self.assertIn("/stores/", response.url)
@@ -118,7 +132,6 @@ class SaleViewsRenderingTest(TestCase):
         product.save()
         sale = Sale.objects.create(
             sale_date=str(datetime.datetime.now().date()),
-            product=product
         )
         url = reverse("sales:sale_delete", kwargs={"pk": sale.pk})
 
@@ -130,6 +143,10 @@ class SaleViewsRenderingTest(TestCase):
         # logged in
         self.client.login(username=self.user.username, password="12345")
 
+        response = self.client.get(url)
+        self.assertIn("/permission_denied/", response.url)
+        
+        self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
         if response.status_code == 302:
             self.assertIn("/stores/", response.url)

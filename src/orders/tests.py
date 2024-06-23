@@ -15,6 +15,7 @@ class OrderViewsRenderingTest(TestCase):
     def setUp(self) -> None:
         self.client = Client()
         self.user = UserModel.objects.create_user(username="Test user", password="12345")
+        self.superuser = UserModel.objects.create_superuser(username="superuser", email="almamy@gmail.com", password="12345")
 
     def test_orders_list_view(self):
         
@@ -28,6 +29,10 @@ class OrderViewsRenderingTest(TestCase):
         # logged in
         self.client.login(username=self.user.username, password="12345")
 
+        response = self.client.get(url)
+        self.assertIn("permission_denied", response.url)
+
+        self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
         if response.status_code == 302:
             self.assertIn("/stores/", response.url)
@@ -48,6 +53,10 @@ class OrderViewsRenderingTest(TestCase):
         # logged in
         self.client.login(username=self.user.username, password="12345")
 
+        response = self.client.get(url)
+        self.assertIn("permission_denied", response.url)
+
+        self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
         if response.status_code == 302:
             self.assertIn("/stores/", response.url)
@@ -77,6 +86,10 @@ class OrderViewsRenderingTest(TestCase):
         self.client.login(username=self.user.username, password="12345")
 
         response = self.client.get(url)
+        self.assertIn("permission_denied", response.url)
+
+        self.client.login(username=self.superuser.username, password="12345")
+        response = self.client.get(url)
         if response.status_code == 302:
             self.assertIn("/stores/", response.url)
         
@@ -105,6 +118,10 @@ class OrderViewsRenderingTest(TestCase):
         # logged in
         self.client.login(username=self.user.username, password="12345")
 
+        response = self.client.get(url)
+        self.assertIn("permission_denied", response.url)
+
+        self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
         if response.status_code == 302:
             self.assertIn("/stores/", response.url)
@@ -140,6 +157,10 @@ class OrderViewsRenderingTest(TestCase):
         # logged in
         self.client.login(username=self.user.username, password="12345")
 
+        response = self.client.get(url)
+        self.assertIn("permission_denied", response.url)
+
+        self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
         if response.status_code == 302:
             self.assertIn("/stores/", response.url)

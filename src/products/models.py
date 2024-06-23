@@ -58,16 +58,15 @@ class Product(models.Model):
         month = datetime.datetime.now().month if not month else month
         year = datetime.datetime.now().year if not year else year
         total_sale = 0
-        sales = self.sale_set.filter(sale_date__month=month, sale_date__year=year)
-        for sale in sales:
-            if sale.quantity:
-                total_sale += sale.quantity
+        saleproducts = self.saleproduct_set.all().filter(sale__sale_date__month=month, sale__sale_date__year=year)
+        for saleproduct in saleproducts:
+            total_sale += saleproduct.quantity
         return total_sale
     
     def get_recent_sales(self, month=None, year=None):
         month = datetime.datetime.now().month if not month else month
         year = datetime.datetime.now().year if not year else year
-        return self.sale_set.filter(sale_date__month=month, sale_date__year=year).order_by("-sale_date")
+        return self.saleproduct_set.all().filter(sale__sale_date__month=month, sale__sale_date__year=year).order_by("-sale__add_at")
 
     @property
     def unaccent_name(self):

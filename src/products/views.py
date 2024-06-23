@@ -77,7 +77,10 @@ class ProductDetailsView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurre
         sale_column_names = [
             Sale.sale_date.field.verbose_name,
             Sale.status.field.verbose_name,
-            Sale.quantity.field.verbose_name,
+            "Qté",
+            Sale.store.field.verbose_name,
+            Sale.seller.field.verbose_name,
+            # Sale.quantity.field.verbose_name,
         ]
 
         # periods

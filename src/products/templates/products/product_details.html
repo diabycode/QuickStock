@@ -86,19 +86,21 @@
                 </tr>
             </thead>
             <tbody>
-                {% for sale in recent_sales %}
+                {% for saleproduct in recent_sales %}
                 <tr>
                     <td>
                         {% if request.user|has_permission:"sales.can_view_sale" %}
-                        <a class="table-link" href="{% url 'sales:sale_details' pk=sale.pk %}">
-                            {{ sale.sale_date|date:"d-m-Y" }}
+                        <a class="table-link" href="{% url 'sales:sale_details' pk=saleproduct.sale.pk %}">
+                            {{ saleproduct.sale.sale_date|date:"d-m-Y" }}
                         </a>
                         {% else %}
-                        {{ sale.sale_date|date:"d-m-Y" }}
+                        {{ saleproduct.sale.sale_date|date:"d-m-Y" }}
                         {% endif %}
                     </td>
-                    <td class="{{ sale.status_class_name }}">{{ sale.status_display }}</td>
-                    <td>{{ sale.quantity }}</td>
+                    <td class="{{ sale.status_class_name }}">{{ saleproduct.sale.status_display }}</td>
+                    <td>{{ saleproduct.quantity }}</td>
+                    <td>{{ saleproduct.sale.store }}</td>
+                    <td>{% if saleproduct.sale.seller %}{{ saleproduct.sale.seller }} {% else %} - {% endif %}</td>
                 </tr>
                 {% endfor %}
             </tbody>

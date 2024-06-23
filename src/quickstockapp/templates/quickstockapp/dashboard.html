@@ -127,20 +127,16 @@
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Produit</th>
-                        <th>Quantité vendu</th>
+                        <th>Magasin</th>
+                        <th>Vendeur</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for sale in recent_sales %}
                     <tr>
                         <td>{{ sale.sale_date|date:"d-m-Y" }}</td>
-                        <td>
-                            <a href="{% url 'products:product_details' slug=sale.product.slug %}" class="table-link"
-                               title="Quantité restante : {{ sale.product.stock_quantity }}">
-                                {{ sale.product.name }}</a>
-                        </td>
-                        <td>{{ sale.quantity }}</td>
+                        <td>{{ sale.store }}</td>
+                        <td>{% if sale.seller %} {{ sale.seller }} {% else %} - {% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

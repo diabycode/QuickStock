@@ -1,0 +1,9 @@
+
+.sale-details-table table th, 
+.sale-details-table table td {
+    text-align: left;
+    padding: .5rem;
+}
+.sale-details-table {
+    margin-bottom: 2rem;
+}

@@ -4,6 +4,8 @@ from django.views.generic import UpdateView, CreateView, DetailView, ListView, D
 from django.contrib.sessions.models import Session
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.http import HttpRequest
+from django.core.exceptions import PermissionDenied
 
 from stores.mixins import NotCurrentStoreMixin
 from stores.models import Store, StoreCategory
@@ -35,11 +37,19 @@ class StoreListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSto
         """
         store_categories = []
         category_list = StoreCategory.choices
-        for category in category_list:
-            store_categories.append({
-                "category_name": category[1],
-                "store_list": Store.objects.filter(category=category[0])
-            })
+        if self.request.user.has_perm("stores.can_access_all_store"):
+            for category in category_list:
+                store_categories.append({
+                    "category_name": category[1],
+                    "store_list": Store.objects.filter(category=category[0])
+                })
+        else:
+            for category in category_list:
+                store_categories.append({
+                    "category_name": category[1],
+                    "store_list": Store.objects.filter(category=category[0], users__in=[self.request.user])
+                })
+
         store_categories = list(sorted(store_categories, key=lambda c: c["category_name"]))
         context["store_categories"] = store_categories
         return context
@@ -53,6 +63,8 @@ class StoreCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, CreateView)
         "address",
         "category",
         "accent_color_code",
+        "users",
+        "description",
     ]
     success_url = reverse_lazy("stores:store_list")
     permission_required = "stores.can_add_store"
@@ -65,7 +77,9 @@ class StoreUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, UpdateView)
         "name",
         "address",
         "category",
-        "accent_color_code"
+        "accent_color_code",
+        "users",
+        "description",
     ]
     success_url = reverse_lazy("stores:store_list")
     permission_required = "stores.can_change_store"
@@ -79,10 +93,9 @@ class StoreDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, DeleteView)
 
 
 @login_required(login_url="/accounts/login/")
-@permission_required("stores.can_change_store")
-def change_store(request, pk):
-    # current_store = get_object_or_404(Store, pk=request.session.get("current_store_pk"))
-    # print("current :", current_store)
-    object = get_object_or_404(Store, pk=pk)
-    request.session["current_store_pk"] = object.pk
-    return redirect("home")
+def change_store(request: HttpRequest, pk):
+    object: Store = get_object_or_404(Store, pk=pk)
+    if request.user.has_perm("stores.can_access_all_store") or request.user in object.users.all():
+        request.session["current_store_pk"] = object.pk
+        return redirect("home")
+    raise PermissionDenied("Accès interdit !")

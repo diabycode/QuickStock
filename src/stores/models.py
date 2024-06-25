@@ -25,7 +25,8 @@ class Store(models.Model):
                                          default=StoreAccentColor.BLUE, verbose_name="Thème")
     category = models.CharField(max_length=150, null=True, choices=StoreCategory.choices,
                                 default=StoreCategory.OTHER, verbose_name="Catégorie")
-
+    users = models.ManyToManyField("accounts.UserModel", verbose_name="Accès aux utilisateurs", blank=True)
+    description = models.TextField(verbose_name="Description", null=True, blank=True)
     add_at = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
@@ -37,6 +38,7 @@ class Store(models.Model):
             ("can_change_store", "Modifier - Magasin"),
             ("can_delete_store", "Supprimer - Magasin"),
             ("can_view_store", "Voir - Magasin"),
+            ("can_access_all_store", "Accès à tous les magasins"),
         ]
 
     @classmethod
@@ -49,4 +51,3 @@ class Store(models.Model):
     @property
     def products_count(self):
         return self.product_set.all().count()
-

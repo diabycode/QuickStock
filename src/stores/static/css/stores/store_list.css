@@ -7,6 +7,9 @@ h2 {
     margin-bottom: 2rem;
     font-weight: 600;
 }
+svg path {
+    fill: var(--white);
+}
 .heading > div {
     display: flex;
     gap: 1rem;
@@ -17,20 +20,7 @@ h2 {
     justify-content: flex-end;
     margin-bottom: 1rem;
 }
-/* .add {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 10px 0;
-    margin-bottom: .5rem;
-} */
-/* .add a {
-    text-decoration: underline;
-    font-size: 1rem;
-    font-weight: 500;
-    display: inline-block;
 
-} */
 .stores {
     display: flex;
     flex-direction: column;

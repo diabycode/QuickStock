@@ -1,4 +1,6 @@
 {% load static %}
+{% load template_permission %}
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,10 +15,11 @@
         <h2>Liste des magasins</h2>
         <div class="heading">
             <div>
-                <button>Modifier</button>
+                {% if request.user|has_permission:"stores.can_add_store" %}
                 <div class="add">
                     <a class="btn primary" href="{% url 'stores:store_create' %}">+ Nouveau magasin</a>
                 </div>
+                {% endif %}
             </div>
         </div>
         <div class="stores">
@@ -27,21 +30,34 @@
                     <div class="store" style="background-color: {{ store.accent_color_code }};">
                         <div class="content">
                             <p class="name">{{ store.name }}</p>
-                            <p>{{ store.address }}</p>
-                            <p>{{ store.products_count }} produit(s)</p>
+                            <p>{% if store.description %}{{ store.description }}{% endif %}</p>
+                            <p style="margin-top: 5px; display: flex;align-items: center; justify-content: flex-start;">
+                                <svg style="margin-right: .6rem;" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 11.5C11.337 11.5 10.7011 11.2366 10.2322 10.7678C9.76339 10.2989 9.5 9.66304 9.5 9C9.5 8.33696 9.76339 7.70107 10.2322 7.23223C10.7011 6.76339 11.337 6.5 12 6.5C12.663 6.5 13.2989 6.76339 13.7678 7.23223C14.2366 7.70107 14.5 8.33696 14.5 9C14.5 9.3283 14.4353 9.65339 14.3097 9.95671C14.1841 10.26 13.9999 10.5356 13.7678 10.7678C13.5356 10.9999 13.26 11.1841 12.9567 11.3097C12.6534 11.4353 12.3283 11.5 12 11.5ZM12 2C10.1435 2 8.36301 2.7375 7.05025 4.05025C5.7375 5.36301 5 7.14348 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 7.14348 18.2625 5.36301 16.9497 4.05025C15.637 2.7375 13.8565 2 12 2Z" fill="black"/>
+                                </svg>                                    
+                                {{ store.address }}</p>
+                            <p style="display: flex;align-items: center; justify-content: flex-start;">
+                                <svg style="margin-right: .6rem;" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21.6497 20.625C21.5838 20.739 21.4891 20.8337 21.3751 20.8995C21.261 20.9654 21.1317 21 21 21H2.99999C2.86841 20.9999 2.73917 20.9651 2.62526 20.8992C2.51136 20.8333 2.41679 20.7386 2.35105 20.6247C2.28532 20.5107 2.25073 20.3814 2.25076 20.2498C2.2508 20.1182 2.28545 19.9889 2.35124 19.875C3.77906 17.4065 5.97937 15.6365 8.54718 14.7975C7.27703 14.0414 6.29019 12.8892 5.73823 11.5179C5.18627 10.1467 5.0997 8.63211 5.49181 7.20688C5.88393 5.78165 6.73304 4.52454 7.90877 3.6286C9.08449 2.73266 10.5218 2.24744 12 2.24744C13.4782 2.24744 14.9155 2.73266 16.0912 3.6286C17.2669 4.52454 18.1161 5.78165 18.5082 7.20688C18.9003 8.63211 18.8137 10.1467 18.2618 11.5179C17.7098 12.8892 16.723 14.0414 15.4528 14.7975C18.0206 15.6365 20.2209 17.4065 21.6487 19.875C21.7147 19.9889 21.7495 20.1182 21.7497 20.2499C21.7499 20.3815 21.7154 20.5109 21.6497 20.625Z" fill="black"/>
+                                </svg>
+                                {{ store.users.all.count }} utilisateur(s)</p>
                             <a href="{% url 'stores:change_store' pk=store.pk %}"></a>
                         </div>
                         <div class="options">
+                            {% if request.user|has_permission:"stores.can_change_store" %}
                             <a href="{% url 'stores:store_update' pk=store.pk %}">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path id="edit_ico" d="M3 21V16.75L16.2 3.575C16.4 3.39167 16.621 3.25 16.863 3.15C17.105 3.05 17.359 3 17.625 3C17.891 3 18.1493 3.05 18.4 3.15C18.6507 3.25 18.8673 3.4 19.05 3.6L20.425 5C20.625 5.18333 20.771 5.4 20.863 5.65C20.955 5.9 21.0007 6.15 21 6.4C21 6.66667 20.9543 6.921 20.863 7.163C20.7717 7.405 20.6257 7.62567 20.425 7.825L7.25 21H3ZM17.6 7.8L19 6.4L17.6 5L16.2 6.4L17.6 7.8Z" fill="black"/>
                                 </svg>
                             </a>
+                            {% endif %}
+                            {% if request.user|has_permission:"stores.can_delete_store" %}
                             <a style="color: var(--error);" href="{% url 'stores:store_delete' pk=store.pk %}">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path id="delete_ico" d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="black"/>
                                 </svg>
                             </a>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
@@ -49,25 +65,6 @@
             {% endfor %}
         </div>
     </main>
-
-    <script>
-        document.querySelector("button").addEventListener("click", (e) => {
-            // e.target.classList.add("edit")
-            if (e.target.innerText !== "Terminer") {
-                e.target.innerText = "Terminer";
-                Array.from(document.querySelectorAll(".store")).forEach(store => {
-                    store.classList.toggle("edit")
-                })
-                
-            } else {
-                e.target.innerText = "Modifier";
-                Array.from(document.querySelectorAll(".store")).forEach(store => {
-                    store.classList.remove("edit")
-                })
-
-            }
-        })
-    </script>
 </body>
 </html>
 

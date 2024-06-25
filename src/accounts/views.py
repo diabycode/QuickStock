@@ -375,7 +375,6 @@ class GroupCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, CreateView)
     fields= [
         "name",
         "permissions",
-        "description"
     ]
     template_name = "accounts/group_create.html"
     success_url = reverse_lazy("accounts:group_list")
@@ -412,7 +411,6 @@ class GroupUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, UpdateView)
     fields= [
         "name",
         "permissions",
-        "description"
     ]
     template_name = "accounts/group_update.html"
     success_url = reverse_lazy("accounts:group_list")

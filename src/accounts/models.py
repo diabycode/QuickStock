@@ -3,21 +3,6 @@ from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseU
 from django.core.exceptions import ValidationError
 
 
-# class CustomGroup(Group):
-#     description = models.TextField(verbose_name="Description", blank=True)
-
-#     def __str__(self) -> str:
-#         return self.name
-    
-#     class Meta:
-#         verbose_name = "Groupe"
-#         verbose_name_plural = "Groupes"
-
-#     @classmethod
-#     def get_verbose_name(cls):
-#         return cls._meta.verbose_name
-    
-
 class CustomUserManager(BaseUserManager):
 
     def _create_user(self, username, email=None, password=None, **extra_fields):
@@ -58,7 +43,6 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=80, null=True, verbose_name="Prénom")
     last_name = models.CharField(max_length=80, null=True, verbose_name="Nom")
     join_date = models.DateTimeField(auto_now_add=True, verbose_name="Ajouté le")
-    # groups = models.ManyToManyField(CustomGroup, verbose_name="Groupes", blank=True)
 
     is_staff = models.BooleanField(default=True, verbose_name="Membre d'équipe")
     is_active = models.BooleanField(default=True, verbose_name="Actif")
@@ -78,6 +62,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
             ("can_change_user", "Modifier - Utilisateur"),
             ("can_delete_user", "Supprimer - Utilisateur"),
             ("can_view_user", "Voir - Utilisateur"),
+            ("can_access_global_stats", "Accès aux statitiques et inventaires globaux"),
         ]
 
     def __str__(self):

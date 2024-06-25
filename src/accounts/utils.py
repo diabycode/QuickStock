@@ -45,8 +45,9 @@ def get_all_permissions(edit_default: bool=False, excludes: list=[]):
     permissions = Permission.objects.none()
 
     for model in models:
-        perms = get_model_permissions(model, edit_default=edit_default)
-        permissions = (permissions | perms)
+        if model:
+            perms = get_model_permissions(model, edit_default=edit_default)
+            permissions = (permissions | perms)
     permissions.distinct()
 
     return permissions

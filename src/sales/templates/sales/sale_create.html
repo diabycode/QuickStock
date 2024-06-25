@@ -52,8 +52,21 @@
             {{ form.buyer_phone.label_tag }}
             {{ form.buyer_phone }}
         </div>
-
+        <div id="discount_field">
+            {{ form.discount.label_tag }}
+            {{ form.discount }}
+        </div>
+        <a href="#" class="link primary" id="discount_apply_btn">Appliquer une réduction</a>
     </div>
+    <script>
+        const discountField = document.getElementById("discount_field");
+        discountField.style.display = "none";
+        const discountBtn = document.getElementById("discount_apply_btn")
+        discountBtn.addEventListener("click", () => {
+            discountField.style.display = "inline-block";
+            discountBtn.remove();
+        })
+    </script>
     <button type="submit">Enrégistrer</button>
     <a class="link" href="{% url 'sales:sale_list' %}">Annuler</a>
 </form>

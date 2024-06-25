@@ -51,7 +51,29 @@
             {{ form.buyer_phone.label_tag }}
             {{ form.buyer_phone }}
         </div>
+        {% if sale.discount_applied %}
+        <div id="discount_field_applied">
+            {{ form.discount.label_tag }}
+            <p class="help_text" style="font-size: .8rem;">Modifier le montant de la réduction</p>
+            {{ form.discount }}
+        </div>
+        {% else %}
+        <div id="discount_field">
+            {{ form.discount.label_tag }}
+            {{ form.discount }}
+        </div>
+        <a href="#" class="link primary" id="discount_apply_btn">Appliquer une réduction</a>
+        {% endif %}
     </div>
+    <script>
+        const discountField = document.getElementById("discount_field");
+        discountField.style.display = "none";
+        const discountBtn = document.getElementById("discount_apply_btn")
+        discountBtn.addEventListener("click", () => {
+            discountField.style.display = "inline-block";
+            discountBtn.remove();
+        })
+    </script>
     <button type="submit">Modifier</button>
     <a class="link" href="{% url 'sales:sale_details' pk=sale.pk %}">Annuler</a>
 </form>

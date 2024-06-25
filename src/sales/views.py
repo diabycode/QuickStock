@@ -93,6 +93,7 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
         'quantity',
         'buyer_name',
         'buyer_phone',
+        'discount'
     ]
     template_name = "sales/sale_create.html"
     success_url = reverse_lazy("sales:sale_list")
@@ -119,7 +120,10 @@ class SaleCreateView(LoginRequiredMixin, NotCurrentStoreMixin, CreateView):
                 return self.form_invalid(form=form)
 
         super().form_valid(form)
-        self.sale_instance = form.instance
+        self.sale_instance: Sale = form.instance
+        if self.sale_instance.discount:
+            self.sale_instance.discount_applied = True
+            self.sale_instance.save()
         success_url = reverse("sales:sale_details", kwargs={"pk": self.sale_instance.pk})
         return  redirect(success_url)
 
@@ -148,6 +152,7 @@ class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         'quantity', # locked
         'buyer_name',
         'buyer_phone',
+        'discount',
     ]
     template_name = "sales/sale_update.html"
     extra_context = {"page_title": "Ventes"}
@@ -177,6 +182,11 @@ class SaleUpdateView(LoginRequiredMixin, NotCurrentStoreMixin, UpdateView):
         for field_name, field in locked_fields:
             if field_name in form.changed_data:
                 return HttpResponseBadRequest("Erreur: Le champ '{}' ne doit être changé.".format(field.label))
+        
+        self.sale_instance: Sale = form.instance
+        if self.sale_instance.discount:
+            self.sale_instance.discount_applied = True
+            self.sale_instance.save()
         return super().form_valid(form)
 
     def get_success_url(self) -> str:

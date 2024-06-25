@@ -18,7 +18,6 @@
     <div class="properties">
         <p>Date de la vente <span>{{ sale.sale_date }}</span></p>
         <p>Statut <span class="{{ sale.status_class_name }}">{{ sale.status_display }}</span></p>
-        
         <p>Nom de l'acheteur 
             <span>
                 {% if sale.buyer_name != None %}{{ sale.buyer_name }} {% else %} - {% endif %}
@@ -29,6 +28,15 @@
                 {% if sale.buyer_phone != None %}{{ sale.buyer_phone }} {% else %} - {% endif %}
             </span>
         </p> 
+        <p>Réduction appliquée
+            <span>
+                {% if sale.discount_applied %}
+                OUI
+                {% else %}
+                NON
+                {% endif %}
+            </span>
+        </p>
     </div>
     <div class="sale-details" style="display: flex; padding: 1rem; border-radius: 10px; gap: 2rem; justify-content: flex-start; margin-bottom: 2rem; background-color: var(--lightgray);">
         <p>
@@ -36,6 +44,9 @@
         </p>
         <p>Prix unitaire (FCFA) <span>{{ sale.product.unit_price_sale|money_string }}</span></p> 
         <p>Quantité vendu <span>{{ sale.quantity }}</span></p> 
+        {% if sale.discount_applied %}
+            <p>Réduction appliquée (FCFA) <span>{{ sale.discount|money_string }}</span></p>
+        {% endif %}    
         <p>Total (FCFA) <span>{{ sale.total_amount|money_string }}</span></p>
     </div>
     

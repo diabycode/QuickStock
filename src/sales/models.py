@@ -1,3 +1,5 @@
+import decimal
+
 from django.db import models
 from unidecode import unidecode
 
@@ -17,6 +19,8 @@ class Sale(models.Model):
     buyer_phone = models.CharField(max_length=100, null=True, blank=True, verbose_name="Téléphone de l'acheteur")
     status = models.CharField(max_length=30, choices=SaleStatus.choices, default=SaleStatus.VALIDATED, verbose_name="Statut")
     store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
+    discount_applied = models.BooleanField(default=False)
+    discount = models.DecimalField(default=decimal.Decimal(0.00), max_digits=10, decimal_places=2, null=True, verbose_name="Montant de la réduction")
 
     add_at = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -42,11 +46,11 @@ class Sale(models.Model):
     
     @property
     def total_amount(self):
-        return self.product.unit_price_sale * self.quantity
+        return (self.product.unit_price_sale * self.quantity) - self.discount
     
     @property
     def income(self):
-        return (self.product.unit_price_sale - self.product.wholesale_unit_price) * self.quantity
+        return ((self.product.unit_price_sale - self.product.wholesale_unit_price) * self.quantity) - self.discount
 
     @property
     def unaccent_buyer_name(self):

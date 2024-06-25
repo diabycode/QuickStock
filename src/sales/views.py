@@ -90,6 +90,7 @@ class SaleCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
         'buyer_name',
         'buyer_phone',
         'seller',
+        'discount'
     ]
     template_name = "sales/sale_create.html"
     # success_url = reverse_lazy("sales:sale_list")
@@ -121,6 +122,10 @@ class SaleCreateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
                     return self.form_invalid(form=form)
 
         form_valid_response = super().form_valid(form) 
+        instance: Sale = form.instance
+        if instance.discount:
+            instance.discount_applied = True
+            instance.save()
 
         log_user_action(
             user=self.request.user,
@@ -161,6 +166,7 @@ class SaleUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
         'buyer_name',
         'buyer_phone',
         'seller',
+        'discount'
     ]
     template_name = "sales/sale_update.html"
     extra_context = {"page_title": "Ventes"}
@@ -194,6 +200,8 @@ class SaleUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
                 return HttpResponseBadRequest("Erreur: Le champ '{}' ne doit être changé.".format(field.label))
 
         obj: Sale = form.instance
+        if obj.discount:
+            obj.discount_applied = True
         obj.save()
         log_user_action(
             user=self.request.user,

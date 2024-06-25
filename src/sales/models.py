@@ -40,6 +40,8 @@ class Sale(models.Model):
     store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, null=True, verbose_name="Magasin")
     add_at = models.DateTimeField(auto_now_add=True, null=True)
     seller = models.ForeignKey("accounts.UserModel", on_delete=models.SET_NULL, verbose_name="Vendeur", null=True)
+    discount_applied = models.BooleanField(default=False)
+    discount = models.DecimalField(default=decimal.Decimal(0.00), max_digits=10, decimal_places=2, null=True, verbose_name="Montant de la réduction")
 
     def __str__(self) -> str:
         return f"Vente : {self.sale_date.strftime('%d-%m-%Y')}"
@@ -76,7 +78,7 @@ class Sale(models.Model):
         total = decimal.Decimal(0.00)
         for saleproduct in self.saleproduct_set.all():
             total += saleproduct.total
-        return total
+        return total - self.discount
     
     @property
     def income(self):
@@ -84,7 +86,7 @@ class Sale(models.Model):
         for saleproduct in self.saleproduct_set.all():
             i = (saleproduct.product.unit_price_sale - saleproduct.product.wholesale_unit_price) * saleproduct.quantity
             income += i
-        return income
+        return income - self.discount
 
     @property
     def unaccent_buyer_name(self):

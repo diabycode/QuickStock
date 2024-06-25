@@ -30,6 +30,11 @@
                 {% if sale.buyer_phone != None %}{{ sale.buyer_phone }} {% else %} - {% endif %}
             </span>
         </p> 
+        <p>Réduction 
+            <span>
+                {% if sale.discount_applied %} OUI {% else %} NON {% endif %}
+            </span>
+        </p> 
     </div>
     <div class="sale-details-table">
         <div>
@@ -55,6 +60,14 @@
                             <td>{{ saleproduct.total|money_string }}</td>
                         </tr>
                     {% endfor %}
+                    {% if sale.discount_applied %}
+                    <tr>
+                        <td>Réduction appliquée</td>
+                        <td></td>
+                        <td></td>
+                        <td><b>{{ sale.discount|money_string }}</b></td>
+                    </tr>
+                    {% endif %}
                     <tr>
                         <td>Total général</td>
                         <td></td>

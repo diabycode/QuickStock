@@ -52,6 +52,7 @@
                     <input type="hidden" id="current_tab" value="{{ current_tab }}">
                     <div class="menu">
                         <ul>
+                            {% if request.user|has_permission:"accounts.can_access_global_stats" %}
                             <li>
                                 <a href="{% url 'home' %}">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,6 +61,7 @@
                                     Tableau de bord
                                 </a>
                             </li>
+                            {% endif %}
                             {% if request.user|has_permission:"products.can_view_product" %}
                             <li>
                                 <a href="{% url 'products:product_list' %}">

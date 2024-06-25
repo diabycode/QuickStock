@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accès interdit</title>
-</head>
-<body>
-    <h1>🚫 Accès interdit</h1>
-    <p>Vous navez pas accès à cette ressource. <a href="{% url 'accounts:logout' %}">Déconnexion</a></p>
-</body>
-</html>
+{% extends 'qstockapp/base.html' %}
+{% load static %}
+
+{% block head %}
+<title>Accès interdit</title>
+{% endblock %}
+
+{% block body %}
+<h1>🚫 Accès interdit</h1>
+<p>Désolé vous navez pas accès à cette ressource.</p>
+{% endblock %}

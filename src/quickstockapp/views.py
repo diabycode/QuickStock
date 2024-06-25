@@ -17,6 +17,7 @@ from products.models import Product
 from sales.models import Sale
 from settings.models import EditableSettings
 from accounts.models import UserPreference
+from accounts.decorators import permission_required
 
 
 def get_current_period(request: HttpRequest, period_list) -> tuple:
@@ -50,6 +51,7 @@ def index(request: HttpRequest):
     return redirect(reverse("home"))
 
 @login_required(login_url='/accounts/login/')
+@permission_required("accounts.can_access_global_stats")
 def home(request: HttpRequest):
     if request.session.get("current_store_pk") is None:
         return redirect("stores:store_list")
@@ -141,6 +143,7 @@ def lock_pin(request: HttpRequest):
     return HttpResponseBadRequest("Bad Request")
 
 
+@login_required(login_url="/accounts/login/")
 def permission_denied(request: HttpRequest):
     return render(request, "quickstockapp/permission_denied.html", {})
 

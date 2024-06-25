@@ -70,13 +70,4 @@
     {% else %}
     <p>Aucun produit à afficher </p>
     {% endif %}
-    <script>
-        document.querySelector(".delete_action").addEventListener("click", (e) => {
-            e.preventDefault();
-            if (confirm("Etes-vous sure de supprimer ?")) {
-                const form = e.target.closest("form");
-                form.submit();
-            }
-        });
-    </script>
 {% endblock %}

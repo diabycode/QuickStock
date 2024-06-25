@@ -39,6 +39,12 @@ tr.warn {
 .table-link {
     font-weight: 700;
 }
+.table-link.regular {
+    font-weight: 400;
+}
+.table-link.regular:hover {
+    text-decoration: underline;
+}
 .table-link:hover {
     color: var(--primary);
 }

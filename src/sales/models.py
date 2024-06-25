@@ -1,4 +1,5 @@
 import decimal
+import datetime
 
 from django.db import models
 from unidecode import unidecode
@@ -89,4 +90,32 @@ class Sale(models.Model):
     def unaccent_buyer_name(self):
         return unidecode(self.buyer_name) if self.buyer_name else None
     
+    @classmethod
+    def get_day_sale_number(cls, store):
+        today = datetime.datetime.now().date()
+        return Sale.objects.filter(store=store, sale_date__day=today.day, sale_date__month=today.month, sale_date__year=today.year).count()
     
+    @classmethod
+    def get_day_sale_revenue(cls, store):
+        today = datetime.datetime.now().date()
+        day_sales =  Sale.objects.filter(store=store, sale_date__day=today.day, sale_date__month=today.month, sale_date__year=today.year)
+        
+        day_revenue = decimal.Decimal(0.00)
+        for sale in day_sales:
+            sale_revenue = decimal.Decimal(0.00)
+            for saleproduct in sale.saleproduct_set.all():
+                product_revenue = saleproduct.product.unit_price_sale * saleproduct.quantity
+                sale_revenue += product_revenue
+            day_revenue += sale_revenue
+        return day_revenue
+
+    @classmethod
+    def get_day_sale_product_quantity(cls, store):
+        today = datetime.datetime.now().date()
+        day_sales =  Sale.objects.filter(store=store, sale_date__day=today.day, sale_date__month=today.month, sale_date__year=today.year)
+        
+        total_quantity = 0
+        for sale in day_sales:
+            for saleproduct in sale.saleproduct_set.all():
+                total_quantity += saleproduct.quantity
+        return total_quantity

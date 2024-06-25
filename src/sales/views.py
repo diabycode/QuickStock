@@ -40,41 +40,32 @@ class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStor
             Sale.status.field.verbose_name,
             Sale.store.field.verbose_name,
             Sale.seller.field.verbose_name,
+            Sale.products.field.verbose_name,
         ]
         
+        today = datetime.datetime.now().date()
         store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
-        sale_list = Sale.objects.filter(store=store).order_by("-add_at")
-        
-        # periods
-        now_period = {
-            "month": datetime.datetime.now().month, 
-            "year": datetime.datetime.now().year}
+        day_sales =  Sale.objects.filter(store=store, sale_date__day=today.day, sale_date__month=today.month, sale_date__year=today.year)
 
-        # period filters
-        periods = get_period_list(model=Sale, date_field="sale_date")
-        selected_month, selected_year = None, None
-        self.request, current_period = get_current_period(request=self.request, period_list=periods)
-        if current_period:
-            selected_month, selected_year = current_period.split("-")
-        
-        sale_list = sale_list.filter(sale_date__month=selected_month, sale_date__year=selected_year)
-        
         # search query filters
         isfilters = False
         search_query = self.request.GET.get("q", None)
         if search_query:
             isfilters = True
             def func(s):
-                return unidecode(search_query).lower() in s.product.unaccent_name.lower()
-            sale_list = filter(func, sale_list)
+                product_names = [p.unaccent_name.lower() for p in s.products.all()]
+                for name in product_names:
+                    if unidecode(search_query).lower() in name:
+                        return True
+                return False
+            day_sales = filter(func, day_sales)
 
+        context["day_sale_number"] = Sale.get_day_sale_number(store=store)
+        context["day_sale_revenue"] = Sale.get_day_sale_revenue(store=store)
+        context["day_sale_product_quantity"] = Sale.get_day_sale_product_quantity(store=store)
         context["sale_column_names"] = sale_column_names
-        context["sale_list"] = sale_list
+        context["sale_list"] = day_sales
         context["page_title"] = "Ventes"
-        context["periods"] = periods
-        context["now_period"] = now_period
-        context["current_month"] = int(selected_month) if selected_month is not None else selected_month
-        context["current_year"] = int(selected_year) if selected_year is not None else selected_year
         context["isfilters"] = isfilters
         if search_query:
             context["search_query"] = search_query 
@@ -203,7 +194,7 @@ class SaleUpdateView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSt
                 return HttpResponseBadRequest("Erreur: Le champ '{}' ne doit être changé.".format(field.label))
 
         obj: Sale = form.instance
-        obj.save(forced_save=True)
+        obj.save()
         log_user_action(
             user=self.request.user,
             action_flag=CHANGE,

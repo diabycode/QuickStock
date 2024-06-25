@@ -1,6 +1,7 @@
 {% extends 'qstockapp/base.html' %}
 {% load static %}
 {% load template_permission %}
+{% load money_string %}
 
 <!-- head  -->
 {% block head %}
@@ -12,11 +13,72 @@
 
 <!-- extra styles  -->
 {% block extra_styles %} 
-    
+.day-stats {
+    background-color: var(--white);
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--gray);
+}
+.day-stats div {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    font-weight: 600;
+}
+.day-stats div > span {
+    font-size: 2rem;
+    font-weight: 700;
+}
+.stat-data {
+    border-radius: 5px;
+}
+svg path {
+    fill: var(--primary)
+}
 {% endblock %}
 
 <!-- body content -->
 {% block body %}
+    <div class="day-stats-bar">
+        <span style="display: flex; align-items: center; gap: .5rem; padding: .2rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_147_39)">
+                <path d="M21.5 4.00002H18.8333V6.00002C18.8333 6.19262 18.7954 6.38334 18.7217 6.56129C18.648 6.73923 18.5399 6.90091 18.4038 7.03711C18.2676 7.1733 18.1059 7.28133 17.9279 7.35504C17.75 7.42875 17.5593 7.46668 17.3667 7.46668C17.1741 7.46668 16.9833 7.42875 16.8054 7.35504C16.6275 7.28133 16.4658 7.1733 16.3296 7.03711C16.1934 6.90091 16.0854 6.73923 16.0116 6.56129C15.9379 6.38334 15.9 6.19262 15.9 6.00002V4.00002H8.13333V6.00002C8.13333 6.389 7.97881 6.76205 7.70376 7.03711C7.4287 7.31216 7.05565 7.46668 6.66667 7.46668C6.27768 7.46668 5.90463 7.31216 5.62958 7.03711C5.35452 6.76205 5.2 6.389 5.2 6.00002V4.00002H2.53333C2.37468 3.99821 2.21728 4.02824 2.07043 4.08832C1.92359 4.14841 1.79029 4.23733 1.67841 4.34983C1.56653 4.46233 1.47835 4.59613 1.41907 4.7433C1.3598 4.89048 1.33065 5.04804 1.33333 5.20668V20.1267C1.33068 20.2825 1.35876 20.4374 1.41596 20.5823C1.47316 20.7273 1.55837 20.8596 1.66671 20.9717C1.77505 21.0837 1.9044 21.1734 2.04738 21.2354C2.19035 21.2975 2.34416 21.3307 2.5 21.3333H21.5C21.6558 21.3307 21.8096 21.2975 21.9526 21.2354C22.0956 21.1734 22.225 21.0837 22.3333 20.9717C22.4416 20.8596 22.5268 20.7273 22.584 20.5823C22.6412 20.4374 22.6693 20.2825 22.6667 20.1267V5.20668C22.6693 5.05084 22.6412 4.896 22.584 4.75102C22.5268 4.60603 22.4416 4.47373 22.3333 4.36168C22.225 4.24962 22.0956 4.16001 21.9526 4.09795C21.8096 4.0359 21.6558 4.00262 21.5 4.00002ZM6.66667 17.3333H5.33333V16H6.66667V17.3333ZM6.66667 14H5.33333V12.6667H6.66667V14ZM6.66667 10.6667H5.33333V9.33335H6.66667V10.6667ZM10.6667 17.3333H9.33333V16H10.6667V17.3333ZM10.6667 14H9.33333V12.6667H10.6667V14ZM10.6667 10.6667H9.33333V9.33335H10.6667V10.6667ZM14.6667 17.3333H13.3333V16H14.6667V17.3333ZM14.6667 14H13.3333V12.6667H14.6667V14ZM14.6667 10.6667H13.3333V9.33335H14.6667V10.6667ZM18.6667 17.3333H17.3333V16H18.6667V17.3333ZM18.6667 14H17.3333V12.6667H18.6667V14ZM18.6667 10.6667H17.3333V9.33335H18.6667V10.6667Z" fill="black"/>
+                <path d="M6.66667 6.66665C6.84348 6.66665 7.01305 6.59641 7.13807 6.47138C7.2631 6.34636 7.33333 6.17679 7.33333 5.99998V1.99998C7.33333 1.82317 7.2631 1.6536 7.13807 1.52858C7.01305 1.40355 6.84348 1.33331 6.66667 1.33331C6.48986 1.33331 6.32029 1.40355 6.19526 1.52858C6.07024 1.6536 6 1.82317 6 1.99998V5.99998C6 6.17679 6.07024 6.34636 6.19526 6.47138C6.32029 6.59641 6.48986 6.66665 6.66667 6.66665Z" fill="black"/>
+                <path d="M17.3333 6.66665C17.5101 6.66665 17.6797 6.59641 17.8047 6.47138C17.9298 6.34636 18 6.17679 18 5.99998V1.99998C18 1.82317 17.9298 1.6536 17.8047 1.52858C17.6797 1.40355 17.5101 1.33331 17.3333 1.33331C17.1565 1.33331 16.987 1.40355 16.8619 1.52858C16.7369 1.6536 16.6667 1.82317 16.6667 1.99998V5.99998C16.6667 6.17679 16.7369 6.34636 16.8619 6.47138C16.987 6.59641 17.1565 6.66665 17.3333 6.66665Z" fill="black"/>
+                </g>
+                <defs>
+                <clipPath id="clip0_147_39">
+                <rect width="24" height="24" fill="white"/>
+                </clipPath>
+                </defs>
+            </svg>
+                
+            Ajourd'hui</span>
+        <div class="day-stats" style="display: flex; justify-content: space-around; gap: 1rem; padding: 1rem;">
+            <div>
+                <span class="stat-data" style="background-color: rgb(245 245 255);">
+                    {{ day_sale_number }}
+    
+                </span>
+                Vente(s) réalisée(s)
+            </div>
+            <div>
+                <span class="stat-data" style="background-color: rgb(245 245 255);">
+                    {{ day_sale_product_quantity }}
+    
+                </span>
+                Produit(s) vendu(s)
+            </div>
+            <div>
+                <span class="stat-data" style="background-color: rgb(239 223 255);">
+                    {{ day_sale_revenue|money_string }}
+    
+                </span>
+                FCFA (revenue total)
+            </div>
+        </div>
+    </div>
     <div class="heading">
         <div class="filter-form">
             <form method="GET" class="search-form">
@@ -26,29 +88,6 @@
                         <path d="M21 21L16.657 16.657M16.657 16.657C17.3999 15.9141 17.9892 15.0322 18.3912 14.0616C18.7933 13.0909 19.0002 12.0506 19.0002 11C19.0002 9.94942 18.7933 8.90911 18.3912 7.93848C17.9892 6.96785 17.3999 6.08591 16.657 5.34302C15.9141 4.60014 15.0322 4.01084 14.0615 3.6088C13.0909 3.20675 12.0506 2.99982 11 2.99982C9.9494 2.99982 8.90908 3.20675 7.93845 3.6088C6.96782 4.01084 6.08589 4.60014 5.343 5.34302C3.84267 6.84335 2.99979 8.87824 2.99979 11C2.99979 13.1218 3.84267 15.1567 5.343 16.657C6.84333 18.1574 8.87821 19.0002 11 19.0002C13.1218 19.0002 15.1567 18.1574 16.657 16.657Z" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
-                <select name="current_period" id="period">
-                    {% for period in periods %}
-                        {% if period.month == current_month and period.year == current_year %}
-                        
-                        <option selected value="{{ period.month }}-{{ period.year }}">
-                            {% if period.month == now_period.month and period.year == now_period.year %}
-                            Ce mois-ci
-                            {% else %}
-                            {{ period.month|stringformat:'02d'  }}/{{ period.year }}
-                            {% endif %}
-                        </option>
-                        {% else %}
-                        <option value="{{ period.month }}-{{ period.year }}">
-                            {% if period.month == now_period.month and period.year == now_period.year %}
-                            Ce mois-ci
-                            {% else %}
-                            {{ period.month|stringformat:'02d'  }}/{{ period.year }}
-                            {% endif %}
-                        </option>
-                        {% endif %}
-                        
-                    {% endfor %}
-                </select>
             </form>
             {% if isfilters %}
             <a href="{% url 'sales:sale_list' %}">x Annuler tous les filtres</a>
@@ -76,6 +115,12 @@
                 <td class="{{ sale.status_class_name }}">{{ sale.status_display }}</td>
                 <td>{{ sale.store }}</td>
                 <td>{% if sale.seller %}{{ sale.seller }} {% else %} - {% endif %}</td>
+                <td>
+                    {% for product in sale.products.all %}
+                        <a href="{% url 'products:product_details' slug=product.slug %}"
+                            class="table-link regular">{{ product.name }}</a>,
+                    {% endfor %}
+                </td>
                 {% if request.user|has_permission:"sales.can_view_sale" %}
                 <td class="actions">
                     <a href="{% url 'sales:sale_details' pk=sale.pk %}">

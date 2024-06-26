@@ -7,6 +7,13 @@
 <link rel="stylesheet" href="{% static 'css/quickstockapp/table.css' %}">
 {% endblock %}
 
+{% block extra_styles %}
+.permission {
+    background-color: var(--lightgray);
+    border-radius: 10px;
+}
+{% endblock %}
+
 <!-- body content -->
 {% block body %}
 <div class="heading">
@@ -38,7 +45,9 @@
                 {% endif %}
             </td>
             <td>
-                {{ group.description }}
+                {% for permission in group.permissions.all %}
+                <span class="permission">{{ permission.name }}</span>,
+                {% endfor %}
             </td>
         </tr>
         {% endfor %}

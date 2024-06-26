@@ -54,11 +54,9 @@ class Product(models.Model):
         year = datetime.datetime.now().year if not year else year
         return self.sale_set.filter(sale_date__month=month, sale_date__year=year)
     
-    def get_sales_count(self, month=None, year=None):
-        month = datetime.datetime.now().month if not month else month
-        year = datetime.datetime.now().year if not year else year
+    def get_sales_count(self, from_date: datetime.date, to_date: datetime.date):
         total_sale = 0
-        saleproducts = self.saleproduct_set.all().filter(sale__sale_date__month=month, sale__sale_date__year=year)
+        saleproducts = self.saleproduct_set.all().filter(sale__sale_date__range=[from_date, to_date])
         for saleproduct in saleproducts:
             total_sale += saleproduct.quantity
         return total_sale

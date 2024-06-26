@@ -35,11 +35,8 @@ class Inventory:
     default_year = datetime.datetime.now().year
 
     @classmethod
-    def get_recent_sales(cls, store: Store, month=None, year=None, limit: int=10):
-        month = cls.default_month if not month else month
-        year = cls.default_year if not year else year
-        return store.sale_set.filter(status=SaleStatus.VALIDATED, sale_date__month=month, sale_date__year=year)\
-                .order_by("-sale_date")[:limit]
+    def get_recent_sales(cls, store: Store, from_date: datetime.date, to_date: datetime.date, limit: int=10):
+        return store.sale_set.filter(status=SaleStatus.VALIDATED, sale_date__range=[from_date, to_date]).order_by("-sale_date")[:limit]
 
     @classmethod
     def products_count(cls, store: Store):
@@ -54,33 +51,18 @@ class Inventory:
         return total
 
     @classmethod
-    def sales_count(cls, store: Store, month=None, year=None):
-        if not year:
-            year = cls.default_year
-        if not month:
-            month = cls.default_month
-
+    def sales_count(cls, store: Store, from_date: datetime.date, to_date: datetime.date):
         return Sale.objects.filter(store=store, status=SaleStatus.VALIDATED,
-                                sale_date__year=year, sale_date__month=month).count()
+                                sale_date__range=[from_date, to_date]).count()
     
     @classmethod
-    def orders_count(cls, store: Store, month=None, year=None):
-        if not year:
-            year = cls.default_year
-        if not month:
-            month = cls.default_month
-        return Order.objects.filter(store=store,
-                                order_date__year=year,
-                                order_date__month=month).count()
+    def orders_count(cls, store: Store, from_date: datetime.date, to_date: datetime.date):
+        return Order.objects.filter(store=store, order_date__range=[from_date, to_date]).count()
 
     @classmethod
-    def total_earned(cls, store: Store, month=None, year=None):
-        if not year:
-            year = cls.default_year
-        if not month:
-            month = cls.default_month
+    def total_earned(cls, store: Store, from_date: datetime.date, to_date: datetime.date):
         total =  decimal.Decimal(0.0)
-        sales = Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, sale_date__year=year, sale_date__month=month)
+        sales = Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, sale_date__range=[from_date, to_date])
         for sale in sales:
             total += sale.total_amount
 
@@ -89,28 +71,21 @@ class Inventory:
         return total_str
     
     @classmethod
-    def net_incomme(cls, store: Store, month=None, year=None):
-        if not year:
-            year = cls.default_year
-        if not month:
-            month = cls.default_month
+    def net_incomme(cls, store: Store, from_date: datetime.date, to_date: datetime.date):
         total =  decimal.Decimal(0.0)
-        sales = Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, sale_date__year=year, sale_date__month=month)
+        sales = Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, sale_date__range=[from_date, to_date])
         for sale in sales:
             total += sale.income
-        total -= cls.get_shipping_fees(store=store, month=month, year=year, string=False)
+        total -= cls.get_shipping_fees(store=store, from_date=from_date, to_date=to_date, string=False)
         total_str = format_number_with_space_separator(total)
         return total_str
 
     @classmethod
-    def best_seller_products(cls, store: Store, month=None, year=None):
-        month = cls.default_month if not month else month
-        year = cls.default_year if not year else year
-
+    def best_seller_products(cls, store: Store, from_date: datetime.date, to_date: datetime.date):
         best_products = []
         products = Product.objects.filter(store=store)
         for product in products:
-            p = (product, product.get_sales_count(month=month, year=year))
+            p = (product, product.get_sales_count(from_date=from_date, to_date=to_date))
             if p[1] and p[1] > 0:
                 best_products.append(p)
         best_products.sort(key=lambda x: x[1], reverse=True)
@@ -122,14 +97,9 @@ class Inventory:
                 .order_by("stock_quantity")[:7]
     
     @classmethod
-    def get_shipping_fees(cls, store: Store, month=None, year=None, string=False):
-        if not year:
-            year = cls.default_year
-        if not month:
-            month = cls.default_month
-
+    def get_shipping_fees(cls, store: Store, from_date: datetime.date, to_date: datetime.date, string=False):
         total_fees = decimal.Decimal(0.0)
-        orders = Order.objects.filter(store=store, order_date__month=month, order_date__year=year)
+        orders = Order.objects.filter(store=store, order_date__range=[from_date, to_date])
         for order in orders:
             if order.shipping_costs:
                 total_fees += order.shipping_costs

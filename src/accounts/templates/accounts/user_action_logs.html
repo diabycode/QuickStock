@@ -6,9 +6,17 @@
 <link rel="stylesheet" href="{% static 'css/quickstockapp/table.css' %}">
 {% endblock %}
 
+{% block extra_styles %}
+td, th {
+    padding: 2px;
+}
+tbody tr {
+    background-color: var(--lightgray)
+}
+{% endblock %}
+
 <!-- body content -->
 {% block body %}
-
 {% if user_action_logs %}
 <table>
     <thead>

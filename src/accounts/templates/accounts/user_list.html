@@ -36,6 +36,12 @@
             <td>{% if user.last_name %}{{ user.last_name }} {% else %} - {% endif %}</td>
             <td>{% if user.first_name %}{{ user.first_name }} {% else %} - {% endif %}</td>
             <td>{{ user.join_date|date:"d-m-Y H:i" }}</td>
+            <td>
+                {% for group in user.groups.all %}
+                    {{ group.name }},
+                {% endfor %}
+
+            </td>
             {% if request.user|has_permission:"accounts.can_change_user" %}
             <td>******<a href="{% url 'accounts:change_user_password' pk=user.pk %}"
                 class="link primary">Changer</a></td>

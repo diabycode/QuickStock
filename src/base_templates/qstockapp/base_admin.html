@@ -40,14 +40,18 @@
         <main>
             <div class="sidebar">
                 <div class="app_name">
-                    <h1>Administration</h1>
+                    {% if app_settings.company_logo %}
+                    <img src="{{ app_settings.company_logo.url }}" alt="Logo" height="40">
+                    {% endif %}
+                    <h1>
+                        {% if app_settings.company_name %} {{ app_settings.company_name }} {% else %} QuickStock {% endif %}</h1>
                 </div>
                 <div class="sidebar-content">
                     <input type="hidden" id="current_tab" value="{{ current_tab }}">
                     <div class="menu">
                         <ul>
                             <li>
-                                <a href="#">
+                                <a href="{% url 'accounts:admin_panel' %}">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M11.4 3.59998V8.39998H3.60001V7.19998C3.60001 6.2452 3.97929 5.32952 4.65442 4.65439C5.32955 3.97926 6.24523 3.59998 7.20001 3.59998H11.4ZM12.6 3.59998V14.4H20.4V7.19998C20.4 6.2452 20.0207 5.32952 19.3456 4.65439C18.6705 3.97926 17.7548 3.59998 16.8 3.59998H12.6ZM20.4 15.6H12.6V20.4H16.8C17.7548 20.4 18.6705 20.0207 19.3456 19.3456C20.0207 18.6704 20.4 17.7548 20.4 16.8V15.6ZM11.4 20.4V9.59998H3.60001V16.8C3.60001 17.7548 3.97929 18.6704 4.65442 19.3456C5.32955 20.0207 6.24523 20.4 7.20001 20.4H11.4Z" fill="black"/>
                                     </svg>
@@ -105,6 +109,7 @@
                         <h2>
                             {{ page_title }}
                         </h2>
+                        <p style="color: var(--subwhite); text-align: center; background-color: var(--black);">Vous êtes dans le site d'administration</p>
                     </div>
                     <div>
                         <span title="Connecté" class="user">

@@ -7,12 +7,16 @@
 {% block head %}
 <title>Gestion des ventes</title>
 <link rel="stylesheet" href="{% static 'css/quickstockapp/table.css' %}">
+<link rel="stylesheet" href="{% static 'css/quickstockapp/form.css' %}">
 <link rel="stylesheet" href="{% static 'css/quickstockapp/filter_form.css' %}">
 <script src="{% static 'js/quickstockapp/period_change.js' %}" defer></script>
 {% endblock %}
 
 <!-- extra styles  -->
 {% block extra_styles %} 
+form {
+    margin-bottom: 0;
+}
 .day-stats {
     background-color: var(--white);
     border-radius: 10px;
@@ -53,8 +57,13 @@ svg path {
                 </clipPath>
                 </defs>
             </svg>
-                
-            Ajourd'hui</span>
+            <div class="period-picker" style="display: flex; gap: 10px;">
+            {% if request.user|has_permission:"accounts.can_access_global_stats" %}
+                {% include 'quickstockapp/partials/date_range_picker.html' with  opens='right' minDate=date_range_min maxDate=date_range_max startDate=from_date endDate=to_date %}
+            {% endif %}
+                <span>{% if is_today %} Ajourd'hui {% endif %}</span>
+            </div>        
+        </span>
         <div class="day-stats" style="display: flex; justify-content: space-around; gap: 1rem; padding: 1rem;">
             <div>
                 <span class="stat-data" style="background-color: rgb(245 245 255);">

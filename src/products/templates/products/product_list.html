@@ -52,6 +52,7 @@
                 <td>{{ product.stock_quantity }}</td>
                 <td>{{ product.wholesale_unit_price|money_string }}</td>
                 <td>{{ product.unit_price_sale|money_string }}</td>
+                <td>{{ product.store.name }}</td>
                 <td> {% if product.add_at %} {{ product.add_at|date:"d-m-Y" }} {% else %} - {% endif %}</td>
                 {% if request.user|has_permission:"products.can_view_product" %}
                 <td class="actions">

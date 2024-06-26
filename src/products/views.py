@@ -33,6 +33,7 @@ class ProductListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentS
             Product.stock_quantity.field.verbose_name,
             Product.wholesale_unit_price.field.verbose_name + " (FCFA)",
             Product.unit_price_sale.field.verbose_name + " (FCFA)",
+            Product.store.field.verbose_name,
             Product.add_at.field.verbose_name,
         ]
         try:
@@ -186,6 +187,3 @@ class ProductDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurren
             change_message="Produit supprimé"
         )
         return super().post(request, *args, **kwargs)
-
-
-

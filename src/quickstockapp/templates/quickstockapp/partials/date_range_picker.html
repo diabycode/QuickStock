@@ -1,0 +1,38 @@
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<div id="date_range_picker">
+    <form method="GET">
+        <input type="text" name="dates" id="date_range_input">
+        <input type="submit" style="display: none;" id="date_range_validate">
+    </form>
+    <script>
+        $('input[name="dates"]').daterangepicker({
+            "locale": {
+                "format": "DD/MM/YYYY",
+                "separator": " - ",
+                "applyLabel": "Valider",
+                "cancelLabel": "Annuler",
+                "fromLabel": "De",
+                "toLabel": "à",
+                "customRangeLabel": "Custom",
+                "daysOfWeek": ["D","L","M","M","J","V","S"],
+                "monthNames": ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
+                "firstDay": 1
+            },
+            "opens": "{{ opens }}",
+            "minDate": "{{ minDate }}",
+            "maxDate": "{{ maxDate }}",
+            "startDate": "{{ startDate }}",
+            "endDate": "{{ endDate }}",
+            "drops": "down",
+        });
+
+        const validateBtn = document.getElementById("date_range_validate");
+        $('input[name="dates"]').on('apply.daterangepicker', () => {
+            validateBtn.click();
+        })
+    </script>
+</div>

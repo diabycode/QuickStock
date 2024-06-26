@@ -8,11 +8,12 @@ from django.views.generic import UpdateView, CreateView, DetailView, ListView, D
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.forms.utils import ErrorList
-from django.http import HttpRequest, HttpResponseBadRequest
+from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
+from django.core.exceptions import PermissionDenied
 from unidecode import unidecode
 
 from .models import Sale, SaleStatus
@@ -43,9 +44,26 @@ class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStor
             Sale.products.field.verbose_name,
         ]
         
+        local_date_format = "%d/%m/%Y"
         today = datetime.datetime.now().date()
+
+        
+        # date range selected
+        date_range: str | None = self.request.GET.get("dates", None)
+        from_date, to_date = (today, today)
+        is_today = True
+        if date_range is not None:
+            if not self.request.user.has_perm("accounts.can_access_global_stats"):
+                raise PermissionDenied()
+            from quickstockapp.views import get_date_objects_from_date_range
+            from_date, to_date = get_date_objects_from_date_range(date_range)
+            is_today = False
+
         store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
-        day_sales =  Sale.objects.filter(store=store, sale_date__day=today.day, sale_date__month=today.month, sale_date__year=today.year)
+        sale_list = Sale.objects.filter(store=store, sale_date__range=[from_date, to_date])            
+        
+        date_range_max = Sale.objects.last().sale_date if Sale.objects.last() else None
+        date_range_min = Sale.objects.first().sale_date if Sale.objects.first() else None
 
         # search query filters
         isfilters = False
@@ -58,15 +76,22 @@ class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStor
                     if unidecode(search_query).lower() in name:
                         return True
                 return False
-            day_sales = filter(func, day_sales)
+            sale_list = filter(func, sale_list)
 
         context["day_sale_number"] = Sale.get_day_sale_number(store=store)
         context["day_sale_revenue"] = Sale.get_day_sale_revenue(store=store)
         context["day_sale_product_quantity"] = Sale.get_day_sale_product_quantity(store=store)
         context["sale_column_names"] = sale_column_names
-        context["sale_list"] = day_sales
+        context["sale_list"] = sale_list
         context["page_title"] = "Ventes"
         context["isfilters"] = isfilters
+
+        context["from_date"] = from_date.strftime(local_date_format)
+        context["to_date"] = to_date.strftime(local_date_format)
+        context["date_range_max"] = date_range_max.strftime(local_date_format) if date_range_max else today.strftime(local_date_format)
+        context["date_range_min"] = date_range_min.strftime(local_date_format) if date_range_min else today.strftime(local_date_format)
+        context["is_today"] = is_today 
+        
         if search_query:
             context["search_query"] = search_query 
         return context

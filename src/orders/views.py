@@ -46,19 +46,6 @@ class OrderListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSto
         store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
         order_list = Order.objects.filter(store=store).order_by("-add_at")
 
-        # actual period
-        now_period = {
-            "month": datetime.datetime.now().month, 
-            "year": datetime.datetime.now().year}
-
-        # period filters
-        periods = get_period_list(model=Order, date_field="order_date")
-        selected_month, selected_year = None, None
-        self.request, current_period = get_current_period(request=self.request, period_list=periods)
-        if current_period:
-            selected_month, selected_year = current_period.split("-")
-        order_list = order_list.filter(order_date__month=selected_month, order_date__year=selected_year)
-
         # search query filters
         isfilters = False
         search_query = self.request.GET.get("q", None)
@@ -71,10 +58,6 @@ class OrderListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentSto
         context["order_column_names"] = order_column_names
         context["order_list"] = order_list
         context["page_title"] = "Commandes"
-        context["periods"] = periods
-        context["now_period"] = now_period
-        context["current_month"] = int(selected_month) if selected_month is not None else selected_month
-        context["current_year"] = int(selected_year) if selected_year is not None else selected_year
         context["isfilters"] = isfilters
         if search_query:
             context["search_query"] = search_query 

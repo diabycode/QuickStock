@@ -24,6 +24,18 @@ from accounts.decorators import permission_required
 from accounts.utils import get_all_permissions
 from accounts.widgets import PermissionSelectWidget
 
+@login_required(login_url="/accounts/login/")
+@permission_required("accounts.can_view_user")
+def admin_panel(request: HttpRequest):
+    context = {}
+    user_actions = LogEntry.objects.all().order_by("-action_time")
+    recent_user_login = UserModel.objects.all().order_by("-last_login")
+
+    context["user_actions"] = user_actions[:10]
+    context["recent_user_login"] = recent_user_login[:5]
+    context["page_title"] = "Vue d'ensemble"
+    return render(request, "accounts/admin_panel.html", context)
+
 
 class CustomLogoutView(View):
     login_url = reverse_lazy('accounts:login')
@@ -223,6 +235,7 @@ class UserListView(LoginRequiredMixin, MyPermissionRequiredMixin, ListView):
             UserModel.last_name.field.verbose_name,
             UserModel.first_name.field.verbose_name,
             UserModel.join_date.field.verbose_name,
+            UserModel.groups.field.verbose_name,
             "Mot de passe"
         ]
         context["user_column_names"] = account_column_names
@@ -365,6 +378,7 @@ class GroupListView(LoginRequiredMixin, MyPermissionRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         group_column_names = [
             Group.name.field.verbose_name,
+            Group.permissions.field.verbose_name,
         ]
         context["group_column_names"] = group_column_names
         return context
@@ -477,4 +491,5 @@ class UserActionLogList(LoginRequiredMixin, MyPermissionRequiredMixin, ListView)
             "Action",
         ]
         context["log_column_names"] = log_column_names
-        return context 
+        context["page_title"] = "Actions utilisateur"
+        return context

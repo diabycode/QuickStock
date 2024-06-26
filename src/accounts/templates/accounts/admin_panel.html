@@ -1,0 +1,52 @@
+{% extends 'qstockapp/base_admin.html' %}
+{% load static %}
+
+{% block head %}
+<title>Administration</title>
+<link rel="stylesheet" href="{% static 'css/accounts/admin_panel.css' %}">
+{% endblock %}
+
+<!-- body content -->
+{% block body %}
+<h3>Controllez tous ce qui ce passe dans le système</h3>
+<div class="panel-content">
+    <div class="admin-data left">
+        <div>
+            <h4>Gestion des utilisateurs</h4>
+            <a href="{% url 'accounts:user_list' %}" class="link primary">Utilisateurs</a>
+        </div>
+        <div>
+            <h4>Gestion des Groupes/Rôles et Autorisation</h4>
+            <a href="{% url 'accounts:group_list' %}" class="link primary">Goupes et autorisation</a>
+        </div>
+    </div>
+    <div class="right">
+        <div class="last-login">
+            <h4>Connexions récentes</h4>
+            {% for user in recent_user_login %}
+            <p>
+                🟢 <a href="{% url 'accounts:user_details' pk=user.pk %}" class="link">{{ user.username }}</a>
+                {{ user.last_login|date:"d-m-Y H:i" }}
+            </p>
+            {% endfor %}
+        </div>
+        <div class="recent-actions">
+            <h4>Actions récentes</h4>
+
+            {% for action in user_actions %}
+            <p>
+                {% if action.is_addition %}
+                 ➕ 
+                {% elif action.is_change %}
+                 ✍ 
+                {% else %}
+                 ❌ 
+                {% endif %}
+                <span>{{ action.change_message }} (<b>{{ action.user }}</b>)</span>
+            </p>
+            {% endfor %}
+            <a href="{% url 'accounts:action_logs' %}" class="link primary">Voir tout</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

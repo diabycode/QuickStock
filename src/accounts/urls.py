@@ -25,5 +25,6 @@ urlpatterns = [
     path('password_changed/', views.password_changed, name='password_changed'),
 
     path('action_logs/', views.UserActionLogList.as_view(), name='action_logs'),
+    path('administration/', views.admin_panel, name='admin_panel'),
 ]
 

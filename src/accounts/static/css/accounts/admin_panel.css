@@ -1,0 +1,23 @@
+h3 {
+    font-weight: 700;
+    background-color: var(--lightgray);
+}
+.panel-content {
+    display: flex;
+    gap: 2rem;
+}
+.left, .right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+h4 {
+    margin-bottom: .5rem;
+    font-weight: 600;
+    font-size: 1.25rem;    
+}
+.right {
+    background-color: var(--white);
+    padding: 1rem;
+    border-radius: 10px;
+}

@@ -13,8 +13,8 @@ class DebtViewsRenderingTest(TestCase):
 
     def setUp(self) -> None:
         self.client = Client()
-        self.user = UserModel.objects.create(username="test_user", password="12345")
-        self.superuser = UserModel.objects.create_superuser(username="superuser", password="12345")
+        self.user = UserModel.objects.create_user(username="test_user", password="12345")
+        self.superuser = UserModel.objects.create_superuser(username="superuser", email="almamy@gmail.com", password="12345")
     
     def test_debt_list_view(self):
         url = reverse("debts:debt_list")
@@ -48,6 +48,7 @@ class DebtViewsRenderingTest(TestCase):
         self.client.login(username=self.user.username, password="12345")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
+        self.assertIn("/permission_denied/", response.url)
         
         self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
@@ -63,6 +64,7 @@ class DebtViewsRenderingTest(TestCase):
         self.client.login(username=self.user.username, password="12345")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
+        self.assertIn("/permission_denied/", response.url)
 
         self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
@@ -83,6 +85,7 @@ class DebtViewsRenderingTest(TestCase):
         self.client.login(username=self.user.username, password="12345")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302) 
+        self.assertIn("/permission_denied/", response.url)
 
         self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
@@ -103,6 +106,7 @@ class DebtViewsRenderingTest(TestCase):
         self.client.login(username=self.user.username, password="12345")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
+        self.assertIn("/permission_denied/", response.url)
 
         self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
@@ -123,6 +127,7 @@ class DebtViewsRenderingTest(TestCase):
         self.client.login(username=self.user.username, password="12345")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
+        self.assertIn("/permission_denied/", response.url)
 
         self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
@@ -152,6 +157,7 @@ class DebtViewsRenderingTest(TestCase):
         self.client.login(username=self.user.username, password="12345")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
+        self.assertIn("/permission_denied/", response.url)
 
         self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)
@@ -180,6 +186,8 @@ class DebtViewsRenderingTest(TestCase):
         self.client.login(username=self.user.username, password="12345")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
+        self.assertIn("/permission_denied/", response.url)
+        # self.assertIn("permission", response.url)
 
         self.client.login(username=self.superuser.username, password="12345")
         response = self.client.get(url)

@@ -37,7 +37,7 @@ class StoreViewsRenderingTest(TestCase):
 
         response = self.client.get(reverse("stores:change_store", kwargs={"pk": store.pk}))
         self.assertEqual(response.status_code, 302)
-        self.assertIn("/dashbord/", response.url)
+        self.assertIn("/details/", response.url)
 
     def test_stores_create_view(self):
         url = reverse("stores:store_create")
@@ -88,5 +88,22 @@ class StoreViewsRenderingTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn("/stores/", response.url)
 
+    def test_change_store_view(self):
+        store = Store.objects.create(name="store")
+        url = reverse("stores:change_store", kwargs={"pk": store.pk})
+
+        rp = self.client.get(url)
+        self.assertEqual(rp.status_code, 302)
+        self.assertIn("login/", rp.url)
+
+        self.client.login(username=self.user.username, password="12345")
+        rp = self.client.get(url)
+        self.assertEqual(rp.status_code, 302)
+        self.assertIn("permission_denied/", rp.url)
+
+        self.client.login(username=self.super_user.username, password="12345")
+        rp = self.client.get(url)
+        self.assertEqual(rp.status_code, 302)
+        self.assertIn("/details/", rp.url)
 
 

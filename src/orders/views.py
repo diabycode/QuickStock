@@ -17,7 +17,6 @@ from .models import Order, OrderStatus
 from stores.models import Store
 from stores.mixins import NotCurrentStoreMixin
 from products.models import Product
-from quickstockapp.views import get_current_period, get_period_list
 from accounts.utils import log_user_action
 from accounts.mixins import MyPermissionRequiredMixin
 from accounts.decorators import permission_required

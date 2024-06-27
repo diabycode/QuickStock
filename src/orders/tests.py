@@ -170,6 +170,32 @@ class OrderViewsRenderingTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    def test_cancel_order_view(self):
+        # order_cancel
 
+        product = Product.objects.create(name="Product test")
+        product.stock_quantity += 2
+        product.save()
+        order = Order.objects.create(
+            product=product,
+            quantity=1,
+            order_date=datetime.datetime.now()
+        )
+        url = reverse("orders:order_cancel", kwargs={"pk": order.pk})
+
+        # login required
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response.url)
+
+        # logged in
+        self.client.login(username=self.user.username, password="12345")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/permission_denied/", response.url)
+
+        self.client.login(username=self.superuser.username, password="12345")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
 

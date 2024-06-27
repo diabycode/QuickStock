@@ -1,11 +1,10 @@
-from django.urls import reverse_lazy, reverse
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import UpdateView, CreateView, DetailView, ListView, DeleteView
-from django.contrib.sessions.models import Session
+from django.shortcuts import get_object_or_404, redirect
+from django.views.generic import UpdateView, CreateView, ListView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 from django.core.exceptions import PermissionDenied
+from django.urls import reverse_lazy
 
 from stores.mixins import NotCurrentStoreMixin
 from stores.models import Store, StoreCategory
@@ -93,6 +92,7 @@ class StoreDeleteView(LoginRequiredMixin, MyPermissionRequiredMixin, DeleteView)
 
 
 @login_required(login_url="/accounts/login/")
+@permission_required("stores.can_view_store")
 def change_store(request: HttpRequest, pk):
     object: Store = get_object_or_404(Store, pk=pk)
     if request.user.has_perm("stores.can_access_all_store") or request.user in object.users.all():

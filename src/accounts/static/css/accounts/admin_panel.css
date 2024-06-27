@@ -1,5 +1,6 @@
 h3 {
-    font-weight: 700;
+    font-weight: 500;
+    font-size: 1rem;
     background-color: var(--lightgray);
 }
 .panel-content {

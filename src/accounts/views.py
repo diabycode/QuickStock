@@ -33,7 +33,6 @@ def admin_panel(request: HttpRequest):
 
     context["user_actions"] = user_actions[:10]
     context["recent_user_login"] = recent_user_login[:5]
-    context["page_title"] = "Vue d'ensemble"
     return render(request, "accounts/admin_panel.html", context)
 
 

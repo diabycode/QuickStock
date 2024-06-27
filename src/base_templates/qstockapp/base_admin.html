@@ -108,11 +108,13 @@
                     <div class="title">
                         <h2>
                             {{ page_title }}
+                            {% if not page_title %}
+                            Vous êtes dans le site d'administration
+                            {% endif %}
                         </h2>
-                        <p style="color: var(--subwhite); text-align: center; background-color: var(--black);">Vous êtes dans le site d'administration</p>
                     </div>
                     <div>
-                        <span title="Connecté" class="user">
+                        <span title="Connecté" class="user" style="background-color: var(--black);">
                             {% if user.fullname != None %}
                                 {{ user.fullname|title }}
                             {% else %}

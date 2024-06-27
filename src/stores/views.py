@@ -97,5 +97,5 @@ def change_store(request: HttpRequest, pk):
     object: Store = get_object_or_404(Store, pk=pk)
     if request.user.has_perm("stores.can_access_all_store") or request.user in object.users.all():
         request.session["current_store_pk"] = object.pk
-        return redirect("home")
+        return redirect("accounts:details")
     raise PermissionDenied("Accès interdit !")

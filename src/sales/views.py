@@ -7,11 +7,9 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import UpdateView, CreateView, DetailView, ListView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
-from django.forms.utils import ErrorList
-from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseForbidden
+from django.http import HttpRequest, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-from django.contrib import messages
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.core.exceptions import PermissionDenied
 from unidecode import unidecode
@@ -20,7 +18,6 @@ from .models import Sale, SaleStatus
 from stores.models import Store
 from stores.mixins import NotCurrentStoreMixin
 from products.models import Product
-from quickstockapp.views import get_period_list, get_current_period
 from accounts.utils import log_user_action
 from accounts.mixins import MyPermissionRequiredMixin
 from accounts.decorators import permission_required
@@ -279,7 +276,8 @@ def cancel_sale(request, pk):
     context["sale"] = obj
     return render(request, "sales/sale_cancel.html", context)
 
-
+@login_required(login_url='/accounts/login/')
+@permission_required("sales.can_change_sale")
 def update_sale_product_quantity(request: HttpRequest, sale_pk):
     sale = get_object_or_404(Sale, pk=sale_pk)
     saleproducts = sale.saleproduct_set.all()

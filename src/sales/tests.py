@@ -162,9 +162,45 @@ class SaleViewsRenderingTest(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
 
+    def test_sale_cancel_view(self):
+        # sale_cancel
+        sale = Sale.objects.create(
+            sale_date=str(datetime.datetime.now().date()),
+        )
+        url = reverse("sales:sale_cancel", kwargs={"pk": sale.pk})
 
+        rp = self.client.get(url)
+        self.assertEqual(rp.status_code, 302)
+        self.assertIn("login/", rp.url)
 
+        self.client.login(username=self.user.username, password="12345")
+        rp = self.client.get(url)
+        self.assertEqual(rp.status_code, 302)
+        self.assertIn("/permission_denied/", rp.url)
 
+        self.client.login(username=self.superuser.username, password="12345")
+        rp = self.client.get(url)
+        self.assertEqual(rp.status_code, 200)
+
+    def test_sale_product_update_view(self):
+        # sale_product_update_view
+        sale = Sale.objects.create(
+            sale_date=str(datetime.datetime.now().date()),
+        )
+        url = reverse("sales:sale_product_update", kwargs={"sale_pk": sale.pk})
+
+        rp = self.client.get(url)
+        self.assertEqual(rp.status_code, 302)
+        self.assertIn("login/", rp.url)
+
+        self.client.login(username=self.user.username, password="12345")
+        rp = self.client.get(url)
+        self.assertEqual(rp.status_code, 302)
+        self.assertIn("/permission_denied/", rp.url)
+
+        self.client.login(username=self.superuser.username, password="12345")
+        rp = self.client.get(url)
+        self.assertEqual(rp.status_code, 200)
 
 
 

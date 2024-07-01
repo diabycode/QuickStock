@@ -47,7 +47,6 @@ class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStor
         
         local_date_format = "%d/%m/%Y"
         today = datetime.datetime.now().date()
-
         
         # date range selected
         date_range: str | None = self.request.GET.get("dates", None)
@@ -61,10 +60,11 @@ class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStor
             is_today = False
 
         store = get_object_or_404(Store, pk=self.request.session.get("current_store_pk"))
-        sale_list = Sale.objects.filter(store=store, sale_date__range=[from_date, to_date])            
-        
-        date_range_max = Sale.objects.last().sale_date if Sale.objects.last() else None
-        date_range_min = Sale.objects.first().sale_date if Sale.objects.first() else None
+        from_date = datetime.datetime(year=from_date.year, month=from_date.month, day=from_date.day, hour=0, minute=0)
+        to_date = datetime.datetime(year=to_date.year, month=to_date.month, day=to_date.day, hour=23, minute=59)
+        sale_list = Sale.objects.filter(store=store, add_at__range=[from_date, to_date]).order_by("-add_at")            
+        date_range_max = today
+        # date_range_min = Sale.objects.first().sale_date if Sale.objects.first() else None
 
         # search query filters
         isfilters = False
@@ -82,11 +82,6 @@ class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStor
         context["sale_number"] = Sale.get_sale_number(store=store, date_range=[from_date, to_date])
         context["sale_revenue"] = Sale.get_sale_revenue(store=store, date_range=[from_date, to_date])
         context["sale_product_quantity"] = Sale.get_sale_product_quantity(store=store, date_range=[from_date, to_date])
-        print(
-            context["sale_number"],
-            context["sale_revenue"],
-            context["sale_product_quantity"]
-        )
         context["sale_column_names"] = sale_column_names
         context["sale_list"] = sale_list
         context["page_title"] = "Ventes"
@@ -95,7 +90,7 @@ class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStor
         context["from_date"] = from_date.strftime(local_date_format)
         context["to_date"] = to_date.strftime(local_date_format)
         context["date_range_max"] = date_range_max.strftime(local_date_format) if date_range_max else today.strftime(local_date_format)
-        context["date_range_min"] = date_range_min.strftime(local_date_format) if date_range_min else today.strftime(local_date_format)
+        # context["date_range_min"] = date_range_min.strftime(local_date_format) if date_range_min else today.strftime(local_date_format)
         context["is_today"] = is_today 
         
         if search_query:
@@ -285,6 +280,7 @@ def cancel_sale(request, pk):
     context["sale"] = obj
     return render(request, "sales/sale_cancel.html", context)
 
+
 @login_required(login_url='/accounts/login/')
 @permission_required("sales.can_change_sale")
 def update_sale_product_quantity(request: HttpRequest, sale_pk):
@@ -298,10 +294,9 @@ def update_sale_product_quantity(request: HttpRequest, sale_pk):
                 saleproduct.quantity = form_data.get(f"quantity-{saleproduct.pk}")
                 saleproduct.save()
 
-        # print(form_data)
-        if form_data.get("deduct_from_stock") == "on":
-            from sales.signals import deduct_sale_from_stock
-            deduct_sale_from_stock.send(Sale, instance=sale)
+        # stock deduction signal
+        from sales.signals import deduct_sale_from_stock
+        deduct_sale_from_stock.send(Sale, instance=sale)
         return redirect(reverse("sales:sale_details", kwargs={"pk": sale.pk}))
 
     context = {

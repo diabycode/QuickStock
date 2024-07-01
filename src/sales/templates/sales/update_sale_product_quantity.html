@@ -20,7 +20,7 @@
 <form method="POST">
     {% csrf_token %} 
     <div class="form-content vertical">
-    {% for saleproduct in saleproducts %}
+        {% for saleproduct in saleproducts %}
         <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gray); padding-bottom: 5px;">
             <label for="id_{{ saleproduct.pk }}"><b>{{ saleproduct.product.name }}</b> (Qté restante : {{ saleproduct.product.stock_quantity }})</label> 
             <span style="max-width: 100px;">
@@ -30,11 +30,7 @@
                 
             </span>
         </div>
-    {% endfor %}
-    <div style="display: flex; gap: .3rem; margin-top: 2rem;">
-        <input type="checkbox" name="deduct_from_stock" id="deduct_from_stock" checked>
-        <label for="deduct_from_stock">Soustraire du stock</label>
-    </div>
+        {% endfor %}
     </div>
     <button type="submit">Enrégistrer</button>
     <a class="link" href="{% url 'sales:sale_list' %}">Annuler</a>

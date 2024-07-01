@@ -59,7 +59,7 @@ svg path {
             </svg>
             <div class="period-picker" style="display: flex; gap: 10px;">
             {% if request.user|has_permission:"accounts.can_access_global_stats" %}
-                {% include 'quickstockapp/partials/date_range_picker.html' with  opens='right' minDate=date_range_min maxDate=to_date startDate=from_date endDate=to_date %}
+                {% include 'quickstockapp/partials/date_range_picker.html' with  opens='right' maxDate=date_range_max startDate=from_date endDate=to_date %}
             {% endif %}
                 <span>{% if is_today %} Ajourd'hui {% endif %}</span>
             </div>        

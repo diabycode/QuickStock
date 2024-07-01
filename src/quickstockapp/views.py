@@ -1,5 +1,6 @@
 import datetime
 import json
+import pytz
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
@@ -67,16 +68,19 @@ def home(request: HttpRequest):
         return redirect("stores:store_list")
 
     local_date_format = "%d/%m/%Y"
-    today = datetime.datetime.now().date()
+    today = datetime.datetime.now(tz=pytz.UTC).date()
 
     # date range selected
     date_range: str | None = request.GET.get("dates", None)
-    from_date, to_date = ((today - datetime.timedelta(days=30)), today)
+    from_date, to_date = today, today
     if date_range is not None:
         from_date, to_date = get_date_objects_from_date_range(date_range)
 
-    date_range_max = Product.objects.last().add_at.date() if Product.objects.last() else None
-    date_range_min = Product.objects.first().add_at.date() if Product.objects.first() else None
+    from_date = datetime.datetime(year=from_date.year, month=from_date.month, day=from_date.day, hour=0, minute=0)
+    to_date = datetime.datetime(year=to_date.year, month=to_date.month, day=to_date.day, hour=23, minute=59)
+
+    date_range_max = today
+    # date_range_min = Product.objects.first().add_at.date() if Product.objects.first() else None
 
     store = get_object_or_404(Store, pk=request.session.get("current_store_pk"))
 
@@ -93,7 +97,7 @@ def home(request: HttpRequest):
         "from_date": from_date.strftime(local_date_format),
         "to_date": to_date.strftime(local_date_format),
         "date_range_max": date_range_max.strftime(local_date_format) if date_range_max else today.strftime(local_date_format),
-        "date_range_min": date_range_min.strftime(local_date_format) if date_range_min else today.strftime(local_date_format),
+        # "date_range_min": date_range_min.strftime(local_date_format) if date_range_min else today.strftime(local_date_format),
     }
     
     return render(request, "quickstockapp/dashboard.html", context=context)

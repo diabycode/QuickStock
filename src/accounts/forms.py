@@ -145,3 +145,6 @@ class UserPasswordChangeForm(UserRegistrationForm):
                 }
             )
         }
+
+    def clean_password(self):
+        return self.cleaned_data['password']

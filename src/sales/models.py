@@ -96,13 +96,13 @@ class Sale(models.Model):
     def get_sale_number(cls, store, date_range=None):
         today = datetime.datetime.now().date()
         date_range = [today, today] if date_range is None else date_range
-        return Sale.objects.filter(store=store, sale_date__range=date_range).count()
+        return Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, add_at__range=date_range).count()
     
     @classmethod
     def get_sale_revenue(cls, store, date_range=None):
         today = datetime.datetime.now().date()
         date_range = [today, today] if date_range is None else date_range
-        sales =  Sale.objects.filter(store=store, sale_date__range=date_range)
+        sales =  Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, add_at__range=date_range)
         
         day_revenue = decimal.Decimal(0.00)
         for sale in sales:
@@ -117,7 +117,7 @@ class Sale(models.Model):
     def get_sale_product_quantity(cls, store, date_range=None):
         today = datetime.datetime.now().date()
         date_range = [today, today] if date_range is None else date_range
-        sales =  Sale.objects.filter(store=store, sale_date__range=date_range)
+        sales =  Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, add_at__range=date_range)
         
         total_quantity = 0
         for sale in sales:

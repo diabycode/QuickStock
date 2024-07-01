@@ -36,7 +36,7 @@ class Inventory:
 
     @classmethod
     def get_recent_sales(cls, store: Store, from_date: datetime.date, to_date: datetime.date, limit: int=10):
-        return store.sale_set.filter(status=SaleStatus.VALIDATED, sale_date__range=[from_date, to_date]).order_by("-sale_date")[:limit]
+        return store.sale_set.filter(status=SaleStatus.VALIDATED, add_at__range=[from_date, to_date]).order_by("-sale_date")[:limit]
 
     @classmethod
     def products_count(cls, store: Store):
@@ -53,16 +53,16 @@ class Inventory:
     @classmethod
     def sales_count(cls, store: Store, from_date: datetime.date, to_date: datetime.date):
         return Sale.objects.filter(store=store, status=SaleStatus.VALIDATED,
-                                sale_date__range=[from_date, to_date]).count()
+                                add_at__range=[from_date, to_date]).count()
     
     @classmethod
     def orders_count(cls, store: Store, from_date: datetime.date, to_date: datetime.date):
-        return Order.objects.filter(store=store, order_date__range=[from_date, to_date]).count()
+        return Order.objects.filter(store=store, add_at__range=[from_date, to_date]).count()
 
     @classmethod
-    def total_earned(cls, store: Store, from_date: datetime.date, to_date: datetime.date):
+    def total_earned(cls, store: Store, from_date: datetime.datetime, to_date: datetime.datetime):
         total =  decimal.Decimal(0.0)
-        sales = Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, sale_date__range=[from_date, to_date])
+        sales = Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, add_at__range=[from_date, to_date])
         for sale in sales:
             total += sale.total_amount
 
@@ -73,7 +73,7 @@ class Inventory:
     @classmethod
     def net_incomme(cls, store: Store, from_date: datetime.date, to_date: datetime.date):
         total =  decimal.Decimal(0.0)
-        sales = Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, sale_date__range=[from_date, to_date])
+        sales = Sale.objects.filter(store=store, status=SaleStatus.VALIDATED, add_at__range=[from_date, to_date])
         for sale in sales:
             total += sale.income
         total -= cls.get_shipping_fees(store=store, from_date=from_date, to_date=to_date, string=False)
@@ -99,7 +99,7 @@ class Inventory:
     @classmethod
     def get_shipping_fees(cls, store: Store, from_date: datetime.date, to_date: datetime.date, string=False):
         total_fees = decimal.Decimal(0.0)
-        orders = Order.objects.filter(store=store, order_date__range=[from_date, to_date])
+        orders = Order.objects.filter(store=store, add_at__range=[from_date, to_date])
         for order in orders:
             if order.shipping_costs:
                 total_fees += order.shipping_costs

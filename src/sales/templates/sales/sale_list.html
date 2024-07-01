@@ -59,7 +59,7 @@ svg path {
             </svg>
             <div class="period-picker" style="display: flex; gap: 10px;">
             {% if request.user|has_permission:"accounts.can_access_global_stats" %}
-                {% include 'quickstockapp/partials/date_range_picker.html' with  opens='right' minDate=date_range_min maxDate=date_range_max startDate=from_date endDate=to_date %}
+                {% include 'quickstockapp/partials/date_range_picker.html' with  opens='right' minDate=date_range_min maxDate=to_date startDate=from_date endDate=to_date %}
             {% endif %}
                 <span>{% if is_today %} Ajourd'hui {% endif %}</span>
             </div>        
@@ -67,21 +67,20 @@ svg path {
         <div class="day-stats" style="display: flex; justify-content: space-around; gap: 1rem; padding: 1rem;">
             <div>
                 <span class="stat-data" style="background-color: rgb(245 245 255);">
-                    {{ day_sale_number }}
-    
+                    {{ sale_number }}
                 </span>
                 Vente(s) réalisée(s)
             </div>
             <div>
                 <span class="stat-data" style="background-color: rgb(245 245 255);">
-                    {{ day_sale_product_quantity }}
+                    {{ sale_product_quantity }}
     
                 </span>
                 Produit(s) vendu(s)
             </div>
             <div>
                 <span class="stat-data" style="background-color: rgb(239 223 255);">
-                    {{ day_sale_revenue|money_string }}
+                    {{ sale_revenue|money_string }}
     
                 </span>
                 FCFA (revenue total)

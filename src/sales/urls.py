@@ -12,6 +12,7 @@ urlpatterns = [
     path('<str:pk>/cancel/', views.cancel_sale, name='sale_cancel'),
     path('create/', views.SaleCreateView.as_view(), name='sale_create'),
     path('<str:sale_pk>/update_sale_product_quantity/', views.update_sale_product_quantity, name='sale_product_update'),
+    path('<str:sale_pk>/generate_invoice/', views.generate_invoice, name='sale_invoice'),
 ]
 
 

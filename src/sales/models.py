@@ -93,17 +93,19 @@ class Sale(models.Model):
         return unidecode(self.buyer_name) if self.buyer_name else None
     
     @classmethod
-    def get_day_sale_number(cls, store):
+    def get_sale_number(cls, store, date_range=None):
         today = datetime.datetime.now().date()
-        return Sale.objects.filter(store=store, sale_date__day=today.day, sale_date__month=today.month, sale_date__year=today.year).count()
+        date_range = [today, today] if date_range is None else date_range
+        return Sale.objects.filter(store=store, sale_date__range=date_range).count()
     
     @classmethod
-    def get_day_sale_revenue(cls, store):
+    def get_sale_revenue(cls, store, date_range=None):
         today = datetime.datetime.now().date()
-        day_sales =  Sale.objects.filter(store=store, sale_date__day=today.day, sale_date__month=today.month, sale_date__year=today.year)
+        date_range = [today, today] if date_range is None else date_range
+        sales =  Sale.objects.filter(store=store, sale_date__range=date_range)
         
         day_revenue = decimal.Decimal(0.00)
-        for sale in day_sales:
+        for sale in sales:
             sale_revenue = decimal.Decimal(0.00)
             for saleproduct in sale.saleproduct_set.all():
                 product_revenue = saleproduct.product.unit_price_sale * saleproduct.quantity
@@ -112,12 +114,13 @@ class Sale(models.Model):
         return day_revenue
 
     @classmethod
-    def get_day_sale_product_quantity(cls, store):
+    def get_sale_product_quantity(cls, store, date_range=None):
         today = datetime.datetime.now().date()
-        day_sales =  Sale.objects.filter(store=store, sale_date__day=today.day, sale_date__month=today.month, sale_date__year=today.year)
+        date_range = [today, today] if date_range is None else date_range
+        sales =  Sale.objects.filter(store=store, sale_date__range=date_range)
         
         total_quantity = 0
-        for sale in day_sales:
+        for sale in sales:
             for saleproduct in sale.saleproduct_set.all():
                 total_quantity += saleproduct.quantity
         return total_quantity

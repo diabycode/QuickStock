@@ -1,4 +1,5 @@
 import datetime
+from io import BytesIO
 
 from django.forms import BaseModelForm
 from django.http import HttpResponse
@@ -13,6 +14,8 @@ from django.shortcuts import redirect
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.core.exceptions import PermissionDenied
 from unidecode import unidecode
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 from .models import Sale, SaleStatus
 from stores.models import Store
@@ -21,6 +24,7 @@ from products.models import Product
 from accounts.utils import log_user_action
 from accounts.mixins import MyPermissionRequiredMixin
 from accounts.decorators import permission_required
+from settings.models import EditableSettings
 
 
 class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStoreMixin, ListView):
@@ -75,9 +79,14 @@ class SaleListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentStor
                 return False
             sale_list = filter(func, sale_list)
 
-        context["day_sale_number"] = Sale.get_day_sale_number(store=store)
-        context["day_sale_revenue"] = Sale.get_day_sale_revenue(store=store)
-        context["day_sale_product_quantity"] = Sale.get_day_sale_product_quantity(store=store)
+        context["sale_number"] = Sale.get_sale_number(store=store, date_range=[from_date, to_date])
+        context["sale_revenue"] = Sale.get_sale_revenue(store=store, date_range=[from_date, to_date])
+        context["sale_product_quantity"] = Sale.get_sale_product_quantity(store=store, date_range=[from_date, to_date])
+        print(
+            context["sale_number"],
+            context["sale_revenue"],
+            context["sale_product_quantity"]
+        )
         context["sale_column_names"] = sale_column_names
         context["sale_list"] = sale_list
         context["page_title"] = "Ventes"
@@ -299,3 +308,33 @@ def update_sale_product_quantity(request: HttpRequest, sale_pk):
         "saleproducts": saleproducts
     }
     return render(request, "sales/update_sale_product_quantity.html", context)
+
+
+def _render_to_pdf(request: HttpRequest, template_name: str, context: dict) -> HttpResponse:
+    sale: Sale = context.get("sale")
+    template = get_template(template_name=template_name)
+    html = template.render(context=context)
+    
+    pdf = BytesIO()
+    pisa.pisaDocument(BytesIO(html.encode("UTF-8")), pdf) 
+    
+    response = HttpResponse(pdf.getvalue(), content_type="application/pdf")
+    response["Content-Disposition"] = \
+        f"inline; filename=invoice{sale.pk}.pdf"
+    
+    return response
+    # return render(request, "sales/invoice.html", context)
+
+
+@login_required(login_url='/accounts/login/')
+@permission_required("sales.can_view_sale")
+def generate_invoice(request: HttpRequest, sale_pk):
+    context = {}
+    sale = get_object_or_404(Sale, pk=sale_pk)
+    context["sale"] = sale
+    context["app_settings"] = EditableSettings.load()
+    return _render_to_pdf(request, "sales/invoice.html", context)
+
+
+
+

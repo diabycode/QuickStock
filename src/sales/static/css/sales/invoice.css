@@ -1,0 +1,64 @@
+/* h1 {
+    color: var(--primary);
+    font-size: 2.3rem;
+    text-transform: uppercase;
+}
+.top {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    width: 100%;
+    gap: 2rem;
+    justify-content: space-between;
+}
+.left {
+    max-width: 300px;
+}
+.desc {
+    text-align: justify;
+    text-transform: uppercase;
+    font-size: .7rem;
+    background-color: var(--subwhite);
+    padding: 10px;
+}
+.sale-details-table table thead {
+    background-color: var(--lightgray);
+}
+.sale-details-table table tbody tr {
+    border-bottom: 1px solid var(--lightgray);
+}
+.sale-details-table table th, 
+.sale-details-table table td {
+    text-align: left;
+    padding: .5rem;
+}
+.sale-details-table {
+    margin-bottom: 2rem;
+    padding: 1rem;
+}
+.sale-details-table > div {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-end;
+}
+p.total {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+p.total > span {
+    display: inline;
+}
+.footer {
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: var(--subwhite);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+} */

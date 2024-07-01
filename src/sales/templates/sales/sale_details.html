@@ -93,6 +93,7 @@
         {% endif %}
     {% endif %}
     {% if request.user|has_permission:"sales.can_change_sale" %}
+    <a href="{% url 'sales:sale_invoice' sale_pk=sale.pk %}" class="btn primary">Générer une facture</a>
     <a class="link primary" href="{% url 'sales:sale_update' pk=sale.pk %}">Modifier</a>
     {% endif %}
     <a class="link" href="{% url 'sales:sale_list' %}">Retour à la liste ventes</a>

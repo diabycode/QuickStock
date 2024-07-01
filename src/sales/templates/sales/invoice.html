@@ -1,0 +1,105 @@
+{% load static %}
+{% load money_string %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FACTURE{{ sale.pk }}</title>
+</head>
+<style type="text/css">
+     @page {
+        size: letter portrait;
+        margin: 2cm;
+
+        @frame content_frame {
+            left: 50pt;
+            width: 512pt;
+            top: 50pt;
+            height: 692pt;
+            /* -pdf-frame-border: 1;    for debugging the layout */
+        }
+        
+    }
+    td, th {
+        padding: .1cm 0;
+    }
+    tbody tr {
+        border-bottom: .001cm solid #e0e0e0;
+    }
+    table {
+        border-collapse: collapse;
+    }
+    .right * {
+        font-weight: 700;
+    }
+</style>
+<body>
+    <main>
+        <div class="container">
+            <div class="top">
+                <div class="left">
+                    <div style="color: #4a75a0; font-size: 20px; font-weight: bold;">{% if app_settings.company_name %} {{ app_settings.company_name }} {% else %} QuickStock {% endif %}</div>
+                    <div class="desc" id="desc">Vente de poussin d'un jour - Matériel d'élevage - Maïs, Soja, GMA (en gros) - Fabrication d'Aliments de Volailles</div>
+                </div>
+                <hr>
+                <div class="right" style="left: 100pt; margin-left: 10px;">
+                    <div>
+                        Facture N° {{ sale.pk }}
+                    </div>
+                    <div>
+                        Date : {{ sale.sale_date|date:"d/m/Y" }}
+                    </div>
+                    <div>
+                        Acheteur : {% if sale.buyer_name != None %}{{ sale.buyer_name }} {% else %} ___ {% endif %}
+                    </div>
+                </div>
+            </div>
+            <p class="heading" id="header_frame">Magasin : {{ sale.store }}</p>
+            <div class="data-table sale-details-table">
+                <table>
+                    <thead>
+                        <tr style="background-color: #e0e0e0;">
+                            <td>Qté</td>
+                            <td>Désignation</td>
+                            <td>Prix Unitaire</td>
+                            <td>Total</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for saleproduct in sale.saleproduct_set.all %}
+                        <tr>
+                            <td>{{ saleproduct.quantity }} </td>
+                            <td>{{ saleproduct.product.name }} </td>
+                            <td>{{ saleproduct.product.unit_price_sale|money_string }} </td>
+                            <td>{{ saleproduct.total|money_string }} </td>
+                        </tr>
+                        {% endfor %}
+                        {% if sale.discount_applied %}
+                    <tr>
+                        <td>Réduction appliquée</td>
+                        <td></td>
+                        <td></td>
+                        <td><b>{{ sale.discount|money_string }}</b></td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td>Total général</td>
+                        <td></td>
+                        <td></td>
+                        <td><b>{{ sale.total_amount|money_string }}</b></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="footer" >
+                <p style="margin-top: 30px;">
+                    Montant payé :
+                    <b style="color: #4a75a0;">{{ sale.total_amount|money_string }} FCFA</b>
+                </p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

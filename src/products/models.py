@@ -56,7 +56,7 @@ class Product(models.Model):
     
     def get_sales_count(self, from_date: datetime.date, to_date: datetime.date):
         total_sale = 0
-        saleproducts = self.saleproduct_set.all().filter(sale__sale_date__range=[from_date, to_date])
+        saleproducts = self.saleproduct_set.all().filter(sale__add_at__range=[from_date, to_date])
         for saleproduct in saleproducts:
             total_sale += saleproduct.quantity
         return total_sale
@@ -64,7 +64,7 @@ class Product(models.Model):
     def get_recent_sales(self, month=None, year=None):
         month = datetime.datetime.now().month if not month else month
         year = datetime.datetime.now().year if not year else year
-        return self.saleproduct_set.all().filter(sale__sale_date__month=month, sale__sale_date__year=year).order_by("-sale__add_at")
+        return self.saleproduct_set.all().filter(sale__add_at__month=month, sale__add_at__year=year).order_by("-sale__add_at")
 
     @property
     def unaccent_name(self):

@@ -5,3 +5,7 @@
     border-radius: 10px;
     min-height: 200px;
 }
+#id_products {
+    resize: vertical;
+    min-height: 300px;
+}

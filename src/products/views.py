@@ -31,7 +31,6 @@ class ProductListView(LoginRequiredMixin, MyPermissionRequiredMixin, NotCurrentS
         product_column_names = [
             Product.name.field.verbose_name,
             Product.stock_quantity.field.verbose_name,
-            Product.wholesale_unit_price.field.verbose_name + " (FCFA)",
             Product.unit_price_sale.field.verbose_name + " (FCFA)",
             Product.store.field.verbose_name,
             Product.add_at.field.verbose_name,

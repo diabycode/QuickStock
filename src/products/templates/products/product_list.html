@@ -50,7 +50,6 @@
             <tr class="{% if product.stock_alert != None %} {{ product.stock_alert }} {% endif %}">
                 <td>{{ product.name }}</td>
                 <td>{{ product.stock_quantity }}</td>
-                <td>{{ product.wholesale_unit_price|money_string }}</td>
                 <td>{{ product.unit_price_sale|money_string }}</td>
                 <td>{{ product.store.name }}</td>
                 <td> {% if product.add_at %} {{ product.add_at|date:"d-m-Y" }} {% else %} - {% endif %}</td>
